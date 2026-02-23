@@ -35,11 +35,10 @@ export interface NotificationGame {
   character_name: string;
 }
 
-export interface NotificationEvent {
-  type: 'notification'; // WebSocket event type
+export interface NotificationData {
   id: number;
   user_id: number;
-  notification_type: 'system' | 'game' | 'mention'; // Backend 'Type' field
+  type: 'system' | 'game' | 'mention';
   title: string;
   message: string;
   date_created: string;
@@ -48,10 +47,15 @@ export interface NotificationEvent {
   game: NotificationGame | null;
 }
 
+export interface NotificationEvent {
+  type: 'notification';
+  data: NotificationData;
+}
+
 export interface UnreadNotificationsResponse {
-  system: NotificationEvent[];
-  game: NotificationEvent[];
-  mention: NotificationEvent[];
+  system: NotificationData[];
+  game: NotificationData[];
+  mention: NotificationData[];
 }
 
 export interface TopicViewersUpdateEvent {

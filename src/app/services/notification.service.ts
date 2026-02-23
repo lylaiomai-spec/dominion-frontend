@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 
@@ -27,15 +27,15 @@ export class NotificationService {
   private topicViewersUpdateSubject = new Subject<TopicViewersUpdateEvent>();
   public topicViewersUpdate$ = this.topicViewersUpdateSubject.asObservable();
 
-  private systemNotificationsSignal = signal<NotificationEvent[]>([]);
+  private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
-  private gameNotificationsSignal = signal<NotificationEvent[]>([]);
+  private gameNotificationsSignal = signal<NotificationData[]>([]);
   public gameNotifications = this.gameNotificationsSignal.asReadonly();
-  private mentionNotificationsSignal = signal<NotificationEvent[]>([]);
+  private mentionNotificationsSignal = signal<NotificationData[]>([]);
   public mentionNotifications = this.mentionNotificationsSignal.asReadonly();
 
   // Subject for real-time toast notifications
-  private notificationSubject = new Subject<NotificationEvent>();
+  private notificationSubject = new Subject<NotificationData>();
   public notification$ = this.notificationSubject.asObservable();
 
   private messageQueue: string[] = [];
@@ -165,16 +165,18 @@ export class NotificationService {
         break;
       case 'notification':
         const event = notification as NotificationEvent;
+        const notificationData = event.data;
+
         // Push to subject for real-time toast
-        this.notificationSubject.next(event);
+        this.notificationSubject.next(notificationData);
 
         // Also update the corresponding signal for the notification list
-        if (event.notification_type === 'system') {
-          this.systemNotificationsSignal.update(current => [event, ...current]);
-        } else if (event.notification_type === 'game') {
-          this.gameNotificationsSignal.update(current => [event, ...current]);
-        } else if (event.notification_type === 'mention') {
-          this.mentionNotificationsSignal.update(current => [event, ...current]);
+        if (notificationData.type === 'system') {
+          this.systemNotificationsSignal.update(current => [notificationData, ...current]);
+        } else if (notificationData.type === 'game') {
+          this.gameNotificationsSignal.update(current => [notificationData, ...current]);
+        } else if (notificationData.type === 'mention') {
+          this.mentionNotificationsSignal.update(current => [notificationData, ...current]);
         }
         break;
       case 'topic_viewers_update':

@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Notification } from '../../models/Notification';
 import { NotificationService } from '../../services/notification.service';
 import { CommonModule } from '@angular/common';
-import { NotificationEvent } from '../../models/event';
+import { NotificationData } from '../../models/event';
 
 @Component({
   selector: 'app-toast',
@@ -16,12 +16,12 @@ export class ToastComponent implements OnInit {
   notifications: Notification[] = [];
 
   ngOnInit() {
-    this.notificationService.notification$.subscribe((event: NotificationEvent) => {
+    this.notificationService.notification$.subscribe((event: NotificationData) => {
       const newNotification: Notification = {
         id: event.id,
         title: event.title,
         message: event.message,
-        from: event.notification_type
+        from: event.type
       };
 
       this.notifications.push(newNotification);

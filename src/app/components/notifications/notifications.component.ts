@@ -1,6 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
+import { NotificationData } from '../../models/event';
 import { RouterLink } from '@angular/router';
 
 @Component({
