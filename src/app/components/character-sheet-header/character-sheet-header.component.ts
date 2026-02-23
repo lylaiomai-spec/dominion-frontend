@@ -5,6 +5,7 @@ import { ShortTextFieldDisplayComponent } from '../short-text-field-display/shor
 import { LongTextFieldDisplayComponent } from '../long-text-field-display/long-text-field-display.component';
 import { NumberFieldDisplayComponent } from '../number-field-display/number-field-display.component';
 import { AuthService } from '../../services/auth.service';
+import { CharacterService } from '../../services/character.service';
 
 @Component({
   selector: 'app-character-sheet-header',
@@ -16,6 +17,7 @@ import { AuthService } from '../../services/auth.service';
 export class CharacterSheetHeaderComponent implements OnInit {
   @Input() character!: Character | null;
   private authService = inject(AuthService);
+  private characterService = inject(CharacterService);
 
   isAdmin = this.authService.isAdmin;
   customFields: any[] = [];
@@ -49,7 +51,18 @@ export class CharacterSheetHeaderComponent implements OnInit {
   }
 
   acceptCharacter() {
-    // TODO: Implement character acceptance logic
-    console.log('Character accepted:', this.character?.id);
+    if (this.character) {
+      this.characterService.acceptCharacter(this.character.id).subscribe({
+        next: () => {
+          console.log('Character accepted successfully');
+          // Optionally, update the character status in the view
+          if (this.character) {
+            // This assumes a status of 1 means accepted. Adjust if necessary.
+            this.character.character_status = 1;
+          }
+        },
+        error: (err) => console.error('Failed to accept character', err)
+      });
+    }
   }
 }

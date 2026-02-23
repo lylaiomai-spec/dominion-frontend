@@ -164,4 +164,8 @@ export class CharacterService {
   updateCharacterProfile(id: number, data: any) {
     return this.apiService.post(`character-profile/update/${id}`, data);
   }
+
+  acceptCharacter(id: number) {
+    return this.apiService.post(`character/accept/${id}`, {});
+  }
 }
