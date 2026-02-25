@@ -65,7 +65,7 @@
         </div>
         <div class="conr">
           <p class="post-links">
-            <span><a href="/post.php?tid=8&amp;qid=21" i18n="@@viewtopic.quote">Quote</a></span>
+            <span><a href="#" (click)="quotePost(post, $event)" i18n="@@viewtopic.quote">Quote</a></span>
             @if(post.can_edit) {
               <span><a href="#" (click)="editPost(post, $event)" i18n="@@viewtopic.edit">Edit</a></span>
             }

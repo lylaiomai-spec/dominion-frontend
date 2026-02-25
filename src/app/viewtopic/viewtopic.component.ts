@@ -169,27 +169,44 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     this.editingPostId.set(null);
   }
 
-  onUpdatePost(event: Event, postId: number) {
+  quotePost(post: Post, event: Event) {
     event.preventDefault();
 
-    // Find the correct form component
-    // Since we are iterating, we can't easily map index to component instance in the template without tracking
-    // But we can find it in the QueryList.
-    // However, since only one post is edited at a time, we can just look for the one that is visible?
-    // Or we can pass the value directly if we bind it?
+    let quoteContent = '';
+    const selection = window.getSelection();
 
-    // A simpler way: get the textarea from the event target's form
+    // Check if there is a selection and if it's within the post content
+    // This is a bit tricky because the selection might span multiple elements
+    // For simplicity, we'll just check if there is text selected.
+    // Ideally, we should check if the selection is inside the specific post's container.
+
+    if (selection && selection.toString().trim().length > 0) {
+      quoteContent = selection.toString().trim();
+    } else {
+      quoteContent = post.content;
+    }
+
+    const authorName = post.use_character_profile && post.character_profile
+      ? post.character_profile.character_name
+      : post.user_profile?.user_name || 'Unknown';
+
+    const formattedQuote = `[quote=${authorName}]${quoteContent}[/quote]\n`;
+
+    // Append to the main post form
+    if (this.postForm && this.postForm.messageField) {
+      const textarea = this.postForm.messageField.nativeElement;
+      textarea.value += formattedQuote;
+      textarea.focus();
+      textarea.scrollTop = textarea.scrollHeight;
+
+      // Scroll to the form
+      document.getElementById('post-form')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  onUpdatePost(event: Event, postId: number) {
+    event.preventDefault();
     const form = event.target as HTMLFormElement;
-    // The textarea inside app-post-form might not be directly accessible via form.elements if it's shadowed
-    // But app-post-form is just a component.
-
-    // Let's use the ViewChildren approach.
-    // We need to know which index in the QueryList corresponds to the edited post.
-    // This is tricky because the QueryList only contains *rendered* components.
-    // Since we only render *one* edit form at a time (presumably), it should be the only one in the list?
-    // Or we can just use the DOM.
-
-    // Let's try to get the value from the textarea directly using standard DOM traversal from the submit button/form
     const textarea = form.querySelector('textarea');
     const content = textarea?.value;
 
@@ -201,16 +218,10 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     };
 
     this.topicService.updatePost(payload).subscribe({
-      next: (updatedPost: any) => { // Assuming backend returns the updated post
-        // Update the local post in the list
-        // We need to update the signal in TopicService
-        // If the backend returns the updated post, we can use it.
-        // If not, we might need to reload or manually update.
-        // Let's assume it returns the post object.
+      next: (updatedPost: any) => {
         if (updatedPost && updatedPost.id) {
              this.topicService.updateLocalPost(updatedPost);
         } else {
-             // Fallback: reload posts
              if (this.id) this.topicService.loadPosts(this.id, this.pageNumber);
         }
         this.cancelEdit();
@@ -235,7 +246,6 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     this.topicService.createPost(payload).subscribe({
       next: () => {
         this.postForm.messageField.nativeElement.value = '';
-        // After posting, the WebSocket event will trigger a redirect if needed
       },
       error: (err) => console.error('Failed to create post', err)
     });
