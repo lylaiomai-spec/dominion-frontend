@@ -61,8 +61,16 @@ export class TopicService {
     return this.apiService.post('post/create', data);
   }
 
+  updatePost(data: any) {
+    return this.apiService.post('post/update', data);
+  }
+
   createTopic(data: CreateTopicRequest) {
     return this.apiService.post('topic/create', data);
+  }
+
+  updateLocalPost(updatedPost: Post) {
+    this.postsSignal.update(posts => posts.map(p => p.id === updatedPost.id ? updatedPost : p));
   }
 
   private handleNewPost(post: Post) {

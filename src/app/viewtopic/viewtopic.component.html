@@ -44,7 +44,17 @@
 
         <div class="post-body">
           <div class="post-box">
-            <div class="post-content" [innerHTML]="post.content_html | safeHtml"></div>
+            @if (editingPostId() === post.id) {
+              <form (submit)="onUpdatePost($event, post.id)">
+                <app-post-form [initialContent]="post.content"></app-post-form>
+                <div class="buttons" style="margin-top: 10px; text-align: right;">
+                  <button type="submit" class="button">Save</button>
+                  <button type="button" class="button" (click)="cancelEdit()">Cancel</button>
+                </div>
+              </form>
+            } @else {
+              <div class="post-content" [innerHTML]="post.content_html | safeHtml"></div>
+            }
           </div>
         </div>
         <div class="clearer"></div>
@@ -57,7 +67,7 @@
           <p class="post-links">
             <span><a href="/post.php?tid=8&amp;qid=21" i18n="@@viewtopic.quote">Quote</a></span>
             @if(post.can_edit) {
-              <span><a href="#" i18n="@@viewtopic.edit">Edit</a></span>
+              <span><a href="#" (click)="editPost(post, $event)" i18n="@@viewtopic.edit">Edit</a></span>
             }
           </p>
         </div>
@@ -105,7 +115,7 @@
             </div>
 
             <div class="form-content" style="flex: 1;">
-              <app-post-form></app-post-form>
+              <app-post-form #mainPostForm></app-post-form>
             </div>
           </div>
 

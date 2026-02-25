@@ -1,4 +1,4 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, ViewChild, AfterViewInit} from '@angular/core';
 
 @Component({
   selector: 'app-post-form',
@@ -7,8 +7,9 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
   standalone: true,
   styleUrl: './post-form.component.css'
 })
-export class PostFormComponent {
+export class PostFormComponent implements AfterViewInit {
   @ViewChild('messageField') messageField!: ElementRef<HTMLTextAreaElement>;
+  @Input() initialContent: string = '';
 
   activeArea: string | null = null;
 
@@ -19,6 +20,12 @@ export class PostFormComponent {
 
   fonts = ['Arial', 'Verdana', 'Georgia', 'Times New Roman', 'Courier New', 'Impact'];
   colors = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'purple', 'gray', 'silver'];
+
+  ngAfterViewInit() {
+    if (this.initialContent) {
+      this.messageField.nativeElement.value = this.initialContent;
+    }
+  }
 
   toggleArea(area: string) {
     this.activeArea = this.activeArea === area ? null : area;

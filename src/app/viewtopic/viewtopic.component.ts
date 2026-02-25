@@ -1,4 +1,4 @@
-import {Component, effect, inject, Input, OnInit, OnDestroy, ViewChild, signal, computed, numberAttribute} from '@angular/core';
+import {Component, effect, inject, Input, OnInit, OnDestroy, ViewChild, signal, computed, numberAttribute, ViewChildren, QueryList} from '@angular/core';
 import {PostFormComponent} from '../components/post-form/post-form.component';
 import {TopicService} from '../services/topic.service';
 import {Router, RouterLink, ActivatedRoute} from '@angular/router';
@@ -68,9 +68,12 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     return Math.ceil(totalPosts / this.postsPerPage);
   });
 
+  editingPostId = signal<number | null>(null);
+
   private destroy$ = new Subject<void>();
 
-  @ViewChild(PostFormComponent) postForm!: PostFormComponent;
+  @ViewChild('mainPostForm') postForm!: PostFormComponent;
+  @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
 
   constructor() {
     // Effect for breadcrumbs and profile loading
@@ -115,6 +118,15 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
         this.showPostForm.set(true);
       }
     });
+
+    // Effect to reload posts when page or topic ID changes
+    effect(() => {
+      const topicId = this.id;
+      const currentPage = this.pageNumber;
+      if (topicId) {
+        this.topicService.loadPosts(topicId, currentPage);
+      }
+    });
   }
 
   isEpisode() { return this.topic().type === TopicType.episode; }
@@ -146,6 +158,65 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
   onCharacterSelected(characterId: number | null) {
     this.selectedCharacterId = characterId;
+  }
+
+  editPost(post: Post, event: Event) {
+    event.preventDefault();
+    this.editingPostId.set(post.id);
+  }
+
+  cancelEdit() {
+    this.editingPostId.set(null);
+  }
+
+  onUpdatePost(event: Event, postId: number) {
+    event.preventDefault();
+
+    // Find the correct form component
+    // Since we are iterating, we can't easily map index to component instance in the template without tracking
+    // But we can find it in the QueryList.
+    // However, since only one post is edited at a time, we can just look for the one that is visible?
+    // Or we can pass the value directly if we bind it?
+
+    // A simpler way: get the textarea from the event target's form
+    const form = event.target as HTMLFormElement;
+    // The textarea inside app-post-form might not be directly accessible via form.elements if it's shadowed
+    // But app-post-form is just a component.
+
+    // Let's use the ViewChildren approach.
+    // We need to know which index in the QueryList corresponds to the edited post.
+    // This is tricky because the QueryList only contains *rendered* components.
+    // Since we only render *one* edit form at a time (presumably), it should be the only one in the list?
+    // Or we can just use the DOM.
+
+    // Let's try to get the value from the textarea directly using standard DOM traversal from the submit button/form
+    const textarea = form.querySelector('textarea');
+    const content = textarea?.value;
+
+    if (!content) return;
+
+    const payload = {
+      post_id: postId,
+      content: content
+    };
+
+    this.topicService.updatePost(payload).subscribe({
+      next: (updatedPost: any) => { // Assuming backend returns the updated post
+        // Update the local post in the list
+        // We need to update the signal in TopicService
+        // If the backend returns the updated post, we can use it.
+        // If not, we might need to reload or manually update.
+        // Let's assume it returns the post object.
+        if (updatedPost && updatedPost.id) {
+             this.topicService.updateLocalPost(updatedPost);
+        } else {
+             // Fallback: reload posts
+             if (this.id) this.topicService.loadPosts(this.id, this.pageNumber);
+        }
+        this.cancelEdit();
+      },
+      error: (err) => console.error('Failed to update post', err)
+    });
   }
 
   onSubmit(event: Event) {
