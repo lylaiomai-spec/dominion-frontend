@@ -33,8 +33,6 @@ export class TopicService {
   constructor() {
     this.notificationService.postCreated$.subscribe(event => {
       const currentTopicId = this.topic().id;
-      // The event structure is { type: 'post_created', data: Post }
-      // So we access event.data.topic_id
       if (event.data.topic_id == currentTopicId) {
         this.handleNewPost(event.data);
       }
@@ -62,6 +60,15 @@ export class TopicService {
   }
 
   private handleNewPost(post: Post) {
+    // Add the new post to the list
     this.postsSignal.update(posts => [...posts, post]);
+
+    // Increment the post count in the topic
+    this.topicSignal.update(topic => {
+      if (topic) {
+        return { ...topic, post_number: topic.post_number + 1 };
+      }
+      return topic;
+    });
   }
 }
