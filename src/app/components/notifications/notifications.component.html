@@ -16,7 +16,7 @@
   @if (mentionNotifications().length > 0) {
     <div class="notification-block mentions" (click)="openModal('mention')">
       <span class="count">{{ mentionNotifications().length }}</span>
-      <span class="label">Mentions</span>
+      <span class="label" i18n="@@notifications.mentions">Mentions</span>
     </div>
   }
 </div>
@@ -72,7 +72,7 @@
       }
 
       @if (activeModal === 'mention') {
-        <h2>Mentions</h2>
+        <h2 i18n="@@notifications.mentions">Mentions</h2>
         <div class="feed-list">
           @for (item of mentionNotifications(); track item.id) {
             <div class="feed-item">

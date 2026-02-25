@@ -116,6 +116,14 @@ export const TRANSLATIONS_RU = {
   "settings.confirmPassword": "Подтвердите новый пароль",
   "settings.save": "Сохранить",
   "admin.title": "Админка",
+  "admin.notifications": "Уведомления",
+  "admin.settings": "Настройки",
+  "admin.users": "Пользователи",
+  "admin.charactertemplates": "Шаблон анкеты",
+  "admin.characterprofiletemplates": "Шаблон профиля",
+  "admin.factions": "Фракции",
+  "admin.episodetemplate": "Шаблон эпизода",
+  "admin.permissions": "Права доступа",
   "profile.title": "Профиль",
   "userprofile.title": "Профиль пользователя",
   "userprofile.basicInfo": "Основная информация",
@@ -128,5 +136,9 @@ export const TRANSLATIONS_RU = {
   "userprofile.episodes": "Эпизодов",
   "userprofile.posts": "Постов",
   "userprofile.lastPost": "Последний пост",
-  "userprofile.noCharacters": "У данного пользователя пока нет созданных персонажей."
+  "userprofile.noCharacters": "У данного пользователя пока нет созданных персонажей.",
+  "breadcrumbs.youAreHere": "Вы здесь",
+  "topicreadby.title": "Тему просматривают",
+  "topicreadby.guests": "Гостей",
+  "topicreadby.users": "Пользователей"
 };
