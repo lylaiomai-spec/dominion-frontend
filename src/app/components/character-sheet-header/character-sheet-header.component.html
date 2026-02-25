@@ -43,7 +43,7 @@
   </div>
 </div>
 
-@if (isAdmin()) {
+@if (isAdmin() && context === 'topic' && character.character_status === 2) {
   <div class="admin-actions">
     <button class="button" (click)="acceptCharacter()">Accept</button>
   </div>

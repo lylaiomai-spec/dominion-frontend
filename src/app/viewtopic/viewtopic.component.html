@@ -26,7 +26,7 @@
     <app-episode-header [episode]="topic().episode" ></app-episode-header>
   }
   @if(isCharacter() && topic().character != null) {
-    <app-character-sheet-header [character]="topic().character"></app-character-sheet-header>
+    <app-character-sheet-header [character]="topic().character" [context]="'topic'"></app-character-sheet-header>
   }
 
   @for(post of posts(); track post.id; let i = $index; let isEven = $even) {

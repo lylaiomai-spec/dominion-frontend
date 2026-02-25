@@ -16,6 +16,8 @@ import { CharacterService } from '../../services/character.service';
 })
 export class CharacterSheetHeaderComponent implements OnInit {
   @Input() character!: Character | null;
+  @Input() context: 'topic' | 'page' = 'page';
+
   private authService = inject(AuthService);
   private characterService = inject(CharacterService);
 
@@ -55,9 +57,7 @@ export class CharacterSheetHeaderComponent implements OnInit {
       this.characterService.acceptCharacter(this.character.id).subscribe({
         next: () => {
           console.log('Character accepted successfully');
-          // Optionally, update the character status in the view
           if (this.character) {
-            // This assumes a status of 1 means accepted. Adjust if necessary.
             this.character.character_status = 1;
           }
         },
