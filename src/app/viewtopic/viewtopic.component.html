@@ -3,8 +3,18 @@
 <div id="pun-main" class="main">
   <div class="main-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h1><span>{{ topic().name }}</span></h1>
-      <span style="font-size: 0.8em; margin-right: 10px;"><a href="#">[Edit]</a></span>
+      @if (editingTopic() && isGeneral()) {
+        <form (submit)="onUpdateTopic($event)" style="flex: 1; display: flex; gap: 10px; align-items: center;">
+          <input type="text" name="title" [value]="topic().name" style="flex: 1; font-size: 1.2em; padding: 5px;">
+          <button type="submit" class="button">Save</button>
+          <button type="button" class="button" (click)="cancelEditTopic()">Cancel</button>
+        </form>
+      } @else {
+        <h1><span>{{ topic().name }}</span></h1>
+        @if (topic().can_edit) {
+          <span style="font-size: 0.8em; margin-right: 10px;"><a href="#" (click)="editTopic($event)">[Edit]</a></span>
+        }
+      }
     </div>
   </div>
 
@@ -28,10 +38,26 @@
   </div>
 
   @if(isEpisode() && topic().episode != null) {
-    <app-episode-header [episode]="topic().episode" ></app-episode-header>
+    @if (editingTopic()) {
+      <app-episode-create
+        [initialData]="topic().episode"
+        (formSubmit)="onUpdateComplexTopic($event)"
+        (cancel)="cancelEditTopic()">
+      </app-episode-create>
+    } @else {
+      <app-episode-header [episode]="topic().episode" ></app-episode-header>
+    }
   }
   @if(isCharacter() && topic().character != null) {
-    <app-character-sheet-header [character]="topic().character" [context]="'topic'"></app-character-sheet-header>
+    @if (editingTopic()) {
+      <app-character-create
+        [initialData]="topic().character"
+        (formSubmit)="onUpdateComplexTopic($event)"
+        (cancel)="cancelEditTopic()">
+      </app-character-create>
+    } @else {
+      <app-character-sheet-header [character]="topic().character" [context]="'topic'"></app-character-sheet-header>
+    }
   }
 
   @for(post of posts(); track (post.id || $index); let i = $index; let isEven = $even) {

@@ -15,6 +15,8 @@ import { SafeHtmlPipe } from '../pipes/safe-html.pipe'
 import { CharacterService } from '../services/character.service';
 import { AuthService } from '../services/auth.service';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
+import { EpisodeCreateComponent } from '../episode-create/episode-create.component';
+import { CharacterCreateComponent } from '../character-create/character-create.component';
 
 function coerceToPage(value: unknown): number {
   const num = numberAttribute(value, 1);
@@ -32,7 +34,9 @@ function coerceToPage(value: unknown): number {
     BreadcrumbsComponent,
     TopicReadByComponent,
     CharacterSheetHeaderComponent,
-    SafeHtmlPipe
+    SafeHtmlPipe,
+    EpisodeCreateComponent,
+    CharacterCreateComponent
   ],
   templateUrl: './viewtopic.component.html',
   standalone: true,
@@ -69,6 +73,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   });
 
   editingPostId = signal<number | null>(null);
+  editingTopic = signal(false);
 
   private destroy$ = new Subject<void>();
 
@@ -242,6 +247,56 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
         this.postForm.messageField.nativeElement.value = '';
       },
       error: (err) => console.error('Failed to create post', err)
+    });
+  }
+
+  editTopic(event: Event) {
+    event.preventDefault();
+    this.editingTopic.set(true);
+  }
+
+  cancelEditTopic() {
+    this.editingTopic.set(false);
+  }
+
+  onUpdateTopic(event: Event) {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const titleInput = form.querySelector('input[name="title"]') as HTMLInputElement;
+    const title = titleInput?.value;
+
+    if (!title || !this.id) return;
+
+    const payload = {
+      title: title
+    };
+
+    this.topicService.updateTopic(this.id, payload).subscribe({
+      next: (updatedTopic: any) => {
+        if (updatedTopic && updatedTopic.id) {
+          this.topicService.updateLocalTopic(updatedTopic);
+        } else {
+          if (this.id) this.topicService.loadTopic(this.id);
+        }
+        this.cancelEditTopic();
+      },
+      error: (err) => console.error('Failed to update topic', err)
+    });
+  }
+
+  onUpdateComplexTopic(payload: any) {
+    if (!this.id) return;
+
+    this.topicService.updateTopic(this.id, payload).subscribe({
+      next: (updatedTopic: any) => {
+        if (updatedTopic && updatedTopic.id) {
+          this.topicService.updateLocalTopic(updatedTopic);
+        } else {
+          if (this.id) this.topicService.loadTopic(this.id);
+        }
+        this.cancelEditTopic();
+      },
+      error: (err) => console.error('Failed to update topic', err)
     });
   }
 }

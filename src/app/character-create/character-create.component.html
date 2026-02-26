@@ -1,23 +1,27 @@
-<h1><span i18n="@@topiccreate.title">Create a new character</span></h1>
+<h1><span i18n="@@topiccreate.title">Start a new character</span></h1>
 <div id="post-form" class="formal">
   <form id="post" class="container" (submit)="onSubmit($event)">
     <fieldset>
-      <legend><span i18n="@@charactercreate.createCharacter">Create Character</span></legend>
+      <legend><span i18n="@@topiccreate.writeMessage">Write your message and click "Send"</span></legend>
       <div class="fs-box hashelp">
-
-        <p class="inputfield required">
-          <label for="char_name"><ng-container i18n="@@charactercreate.name">Name</ng-container> <em><ng-container i18n="@@topiccreate.required">(Required)</ng-container></em></label><br />
-          <span class="input"><input id="char_name" type="text" name="req_name" value="" size="80" maxlength="70" /></span>
+        <p class="inputfield required longinput">
+          <label for="fld3"><ng-container i18n="@@topiccreate.subject">Name</ng-container> <em><ng-container i18n="@@topiccreate.required">(Required)</ng-container></em></label><br />
+          <span class="input"><input id="fld3" type="text" name="req_name" [value]="characterName" size="80" maxlength="70" /></span>
         </p>
 
-        <p class="inputfield required">
-          <label for="char_avatar"><ng-container i18n="@@charactercreate.avatar">Avatar URL</ng-container></label><br />
-          <span class="input"><input id="char_avatar" type="text" name="req_avatar" value="" size="80" maxlength="255" /></span>
+        <p class="inputfield required longinput">
+          <label for="fld4">Avatar URL</label><br />
+          <span class="input"><input id="fld4" type="text" name="req_avatar" [value]="characterAvatar" size="80" maxlength="255" /></span>
         </p>
+
+        <app-faction-choose
+          [initialFactions]="selectedFactions"
+          (selectionChange)="onFactionsChanged($event)">
+        </app-faction-choose>
 
       </div>
     </fieldset>
-    <app-faction-choose (selectionChange)="onFactionsChanged($event)"></app-faction-choose>
+
     <fieldset>
       @for (field of characterTemplate(); track field.order) {
         <div class="fs-box hashelp">
@@ -25,26 +29,38 @@
             @if (field.content_field_type === 'short_text' || field.content_field_type === 'number') {
               <app-short-text-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-short-text-field>
             }
             @if (field.content_field_type === 'long_text') {
               <app-long-text-field
                 [fieldName]="field.human_field_name"
                 [name]="field.machine_field_name"
-                [rows]="10">
+                [rows]="10"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-long-text-field>
             }
             @if (field.content_field_type === 'image') {
               <app-image-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-image-field>
             }
           </p>
         </div>
       }
     </fieldset>
-    <p class="formsubmit"><input type="submit" class="button submit" name="submit" value="Create" i18n-value="@@charactercreate.create" accesskey="s" /></p>
+
+    <p class="formsubmit">
+      <input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" />
+      @if (cancel.observed) {
+        <button type="button" class="button" (click)="onCancel()" i18n="@@topiccreate.cancel">Cancel</button>
+      } @else {
+        <input type="submit" class="button preview" name="preview" value="Preview" i18n-value="@@topiccreate.preview" accesskey="p" />
+      }
+    </p>
   </form>
 </div>
+<div id="ajaxpostpreview"></div>

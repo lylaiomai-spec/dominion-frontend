@@ -6,7 +6,7 @@
       <div class="fs-box hashelp">
         <p class="inputfield required longinput">
           <label for="fld3"><ng-container i18n="@@topiccreate.subject">Subject</ng-container> <em><ng-container i18n="@@topiccreate.required">(Required)</ng-container></em></label><br />
-          <span class="input"><input id="fld3" type="text" name="req_subject" value="" size="80" maxlength="70" /></span>
+          <span class="input"><input id="fld3" type="text" name="req_subject" [value]="subject" size="80" maxlength="70" /></span>
         </p>
 
         <div class="inputfield required longinput">
@@ -41,20 +41,23 @@
             @if (field.content_field_type === 'short_text' || field.content_field_type === 'number') {
               <app-short-text-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-short-text-field>
             }
             @if (field.content_field_type === 'long_text') {
               <app-long-text-field
                 [fieldName]="field.human_field_name"
                 [name]="field.machine_field_name"
-                [rows]="10">
+                [rows]="10"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-long-text-field>
             }
             @if (field.content_field_type === 'image') {
               <app-image-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-image-field>
             }
           </p>
@@ -62,7 +65,14 @@
       }
     </fieldset>
 
-    <p class="formsubmit"><input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" /> <input type="submit" class="button preview" name="preview" value="Preview" i18n-value="@@topiccreate.preview" accesskey="p" /></p>
+    <p class="formsubmit">
+      <input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" />
+      @if (cancel.observed) {
+        <button type="button" class="button" (click)="onCancel()" i18n="@@topiccreate.cancel">Cancel</button>
+      } @else {
+        <input type="submit" class="button preview" name="preview" value="Preview" i18n-value="@@topiccreate.preview" accesskey="p" />
+      }
+    </p>
   </form>
 </div>
 <div id="ajaxpostpreview"></div>

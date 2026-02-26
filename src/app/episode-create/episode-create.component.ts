@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EpisodeService } from '../services/episode.service';
@@ -8,7 +8,7 @@ import { LongTextFieldComponent } from '../components/long-text-field/long-text-
 import { ImageFieldComponent } from '../components/image-field/image-field.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CreateEpisodeRequest } from '../models/Episode';
+import { CreateEpisodeRequest, Episode } from '../models/Episode';
 
 @Component({
   selector: 'app-episode-create',
@@ -24,6 +24,10 @@ export class EpisodeCreateComponent implements OnInit {
   episodeTemplate = this.episodeService.episodeTemplate;
   characterSuggestions = this.characterService.shortCharacterList;
 
+  @Input() initialData: Episode | null = null;
+  @Output() formSubmit = new EventEmitter<any>();
+  @Output() cancel = new EventEmitter<void>();
+
   // Character inputs
   characterControls = new FormArray([new FormControl('')]);
   selectedCharacterIds: (number | null)[] = [null];
@@ -32,6 +36,7 @@ export class EpisodeCreateComponent implements OnInit {
   activeInputIndex: number | null = null;
 
   subforumId: number = 0;
+  subject: string = '';
 
   constructor() {
     this.setupAutocomplete(0);
@@ -44,6 +49,30 @@ export class EpisodeCreateComponent implements OnInit {
         this.subforumId = +params['fid'];
       }
     });
+
+    if (this.initialData) {
+      this.populateForm(this.initialData);
+    }
+  }
+
+  populateForm(data: Episode) {
+    this.subject = data.name;
+
+    // Clear initial controls
+    this.characterControls.clear();
+    this.selectedCharacterIds = [];
+
+    if (data.characters && data.characters.length > 0) {
+      data.characters.forEach((char, index) => {
+        this.characterControls.push(new FormControl(char.name));
+        this.selectedCharacterIds.push(char.id);
+        this.setupAutocomplete(index);
+      });
+    } else {
+      this.characterControls.push(new FormControl(''));
+      this.selectedCharacterIds.push(null);
+      this.setupAutocomplete(0);
+    }
   }
 
   setupAutocomplete(index: number) {
@@ -90,6 +119,14 @@ export class EpisodeCreateComponent implements OnInit {
     }
   }
 
+  getFieldValue(machineName: string): any {
+    if (this.initialData && this.initialData.custom_fields && this.initialData.custom_fields.custom_fields) {
+      const field = this.initialData.custom_fields.custom_fields[machineName];
+      return field ? field.content : null;
+    }
+    return null;
+  }
+
   onSubmit(event: Event) {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
@@ -105,21 +142,29 @@ export class EpisodeCreateComponent implements OnInit {
       }
     });
 
-    const request: CreateEpisodeRequest = {
+    const request: any = {
       subforum_id: this.subforumId,
       name: formData.get('req_subject') as string,
       character_ids: this.selectedCharacterIds.filter((id): id is number => id !== null),
       custom_fields: customFields
     };
 
-    this.episodeService.createEpisode(request).subscribe({
-      next: (response) => {
-        console.log('Episode created successfully', response);
-        this.router.navigate(['/viewforum', this.subforumId]);
-      },
-      error: (err) => {
-        console.error('Failed to create episode', err);
-      }
-    });
+    if (this.formSubmit.observed) {
+      this.formSubmit.emit(request);
+    } else {
+      this.episodeService.createEpisode(request as CreateEpisodeRequest).subscribe({
+        next: (response) => {
+          console.log('Episode created successfully', response);
+          this.router.navigate(['/viewforum', this.subforumId]);
+        },
+        error: (err) => {
+          console.error('Failed to create episode', err);
+        }
+      });
+    }
+  }
+
+  onCancel() {
+    this.cancel.emit();
   }
 }

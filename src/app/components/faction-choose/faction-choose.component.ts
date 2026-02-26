@@ -1,4 +1,4 @@
-import { Component, inject, effect, signal, Output, EventEmitter } from '@angular/core';
+import { Component, inject, effect, signal, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FactionService } from '../../services/faction.service';
@@ -17,15 +17,47 @@ interface FactionLevel {
   templateUrl: './faction-choose.component.html',
   styleUrl: './faction-choose.component.css'
 })
-export class FactionChooseComponent {
+export class FactionChooseComponent implements OnInit {
   private factionService = inject(FactionService);
 
+  @Input() initialFactions: Faction[] = [];
   @Output() selectionChange = new EventEmitter<Faction[]>();
 
   factionLevels = signal<FactionLevel[]>([]);
 
   constructor() {
-    this.addFactionLevel(0);
+    // Constructor logic moved to ngOnInit or handled there
+  }
+
+  ngOnInit() {
+    if (this.initialFactions.length > 0) {
+      this.loadInitialFactions(0);
+    } else {
+      this.addFactionLevel(0);
+    }
+  }
+
+  loadInitialFactions(index: number) {
+    const parentId = index === 0 ? 0 : this.initialFactions[index - 1].id;
+
+    this.factionService.getFactionChildren(parentId).subscribe(children => {
+      if (children.length > 0 || this.factionLevels().length === 0) {
+        const selectedId = index < this.initialFactions.length ? this.initialFactions[index].id : null;
+
+        this.factionLevels.update(levels => [
+          ...levels,
+          {
+            label: `Faction ${levels.length + 1}`,
+            options: children,
+            selectedId: selectedId
+          }
+        ]);
+
+        if (selectedId !== null && index < this.initialFactions.length) {
+          this.loadInitialFactions(index + 1);
+        }
+      }
+    });
   }
 
   addFactionLevel(parentId: number) {

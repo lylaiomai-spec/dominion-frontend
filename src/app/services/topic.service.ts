@@ -78,9 +78,18 @@ export class TopicService {
     return this.apiService.post('topic/create', data);
   }
 
+  updateTopic(id: number, data: any) {
+    return this.apiService.post(`topic/update/${id}`, data);
+  }
+
   updateLocalPost(updatedPost: Post) {
     const enrichedPost = this.enrichPostWithPermissions(updatedPost);
     this.postsSignal.update(posts => posts.map(p => p.id === enrichedPost.id ? enrichedPost : p));
+  }
+
+  updateLocalTopic(updatedTopic: Topic) {
+    const enrichedTopic = this.enrichTopicWithPermissions(updatedTopic);
+    this.topicSignal.set(enrichedTopic);
   }
 
   private handleNewPost(post: Post) {
