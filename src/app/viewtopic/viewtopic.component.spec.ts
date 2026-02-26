@@ -6,7 +6,7 @@ import { CharacterService } from '../services/character.service';
 import { AuthService } from '../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { Topic, TopicType, TopicStatus } from '../models/Topic';
 import { Post } from '../models/Post';
 import { CommonModule } from '@angular/common';
@@ -42,8 +42,12 @@ describe('ViewtopicComponent', () => {
   let characterServiceSpy: jasmine.SpyObj<CharacterService>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
 
+  let topicSignal: WritableSignal<Topic>;
+  let postsSignal: WritableSignal<Post[]>;
+
+  // Initial topic has ID 0 to trigger loadTopic when route param is 1
   const mockTopic: Topic = {
-    id: 1,
+    id: 0,
     name: 'Test Topic',
     subforum_id: 1,
     date_created: '2023-01-01',
@@ -66,14 +70,17 @@ describe('ViewtopicComponent', () => {
   ];
 
   beforeEach(async () => {
+    topicSignal = signal(mockTopic);
+    postsSignal = signal(mockPosts);
+
     topicServiceSpy = jasmine.createSpyObj('TopicService', ['loadTopic', 'loadPosts', 'createPost', 'updatePost', 'updateLocalPost', 'updateTopic', 'updateLocalTopic'], {
-      topic: signal(mockTopic),
-      posts: signal(mockPosts)
+      topic: topicSignal,
+      posts: postsSignal
     });
     forumServiceSpy = jasmine.createSpyObj('ForumService', ['loadSubforum'], {
       subforum: signal(null)
     });
-    characterServiceSpy = jasmine.createSpyObj('CharacterService', ['loadUserCharacterProfilesForTopic'], {
+    characterServiceSpy = jasmine.createSpyObj('CharacterService', ['loadUserCharacterProfilesForTopic', 'loadUserCharacterProfiles', 'loadShortCharacterList'], {
       userCharacterProfiles: signal([])
     });
     authServiceSpy = jasmine.createSpyObj('AuthService', [], {
@@ -118,6 +125,9 @@ describe('ViewtopicComponent', () => {
   });
 
   it('should display topic title', () => {
+    // We need to update the signal to reflect the loaded topic for the template to render it
+    topicSignal.set({ ...mockTopic, id: 1 });
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Test Topic');
   });
@@ -143,6 +153,9 @@ describe('ViewtopicComponent', () => {
   });
 
   it('should show edit link for topic header when can_edit is true', () => {
+    // Ensure topic is loaded and has can_edit = true
+    topicSignal.set({ ...mockTopic, id: 1, can_edit: true });
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     const headerEdit = compiled.querySelector('.main-header a');
     expect(headerEdit?.textContent).toContain('[Edit]');

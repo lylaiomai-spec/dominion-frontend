@@ -4,13 +4,14 @@ import { AuthService } from '../../services/auth.service';
 import { CharacterService } from '../../services/character.service';
 import { of } from 'rxjs';
 import { Character } from '../../models/Character';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 
 describe('CharacterSheetHeaderComponent', () => {
   let component: CharacterSheetHeaderComponent;
   let fixture: ComponentFixture<CharacterSheetHeaderComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let characterServiceSpy: jasmine.SpyObj<CharacterService>;
+  let isAdminSignal: WritableSignal<boolean>;
 
   const mockCharacter: Character = {
     id: 1,
@@ -29,8 +30,9 @@ describe('CharacterSheetHeaderComponent', () => {
   };
 
   beforeEach(async () => {
+    isAdminSignal = signal(false);
     authServiceSpy = jasmine.createSpyObj('AuthService', [], {
-      isAdmin: signal(false)
+      isAdmin: isAdminSignal
     });
     characterServiceSpy = jasmine.createSpyObj('CharacterService', ['acceptCharacter']);
 
@@ -68,9 +70,7 @@ describe('CharacterSheetHeaderComponent', () => {
   });
 
   it('should show accept button for admin in topic context with pending status', () => {
-    // Mock isAdmin signal to return true
-    Object.defineProperty(authServiceSpy, 'isAdmin', { value: signal(true) });
-
+    isAdminSignal.set(true);
     component.character = { ...mockCharacter, character_status: 2 }; // Pending
     component.context = 'topic';
     fixture.detectChanges();
@@ -83,7 +83,7 @@ describe('CharacterSheetHeaderComponent', () => {
   });
 
   it('should call acceptCharacter on click', () => {
-    Object.defineProperty(authServiceSpy, 'isAdmin', { value: signal(true) });
+    isAdminSignal.set(true);
     component.character = { ...mockCharacter, character_status: 2 };
     component.context = 'topic';
     fixture.detectChanges();
