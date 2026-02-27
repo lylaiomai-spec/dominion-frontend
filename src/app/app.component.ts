@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit} from '@angular/core';
+import {Component, effect, inject, OnInit, computed} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {FooterComponent} from './components/footer/footer.component';
 import {NavlinksComponent} from './components/navlinks/navlinks.component';
@@ -21,10 +21,12 @@ export class AppComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private authChannel = new BroadcastChannel('auth_channel');
 
-  title = 'Cuento';
-  pageId = 'pun-main';
   boardService = inject(BoardService);
   authService = inject(AuthService);
+
+  title = computed(() => this.boardService.board().site_name || 'Cuento');
+
+  pageId = 'pun-main';
   currentUser = this.authService.currentUser;
   currentDate = new Date();
   private notificationService = inject(NotificationService);
