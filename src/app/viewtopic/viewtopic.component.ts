@@ -235,11 +235,19 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
     if (!message || !this.id) return;
 
+    let characterProfileId: number | null = null;
+    if (this.selectedCharacterId !== null) {
+      const profile = this.userCharacterProfiles().find(p => p.character_id === this.selectedCharacterId);
+      if (profile) {
+        characterProfileId = profile.id;
+      }
+    }
+
     const payload = {
       topic_id: +this.id,
       content: message,
       use_character_profile: this.selectedCharacterId !== null,
-      character_profile_id: this.selectedCharacterId
+      character_profile_id: characterProfileId
     };
 
     this.topicService.createPost(payload).subscribe({
