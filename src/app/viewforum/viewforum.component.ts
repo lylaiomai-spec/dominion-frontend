@@ -1,7 +1,13 @@
-import {Component, effect, inject, Input, OnInit} from '@angular/core';
-import {RouterLink} from '@angular/router';
+import {Component, effect, inject, Input, OnInit, OnDestroy, computed, numberAttribute} from '@angular/core';
+import {RouterLink, ActivatedRoute} from '@angular/router';
 import {ForumService} from '../services/forum.service';
 import {BreadcrumbItem, BreadcrumbsComponent} from '../components/breadcrumbs/breadcrumbs.component';
+import { Subject, takeUntil, combineLatest } from 'rxjs';
+
+function coerceToPage(value: unknown): number {
+  const num = numberAttribute(value, 1);
+  return num < 1 ? 1 : num;
+}
 
 @Component({
   selector: 'app-viewforum',
@@ -13,14 +19,25 @@ import {BreadcrumbItem, BreadcrumbsComponent} from '../components/breadcrumbs/br
   standalone: true,
   styleUrl: './viewforum.component.css'
 })
-export class ViewforumComponent implements OnInit {
+export class ViewforumComponent implements OnInit, OnDestroy {
   forumService = inject(ForumService);
-  @Input() id?: number;
-  @Input() page?: number;
+  route = inject(ActivatedRoute);
+
+  @Input({ transform: numberAttribute }) id?: number;
+  @Input({ transform: coerceToPage, alias: 'page' }) pageNumber: number = 1;
+
   topics = this.forumService.subforumTopics;
   subforum = this.forumService.subforum;
 
   breadcrumbs: BreadcrumbItem[] = [];
+
+  topicsPerPage = 30;
+  totalPages = computed(() => {
+    const totalTopics = this.subforum()?.topic_number || 0;
+    return Math.ceil(totalTopics / this.topicsPerPage);
+  });
+
+  private destroy$ = new Subject<void>();
 
   constructor() {
     effect(() => {
@@ -35,9 +52,23 @@ export class ViewforumComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if(this.id) {
-      this.forumService.loadSubforumPage(this.id, this.page)
-      this.forumService.loadSubforum(this.id);
-    }
+    combineLatest([this.route.paramMap, this.route.queryParamMap])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([paramMap, queryParamMap]) => {
+        const forumId = Number(paramMap.get('id'));
+        const page = coerceToPage(queryParamMap.get('page'));
+
+        if (forumId) {
+          if (this.subforum().id !== forumId) {
+            this.forumService.loadSubforum(forumId);
+          }
+          this.forumService.loadSubforumPage(forumId, page);
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
