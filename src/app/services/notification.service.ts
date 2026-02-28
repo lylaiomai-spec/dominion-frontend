@@ -3,6 +3,8 @@ import { Subject } from 'rxjs';
 import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
@@ -45,7 +47,7 @@ export class NotificationService {
   private explicitlyClosed = false;
 
   constructor() {
-    const baseUrl = 'http://localhost:8080';
+    const baseUrl = environment.wsUrl;
     this.url = baseUrl.replace(/^http/, 'ws') + '/ws';
   }
 
