@@ -1,3 +1,4 @@
+import {UserShort} from './UserShort';
 export interface Board {
   site_name: string;
   domain: string;
@@ -7,5 +8,5 @@ export interface Board {
   total_post_number: number;
   total_episode_number: number;
   total_episode_post_number: number;
-  last_registered_user: string | null;
+  last_registered_user: UserShort | null;
 }

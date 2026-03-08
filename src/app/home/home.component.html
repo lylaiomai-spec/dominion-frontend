@@ -62,7 +62,13 @@
           <p><span><ng-container i18n="@@home.totalTopics">Total topics</ng-container>: <strong>{{board().total_character_number}}</strong></span></p>
           <p><span><ng-container i18n="@@home.totalPosts">Total posts</ng-container>: <strong>{{board().total_post_number}}</strong></span></p>
           <p><span><ng-container i18n="@@home.totalUsers">Total users</ng-container>: <strong>{{board().total_user_number}}</strong></span></p>
-          <p><span><ng-container i18n="@@home.newestUser">Newest user</ng-container>: <strong><a href="/profile.php?id=2">Admin</a></strong></span></p>
+          <p><span><ng-container i18n="@@home.newestUser">Newest user</ng-container>:
+            <strong>
+              @if (board().last_registered_user) {
+                <a [routerLink]="['/profile', board().last_registered_user?.id]">{{ board().last_registered_user?.username }}</a>
+              }
+            </strong>
+          </span></p>
         </div>
         <div class="statscon">
           <p><span><ng-container i18n="@@home.totalEpisodes">Total episodes</ng-container>: <strong>{{board().total_episode_number}}</strong></span></p>
