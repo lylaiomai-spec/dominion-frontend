@@ -79,6 +79,15 @@ export class TopicService {
           const enrichedPosts = data.posts.map(post => this.enrichPostWithPermissions(post));
           this.postsSignal.set(enrichedPosts);
           this.currentPageSignal.set(data.page);
+
+          if (data.posts.length > 0) {
+            const maxPostId = Math.max(...data.posts.map(p => p.id));
+            this.notificationService.sendMessage({
+              type: 'topic_view',
+              topic_id: topicId,
+              post_id: maxPostId
+            });
+          }
         } else {
           console.warn('Invalid posts response format', data);
           this.postsSignal.set([]);
@@ -126,6 +135,13 @@ export class TopicService {
         return { ...topic, post_number: topic.post_number + 1 };
       }
       return topic;
+    });
+
+    // Notify backend that we viewed this new post
+    this.notificationService.sendMessage({
+      type: 'topic_view',
+      topic_id: post.topic_id,
+      post_id: post.id
     });
 
     // Check if the current user is the author and redirect if so

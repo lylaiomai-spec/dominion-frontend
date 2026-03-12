@@ -12,11 +12,13 @@ export interface Topic {
   post_number: number;
   last_post_author_user_id: number|null;
   last_post_author_username: string|null;
+  last_post_id?: number | null;
   type: TopicType;
   status: TopicStatus;
   episode: Episode|null;
   character: Character|null;
   can_edit?: boolean;
+  not_viewed?: boolean;
 }
 
 export enum TopicType {
