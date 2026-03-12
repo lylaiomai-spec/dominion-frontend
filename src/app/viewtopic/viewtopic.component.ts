@@ -80,6 +80,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   editingTopic = signal(false);
 
   private destroy$ = new Subject<void>();
+  private lastLoadedProfilesForTopicId: number | null = null;
 
   @ViewChild('mainPostForm') postForm!: PostFormComponent;
   @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
@@ -101,17 +102,21 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
           { label: t.name }
         ];
 
-        if (t.type === TopicType.character) {
-          this.loadProfiles = false;
-          this.showAccount = true;
-        } else if (t.type === TopicType.episode) {
-          this.loadProfiles = false;
-          this.showAccount = false;
-          this.characterService.loadUserCharacterProfilesForTopic(t.id);
-        } else if (t.type === TopicType.general) {
-          this.loadProfiles = false;
-          this.showAccount = true;
-          this.characterService.loadUserCharacterProfilesForTopic(t.id);
+        if (this.lastLoadedProfilesForTopicId !== t.id) {
+          if (t.type === TopicType.character) {
+            this.loadProfiles = false;
+            this.showAccount = true;
+          } else if (t.type === TopicType.episode) {
+            this.loadProfiles = false;
+            this.showAccount = false;
+            this.characterService.loadUserCharacterProfilesForTopic(t.id);
+            this.lastLoadedProfilesForTopicId = t.id;
+          } else if (t.type === TopicType.general) {
+            this.loadProfiles = false;
+            this.showAccount = true;
+            this.characterService.loadUserCharacterProfilesForTopic(t.id);
+            this.lastLoadedProfilesForTopicId = t.id;
+          }
         }
       }
     });

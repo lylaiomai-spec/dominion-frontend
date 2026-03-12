@@ -5,6 +5,7 @@ import {Post} from '../models/Post';
 import {NotificationService} from './notification.service';
 import {AuthService} from './auth.service';
 import {Router} from '@angular/router';
+import {BoardService} from './board.service';
 
 interface PostsResponse {
   page: number;
@@ -17,6 +18,7 @@ export class TopicService {
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private boardService = inject(BoardService);
 
   private topicSignal = signal<Topic>({
     id: 0,
@@ -41,8 +43,6 @@ export class TopicService {
 
   private currentPageSignal = signal<number>(1);
   readonly currentPage = this.currentPageSignal.asReadonly();
-
-  private readonly postsPerPage = 15;
 
   constructor() {
     this.notificationService.postCreated$.subscribe(event => {
@@ -73,10 +73,18 @@ export class TopicService {
       url = `topic-posts/${topicId}?post_id=${postId}`;
     }
 
-    this.apiService.get<PostsResponse>(url).subscribe(data => {
-      const enrichedPosts = data.posts.map(post => this.enrichPostWithPermissions(post));
-      this.postsSignal.set(enrichedPosts);
-      this.currentPageSignal.set(data.page);
+    this.apiService.get<PostsResponse>(url).subscribe({
+      next: (data) => {
+        if (data && data.posts) {
+          const enrichedPosts = data.posts.map(post => this.enrichPostWithPermissions(post));
+          this.postsSignal.set(enrichedPosts);
+          this.currentPageSignal.set(data.page);
+        } else {
+          console.warn('Invalid posts response format', data);
+          this.postsSignal.set([]);
+        }
+      },
+      error: (err) => console.error('Failed to load posts', err)
     });
   }
 
@@ -124,8 +132,13 @@ export class TopicService {
     const currentUser = this.authService.currentUser();
     if (currentUser && enrichedPost.user_profile && currentUser.id === enrichedPost.user_profile.user_id) {
       const totalPosts = this.topic().post_number;
-      const lastPage = Math.ceil(totalPosts / this.postsPerPage);
-      this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: lastPage } });
+      const postsPerPage = this.boardService.board().posts_per_page || 15;
+      const lastPage = Math.ceil(totalPosts / postsPerPage);
+
+      // Only navigate if we are not already on the last page
+      if (this.currentPageSignal() !== lastPage) {
+        this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: lastPage } });
+      }
     }
   }
 
