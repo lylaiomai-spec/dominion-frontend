@@ -49,8 +49,6 @@ export class TopicService {
   private currentPageSignal = signal<PageState>({ page: 1, topicId: 0 });
   readonly currentPage = this.currentPageSignal.asReadonly();
 
-  private readonly postsPerPage = 15;
-
   constructor() {
     this.notificationService.postCreated$.subscribe(event => {
       const currentTopicId = this.topic().id;
@@ -68,6 +66,9 @@ export class TopicService {
   }
 
   loadTopic(id: number) {
+    // Reset page state when loading a new topic
+    this.currentPageSignal.set({ page: 1, topicId: 0 });
+
     this.apiService.get<Topic>('topic/get/' + id.toString()).subscribe(data => {
       const enrichedTopic = this.enrichTopicWithPermissions(data);
       this.topicSignal.set(enrichedTopic);
