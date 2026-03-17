@@ -18,6 +18,7 @@ import { BoardService } from '../services/board.service';
 import { Subject, Subscription } from 'rxjs';
 import { EpisodeCreateComponent } from '../episode-create/episode-create.component';
 import { CharacterCreateComponent } from '../character-create/character-create.component';
+import { EpisodeService } from '../services/episode.service';
 
 function coerceToPage(value: unknown): number {
   const num = numberAttribute(value, 1);
@@ -47,6 +48,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   topicService = inject(TopicService);
   forumService = inject(ForumService);
   characterService = inject(CharacterService);
+  episodeService = inject(EpisodeService);
   authService = inject(AuthService);
   boardService = inject(BoardService);
   router = inject(Router);
@@ -365,6 +367,19 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
         this.cancelEditTopic();
       },
       error: (err: any) => console.error('Failed to update character', err)
+    });
+  }
+
+  onUpdateEpisode(payload: any) {
+    const episodeId = this.topic().episode?.id;
+    if (!episodeId) return;
+
+    this.episodeService.updateEpisode(episodeId, payload).subscribe({
+      next: () => {
+        if (this.id()) this.topicService.loadTopic(this.id()!);
+        this.cancelEditTopic();
+      },
+      error: (err: any) => console.error('Failed to update episode', err)
     });
   }
 }

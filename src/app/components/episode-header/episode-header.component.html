@@ -14,6 +14,17 @@
       </div>
     </div>
 
+    @if (episode.masks && episode.masks.length > 0) {
+      <div class="episode-masks">
+        <h3>Masks</h3>
+        <div class="mask-list">
+          @for (mask of episode.masks; track mask.id) {
+            <div class="mask-item">{{ mask.mask_name }} ({{ mask.user_name }})</div>
+          }
+        </div>
+      </div>
+    }
+
     @if (customFields.length > 0) {
       <div class="episode-custom-fields">
         <ul>
