@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, effect } from '@angular/core';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { UserShort } from '../models/UserShort';
@@ -13,6 +13,19 @@ export class UserService {
 
   private privateKeySignal = signal<CryptoKey | null>(null);
   readonly privateKey = this.privateKeySignal.asReadonly();
+
+  constructor() {
+    if (this.authService.isAuthenticated()) {
+      this.tryRestorePrivateKey();
+    }
+
+    effect(() => {
+      if (!this.authService.isAuthenticated()) {
+        this.privateKeySignal.set(null);
+        this.clearPrivateKeyFromDb().catch(() => {});
+      }
+    }, { allowSignalWrites: true });
+  }
 
   private usersOnPageSignal = signal<UserShort[]>([]);
   readonly usersOnPage = this.usersOnPageSignal.asReadonly();
@@ -74,6 +87,7 @@ export class UserService {
       switchMap(data => from(this.decryptPrivateKey(data.private_key, data.iv, data.salt, hashedPassword))),
       map(key => {
         this.privateKeySignal.set(key);
+        this.savePrivateKeyToDb(key).catch(err => console.error('Failed to cache private key', err));
       })
     );
   }
@@ -168,6 +182,51 @@ export class UserService {
       iv: this.bufferToBase64(iv),
       salt: this.bufferToBase64(salt)
     };
+  }
+
+  private tryRestorePrivateKey(): void {
+    this.loadPrivateKeyFromDb()
+      .then(key => { if (key) this.privateKeySignal.set(key); })
+      .catch(err => console.error('Failed to restore private key from IndexedDB', err));
+  }
+
+  private openKeyStore(): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open('cuento_keystore', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('keys');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  private async savePrivateKeyToDb(key: CryptoKey): Promise<void> {
+    const db = await this.openKeyStore();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('keys', 'readwrite');
+      tx.objectStore('keys').put(key, 'private_key');
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  private async loadPrivateKeyFromDb(): Promise<CryptoKey | null> {
+    const db = await this.openKeyStore();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('keys', 'readonly');
+      const req = tx.objectStore('keys').get('private_key');
+      req.onsuccess = () => resolve(req.result ?? null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  private async clearPrivateKeyFromDb(): Promise<void> {
+    const db = await this.openKeyStore();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction('keys', 'readwrite');
+      tx.objectStore('keys').delete('private_key');
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
   }
 
   private bufferToBase64(buffer: ArrayBuffer): string {

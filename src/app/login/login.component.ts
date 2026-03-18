@@ -39,7 +39,6 @@ export class LoginComponent {
       this.authService.login(credentials as any).subscribe({
         next: () => {
           this.authService.hashPassword(password).then(hashedPassword => {
-            sessionStorage.setItem('hashed_password', hashedPassword);
             this.userService.loadAndDecryptPrivateKey(hashedPassword).subscribe({
               next: () => {
                 this.isLoading.set(false);

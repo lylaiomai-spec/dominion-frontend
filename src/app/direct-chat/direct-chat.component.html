@@ -42,7 +42,12 @@
 
       <div class="pm-history">
         <div class="main-item">
-          <div class="history-scroll" #scrollContainer>
+          <div class="history-scroll" #scrollContainer (scroll)="onScroll()">
+            @if (isLoadingOlder()) {
+              <div class="load-older-loader">
+                <span class="loader-spinner"></span>
+              </div>
+            }
             @for (msg of messages(); track msg.id) {
               <div class="message" [class.altstyle]="msg.isMe">
                 <div class="container">

@@ -26,22 +26,37 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput') messageField!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef<HTMLDivElement>;
 
+  private skipScrollToBottom = false;
+  private scrollHeightBeforeLoad = 0;
+  private isProgrammaticScroll = false;
+
   constructor() {
     effect(() => {
       const msgs = this.messages();
-      if (msgs.length > 0) {
-        setTimeout(() => {
-          if (this.scrollContainer) {
-            this.scrollContainer.nativeElement.scrollTo({ top: this.scrollContainer.nativeElement.scrollHeight, behavior: 'smooth' });
-          }
-        }, 0);
-      }
+      if (msgs.length === 0) return;
+
+      setTimeout(() => {
+        if (!this.scrollContainer) return;
+        const el = this.scrollContainer.nativeElement;
+
+        if (this.skipScrollToBottom) {
+          this.isProgrammaticScroll = true;
+          el.scrollTop = el.scrollHeight - this.scrollHeightBeforeLoad;
+          this.skipScrollToBottom = false;
+          setTimeout(() => { this.isProgrammaticScroll = false; }, 100);
+        } else {
+          this.isProgrammaticScroll = true;
+          el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+          setTimeout(() => { this.isProgrammaticScroll = false; }, 800);
+        }
+      }, 0);
     });
   }
 
   chatList = this.directChatService.chatList;
   currentChat = this.directChatService.currentChat;
   messages = this.directChatService.messages;
+  isLoadingOlder = this.directChatService.isLoadingOlder;
 
   activeUser: User = {
     id: 0,
@@ -144,6 +159,20 @@ export class DirectChatComponent implements OnInit, OnDestroy {
       error: (err) => console.error('Failed to send message', err)
     });
   }
+  onScroll() {
+    if (this.isProgrammaticScroll) return;
+    const el = this.scrollContainer.nativeElement;
+    if (el.scrollTop <= 1 && !this.isLoadingOlder()) {
+      const chat = this.currentChat();
+      const msgs = this.messages();
+      if (!chat || msgs.length === 0) return;
+
+      this.scrollHeightBeforeLoad = el.scrollHeight;
+      this.skipScrollToBottom = true;
+      this.directChatService.loadOlderMessages(chat.chat_id, msgs[0].id);
+    }
+  }
+
   selectUser(chat: DirectChatListItem) {
     this.directChatService.loadDirectChat(chat.chat_id);
   }

@@ -65,12 +65,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.boardService.loadBoard();
 
-    const hashedPassword = sessionStorage.getItem('hashed_password');
-    if (hashedPassword && this.authService.isAuthenticated()) {
-      this.userService.loadAndDecryptPrivateKey(hashedPassword).subscribe({
-        error: (err) => console.error('Failed to restore private key', err)
-      });
-    }
+
   }
 
   private setupRouteListener() {

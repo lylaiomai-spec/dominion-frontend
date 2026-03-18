@@ -24,6 +24,9 @@ export class DirectChatService {
   private messagesSignal = signal<Message[]>([]);
   readonly messages = this.messagesSignal.asReadonly();
 
+  private isLoadingOlderSignal = signal(false);
+  readonly isLoadingOlder = this.isLoadingOlderSignal.asReadonly();
+
   loadDirectChat(chatId: number): void {
     this.apiService.get<DirectChatResponse>(`direct-chat/${chatId}`).subscribe({
       next: (data) => {
@@ -70,6 +73,30 @@ export class DirectChatService {
       username: msg.username,
       avatar: msg.avatar
     };
+  }
+
+  loadOlderMessages(chatId: number, beforeMessageId: number): void {
+    this.isLoadingOlderSignal.set(true);
+    const currentUserId = this.authService.currentUser()!.id;
+
+    this.privateKey$.pipe(
+      filter((key): key is CryptoKey => key !== null),
+      take(1),
+      switchMap(privateKey =>
+        this.apiService.get<DirectMessageRaw[]>(`direct-chat/${chatId}/messages/${beforeMessageId}/before`).pipe(
+          switchMap(async data => Promise.all(data.map(msg => this.decryptMessage(msg, privateKey, currentUserId))))
+        )
+      )
+    ).subscribe({
+      next: (decrypted) => {
+        this.messagesSignal.update(msgs => [...decrypted, ...msgs]);
+        this.isLoadingOlderSignal.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load older messages', err);
+        this.isLoadingOlderSignal.set(false);
+      }
+    });
   }
 
   loadChatList(): void {

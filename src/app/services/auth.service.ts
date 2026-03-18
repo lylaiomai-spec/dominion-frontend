@@ -108,7 +108,6 @@ export class AuthService {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     localStorage.removeItem('locale');
-    sessionStorage.removeItem('hashed_password');
     this.setGuestUser();
     this.authToken.set(null);
     if (notify) {
@@ -137,7 +136,7 @@ export class AuthService {
     this.authToken.set(response.access_token);
     this.authChannel.postMessage('login');
     if (navigate) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/']);
     }
   }
 

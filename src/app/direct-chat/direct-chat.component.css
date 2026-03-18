@@ -94,6 +94,26 @@
   padding: 10px;
 }
 
+.load-older-loader {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.loader-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #3e5c3e;
+  border-top-color: #4ade80;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* Bubble Styling using Post classes */
 .pm-history .post {
   margin-bottom: 10px;
