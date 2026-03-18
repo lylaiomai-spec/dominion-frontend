@@ -108,6 +108,7 @@ export class AuthService {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     localStorage.removeItem('locale');
+    sessionStorage.removeItem('hashed_password');
     this.setGuestUser();
     this.authToken.set(null);
     if (notify) {

@@ -104,10 +104,18 @@ export class DirectChatComponent implements OnInit {
     textarea.setSelectionRange(newPos, newPos);
   }
 
-  handleSend() {}
+  handleSend() {
+    const textarea = this.messageField.nativeElement;
+    const content = textarea.value.trim();
+    if (!content) return;
+
+    this.directChatService.sendMessage(content).subscribe({
+      next: () => { textarea.value = ''; },
+      error: (err) => console.error('Failed to send message', err)
+    });
+  }
   selectUser(chat: DirectChatListItem) {
     this.directChatService.loadDirectChat(chat.chat_id);
-    this.directChatService.loadMessages(chat.chat_id);
   }
   toggleSearch() {}
   onSearch(event: Event) {}

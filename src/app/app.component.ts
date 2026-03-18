@@ -6,6 +6,7 @@ import {filter, map, mergeMap} from 'rxjs';
 import {ToastComponent} from './components/toast/toast.component';
 import {BoardService} from './services/board.service';
 import {AuthService} from './services/auth.service';
+import {UserService} from './services/user.service';
 import {NotificationsComponent} from './components/notifications/notifications.component';
 import {NotificationService} from './services/notification.service';
 
@@ -23,6 +24,7 @@ export class AppComponent implements OnInit {
 
   boardService = inject(BoardService);
   authService = inject(AuthService);
+  private userService = inject(UserService);
 
   title = computed(() => this.boardService.board().site_name || 'Cuento');
 
@@ -62,6 +64,13 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.boardService.loadBoard();
+
+    const hashedPassword = sessionStorage.getItem('hashed_password');
+    if (hashedPassword && this.authService.isAuthenticated()) {
+      this.userService.loadAndDecryptPrivateKey(hashedPassword).subscribe({
+        error: (err) => console.error('Failed to restore private key', err)
+      });
+    }
   }
 
   private setupRouteListener() {

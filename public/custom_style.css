@@ -496,3 +496,118 @@ body::before {
   margin-left: 21em;
   border: none !important;
 }
+
+/* ── Direct Chat Messages ─────────────────────────────────────── */
+
+.message {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.message .container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 70%;
+}
+
+/* Others' messages: left side */
+.message .container {
+  flex-direction: row;
+}
+
+/* My messages: right side */
+.message.altstyle {
+  justify-content: flex-end;
+}
+
+.message.altstyle .container {
+  flex-direction: row-reverse;
+}
+
+/* Avatar */
+.message-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #d1bc9b;
+}
+
+.message-avatar-placeholder {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #1b3a6d;
+  color: #fcfaf2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Georgia', serif;
+  font-size: 1rem;
+  font-weight: bold;
+  flex-shrink: 0;
+  border: 2px solid #d1bc9b;
+}
+
+.message.altstyle .message-avatar-placeholder {
+  background: #9c7d58;
+}
+
+/* Username + bubble wrapper */
+.message-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.message-username {
+  font-size: 0.78em;
+  font-weight: bold;
+  color: #7a5d3b;
+  padding: 0 4px;
+}
+
+.message.altstyle .message-username {
+  text-align: right;
+}
+
+/* Bubble */
+.message-box {
+  background: #fffdf7;
+  border: 1px solid #d1bc9b;
+  border-radius: 0 12px 12px 12px;
+  padding: 8px 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.message.altstyle .message-box {
+  background: #12284c;
+  border-color: #1b3a6d;
+  border-radius: 12px 0 12px 12px;
+}
+
+.message-content p {
+  margin: 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+  color: #333;
+  word-break: break-word;
+}
+
+.message.altstyle .message-content p {
+  color: #e8dfc8;
+}
+
+/* Timestamp */
+.message-metadata {
+  margin: 0;
+  font-size: 0.72em;
+  color: #aaa;
+  padding: 0 4px;
+}
+
+.message.altstyle .message-metadata {
+  text-align: right;
+}

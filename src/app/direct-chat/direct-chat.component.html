@@ -44,16 +44,24 @@
         <div class="main-item">
           <div class="history-scroll" #scrollContainer>
             @for (msg of messages(); track msg.id) {
-              <div class="post" [class.altstyle]="msg.isMe">
+              <div class="message" [class.altstyle]="msg.isMe">
                 <div class="container">
-                  <div class="post-main">
-                    <div class="post-body">
-                      <div class="post-box">
-                        <div class="post-content">
+                  <div class="message-author">
+                    @if (msg.avatar) {
+                      <img [src]="msg.avatar" [alt]="msg.username" class="message-avatar" />
+                    } @else {
+                      <div class="message-avatar message-avatar-placeholder">{{ msg.username[0] }}</div>
+                    }
+                    <span class="message-username">{{ msg.username }}</span>
+                  </div>
+                  <div class="message-main">
+                    <div class="message-body">
+                      <div class="message-box">
+                        <div class="message-content">
                           <p [innerHTML]="highlightMatch(msg.text)"></p>
                         </div>
                       </div>
-                      <p class="post-metadata"><span>{{ msg.time }}</span></p>
+                      <p class="message-metadata"><span>{{ msg.time }}</span></p>
                     </div>
                   </div>
                 </div>

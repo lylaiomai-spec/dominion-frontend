@@ -11,6 +11,18 @@ export interface DirectChatResponse {
   last_read_message_id: number | null;
 }
 
+export interface DirectMessageRaw {
+  id: number;
+  user_id: number;
+  username: string;
+  avatar: string | null;
+  date_send: string;
+  date_received: string | null;
+  ciphertext: string;
+  iv: string;
+  key: string;
+}
+
 export interface DirectChat {
   id: number;
   userName: string;
