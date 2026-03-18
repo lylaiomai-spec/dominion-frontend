@@ -1,12 +1,13 @@
-import {Component, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, effect, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {User} from '../models/User';
 import {DirectChat, DirectChatListItem} from '../models/DirectChat';
 import {DirectChatService} from '../services/direct-chat.service';
+import {NotificationService} from '../services/notification.service';
 import {UserService} from '../services/user.service';
 import {UserShort} from '../models/UserShort';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {Subject} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 
 @Component({
@@ -16,11 +17,27 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
   standalone: true,
   styleUrl: './direct-chat.component.css'
 })
-export class DirectChatComponent implements OnInit {
+export class DirectChatComponent implements OnInit, OnDestroy {
   private directChatService = inject(DirectChatService);
+  private notificationService = inject(NotificationService);
   private userService = inject(UserService);
+  private dmSub: Subscription | null = null;
 
   @ViewChild('chatInput') messageField!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('scrollContainer') private scrollContainer!: ElementRef<HTMLDivElement>;
+
+  constructor() {
+    effect(() => {
+      const msgs = this.messages();
+      if (msgs.length > 0) {
+        setTimeout(() => {
+          if (this.scrollContainer) {
+            this.scrollContainer.nativeElement.scrollTo({ top: this.scrollContainer.nativeElement.scrollHeight, behavior: 'smooth' });
+          }
+        }, 0);
+      }
+    });
+  }
 
   chatList = this.directChatService.chatList;
   currentChat = this.directChatService.currentChat;
@@ -52,6 +69,19 @@ export class DirectChatComponent implements OnInit {
     ).subscribe(results => {
       this.autocompleteResults = results;
     });
+
+    this.dmSub = this.notificationService.directMessageCreated$.subscribe(event => {
+      const openChatId = this.directChatService.currentChat()?.chat_id;
+      if (openChatId === event.data.chat_id) {
+        this.directChatService.appendNewMessage(event.data);
+      } else {
+        this.directChatService.incrementUnreadCount(event.data.chat_id);
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.dmSub?.unsubscribe();
   }
 
   onNewChatInput() {

@@ -87,6 +87,24 @@ export class DirectChatService {
     this.chatListSignal.update(list => [item, ...list]);
   }
 
+  appendNewMessage(raw: DirectMessageRaw): void {
+    const currentUserId = this.authService.currentUser()!.id;
+    this.privateKey$.pipe(
+      filter((key): key is CryptoKey => key !== null),
+      take(1),
+      switchMap(privateKey => from(this.decryptMessage(raw, privateKey, currentUserId)))
+    ).subscribe({
+      next: (message) => this.messagesSignal.update(msgs => [...msgs, message]),
+      error: (err) => console.error('Failed to decrypt incoming message', err)
+    });
+  }
+
+  incrementUnreadCount(chatId: number): void {
+    this.chatListSignal.update(list =>
+      list.map(chat => chat.chat_id === chatId ? { ...chat, unread_count: chat.unread_count + 1 } : chat)
+    );
+  }
+
   sendMessage(content: string): Observable<any> {
     const chat = this.currentChatSignal();
     if (!chat) throw new Error('No active chat');

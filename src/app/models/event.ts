@@ -1,5 +1,6 @@
 import { Post } from './Post';
 import { UserShort } from './UserShort';
+import { DirectMessageRaw } from './DirectChat';
 
 export interface TopicCreatedEvent {
   type: 'topic_created';
@@ -68,4 +69,9 @@ export interface TopicViewersUpdateEvent {
   data: UserShort[];
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent;
+export interface DirectMessageCreatedEvent {
+  type: 'direct_message_created';
+  data: DirectMessageRaw;
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent;

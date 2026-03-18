@@ -13,6 +13,7 @@ export interface DirectChatResponse {
 
 export interface DirectMessageRaw {
   id: number;
+  chat_id: number;
   user_id: number;
   username: string;
   avatar: string | null;

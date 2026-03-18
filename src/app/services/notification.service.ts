@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -31,6 +31,9 @@ export class NotificationService {
 
   private topicViewersUpdateSubject = new Subject<TopicViewersUpdateEvent>();
   public topicViewersUpdate$ = this.topicViewersUpdateSubject.asObservable();
+
+  private directMessageCreatedSubject = new Subject<DirectMessageCreatedEvent>();
+  public directMessageCreated$ = this.directMessageCreatedSubject.asObservable();
 
   private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
@@ -209,6 +212,9 @@ export class NotificationService {
         break;
       case 'topic_viewers_update':
         this.topicViewersUpdateSubject.next(notification as TopicViewersUpdateEvent);
+        break;
+      case 'direct_message_created':
+        this.directMessageCreatedSubject.next(notification as DirectMessageCreatedEvent);
         break;
       default:
         console.warn('Unknown notification type:', notification);
