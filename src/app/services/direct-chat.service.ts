@@ -3,6 +3,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
+import { NotificationService } from './notification.service';
 import { DirectChatListItem, DirectChatResponse, DirectMessageRaw } from '../models/DirectChat';
 import { Message } from '../models/Message';
 import { Observable, from } from 'rxjs';
@@ -13,6 +14,7 @@ export class DirectChatService {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private notificationService = inject(NotificationService);
   private privateKey$ = toObservable(this.userService.privateKey);
 
   private chatListSignal = signal<DirectChatListItem[]>([]);
@@ -27,6 +29,11 @@ export class DirectChatService {
   private isLoadingOlderSignal = signal(false);
   readonly isLoadingOlder = this.isLoadingOlderSignal.asReadonly();
 
+  private isLoadingNewerSignal = signal(false);
+  readonly isLoadingNewer = this.isLoadingNewerSignal.asReadonly();
+
+  private noMoreNewer = false;
+
   loadDirectChat(chatId: number): void {
     this.apiService.get<DirectChatResponse>(`direct-chat/${chatId}`).subscribe({
       next: (data) => {
@@ -38,6 +45,7 @@ export class DirectChatService {
   }
 
   loadMessages(chatId: number): void {
+    this.noMoreNewer = false;
     const currentUserId = this.authService.currentUser()!.id;
 
     this.privateKey$.pipe(
@@ -49,7 +57,21 @@ export class DirectChatService {
         )
       )
     ).subscribe({
-      next: (decrypted) => this.messagesSignal.set(decrypted),
+      next: (decrypted) => {
+        this.messagesSignal.set(decrypted);
+        const chat = this.currentChatSignal();
+        if (chat && decrypted.length > 0) {
+          const lastId = decrypted[decrypted.length - 1].id;
+          if (chat.last_read_message_id === null || lastId > chat.last_read_message_id) {
+            this.notificationService.sendMessage({
+              type: 'direct_message_viewed',
+              chat_id: chat.chat_id,
+              last_viewed_message_id: lastId
+            });
+            this.currentChatSignal.update(c => c ? { ...c, last_read_message_id: lastId } : c);
+          }
+        }
+      },
       error: (err) => console.error('Failed to load messages', err)
     });
   }
@@ -99,6 +121,47 @@ export class DirectChatService {
     });
   }
 
+  loadNewerMessages(chatId: number, afterMessageId: number): void {
+    if (this.noMoreNewer) return;
+    this.isLoadingNewerSignal.set(true);
+    const currentUserId = this.authService.currentUser()!.id;
+
+    this.privateKey$.pipe(
+      filter((key): key is CryptoKey => key !== null),
+      take(1),
+      switchMap(privateKey =>
+        this.apiService.get<DirectMessageRaw[]>(`direct-chat/${chatId}/messages/${afterMessageId}/after`).pipe(
+          switchMap(async data => Promise.all(data.map(msg => this.decryptMessage(msg, privateKey, currentUserId))))
+        )
+      )
+    ).subscribe({
+      next: (decrypted) => {
+        if (decrypted.length === 0) {
+          this.noMoreNewer = true;
+        } else {
+          this.messagesSignal.update(msgs => [...msgs, ...decrypted]);
+          const chat = this.currentChatSignal();
+          if (chat) {
+            const lastId = decrypted[decrypted.length - 1].id;
+            if (chat.last_read_message_id === null || lastId > chat.last_read_message_id) {
+              this.notificationService.sendMessage({
+                type: 'direct_message_viewed',
+                chat_id: chat.chat_id,
+                last_viewed_message_id: lastId
+              });
+              this.currentChatSignal.update(c => c ? { ...c, last_read_message_id: lastId } : c);
+            }
+          }
+        }
+        this.isLoadingNewerSignal.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load newer messages', err);
+        this.isLoadingNewerSignal.set(false);
+      }
+    });
+  }
+
   loadChatList(): void {
     this.apiService.get<DirectChatListItem[]>('direct-chats').subscribe({
       next: (data) => this.chatListSignal.set(data),
@@ -121,7 +184,18 @@ export class DirectChatService {
       take(1),
       switchMap(privateKey => from(this.decryptMessage(raw, privateKey, currentUserId)))
     ).subscribe({
-      next: (message) => this.messagesSignal.update(msgs => [...msgs, message]),
+      next: (message) => {
+        this.messagesSignal.update(msgs => [...msgs, message]);
+        const chat = this.currentChatSignal();
+        if (chat && (chat.last_read_message_id === null || message.id > chat.last_read_message_id)) {
+          this.notificationService.sendMessage({
+            type: 'direct_message_viewed',
+            chat_id: chat.chat_id,
+            last_viewed_message_id: message.id
+          });
+          this.currentChatSignal.update(c => c ? { ...c, last_read_message_id: message.id } : c);
+        }
+      },
       error: (err) => console.error('Failed to decrypt incoming message', err)
     });
   }

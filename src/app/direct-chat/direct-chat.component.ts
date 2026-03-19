@@ -57,6 +57,7 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   currentChat = this.directChatService.currentChat;
   messages = this.directChatService.messages;
   isLoadingOlder = this.directChatService.isLoadingOlder;
+  isLoadingNewer = this.directChatService.isLoadingNewer;
 
   activeUser: User = {
     id: 0,
@@ -162,14 +163,19 @@ export class DirectChatComponent implements OnInit, OnDestroy {
   onScroll() {
     if (this.isProgrammaticScroll) return;
     const el = this.scrollContainer.nativeElement;
-    if (el.scrollTop <= 1 && !this.isLoadingOlder()) {
-      const chat = this.currentChat();
-      const msgs = this.messages();
-      if (!chat || msgs.length === 0) return;
+    const chat = this.currentChat();
+    const msgs = this.messages();
+    if (!chat || msgs.length === 0) return;
 
+    if (el.scrollTop <= 1 && !this.isLoadingOlder()) {
       this.scrollHeightBeforeLoad = el.scrollHeight;
       this.skipScrollToBottom = true;
       this.directChatService.loadOlderMessages(chat.chat_id, msgs[0].id);
+    }
+
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight <= 1;
+    if (atBottom && !this.isLoadingNewer()) {
+      this.directChatService.loadNewerMessages(chat.chat_id, msgs[msgs.length - 1].id);
     }
   }
 

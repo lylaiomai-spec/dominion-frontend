@@ -72,6 +72,11 @@
                 </div>
               </div>
             }
+            @if (isLoadingNewer()) {
+              <div class="load-older-loader">
+                <span class="loader-spinner"></span>
+              </div>
+            }
           </div>
 
           <div class="pm-input">
