@@ -119,11 +119,14 @@ export class AuthService {
   public updateUser(user: User) {
     localStorage.setItem('user', JSON.stringify(user));
     const wasGuest = this.currentUser()?.id === 0;
+    const storedLocale = localStorage.getItem('locale');
     this.currentUser.set(user);
     // Update locale — only reload if switching between languages on an already-authenticated session
-    if (localStorage.getItem('locale') !== user.interface_language) {
+    if (storedLocale !== user.interface_language) {
       localStorage.setItem('locale', user.interface_language);
       if (!wasGuest) {
+        console.warn('[AuthService] updateUser: locale changed while authenticated — reloading page', { storedLocale, newLocale: user.interface_language, wasGuest });
+        console.trace('[AuthService] updateUser reload call stack');
         window.location.reload();
       }
     }
