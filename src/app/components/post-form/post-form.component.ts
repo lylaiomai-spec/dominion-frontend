@@ -85,7 +85,7 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
     const cursor = textarea.selectionStart;
     const textBeforeCursor = textarea.value.substring(0, cursor);
 
-    const match = textBeforeCursor.match(/@([^\s@]*)$/);
+    const match = textBeforeCursor.match(/@([^\u200A@]*)$/);
     if (match) {
       this.mentionAtPos = cursor - match[0].length;
       this.mentionSubject.next(match[1]);
@@ -102,7 +102,7 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
 
     const before = text.substring(0, this.mentionAtPos);
     const after = text.substring(cursor);
-    const inserted = `@${user.username} `;
+    const inserted = `@${user.username}\u200A`;
 
     textarea.value = before + inserted + after;
     textarea.focus();
