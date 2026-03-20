@@ -72,7 +72,7 @@ export class AuthService {
       switchMap(hashedPassword => {
         const loginData = { ...credentials, password: hashedPassword };
         return this.http.post<AuthResponse>(`${this.apiUrl}/login`, loginData).pipe(
-          tap(res => this.handleAuth(res))
+          tap(res => this.handleAuth(res, false))
         );
       })
     );
