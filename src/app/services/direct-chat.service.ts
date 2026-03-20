@@ -1,13 +1,12 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { Injectable, inject, signal, effect } from '@angular/core';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 import { NotificationService } from './notification.service';
 import { DirectChatListItem, DirectChatResponse, DirectMessageRaw } from '../models/DirectChat';
 import { Message } from '../models/Message';
-import { Observable, from, of } from 'rxjs';
-import { filter, take, switchMap } from 'rxjs/operators';
+import { Observable, from, of, ReplaySubject } from 'rxjs';
+import { take, switchMap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class DirectChatService {
@@ -15,7 +14,15 @@ export class DirectChatService {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private notificationService = inject(NotificationService);
-  private privateKey$ = toObservable(this.userService.privateKey);
+
+  private privateKeySubject = new ReplaySubject<CryptoKey>(1);
+
+  constructor() {
+    effect(() => {
+      const key = this.userService.privateKey();
+      if (key) this.privateKeySubject.next(key);
+    });
+  }
 
   private chatListSignal = signal<DirectChatListItem[]>([]);
   readonly chatList = this.chatListSignal.asReadonly();
@@ -37,10 +44,7 @@ export class DirectChatService {
   private resolvePrivateKey(): Observable<CryptoKey> {
     const key = this.userService.privateKey();
     if (key) return of(key);
-    return this.privateKey$.pipe(
-      filter((k): k is CryptoKey => k !== null),
-      take(1)
-    );
+    return this.privateKeySubject.pipe(take(1));
   }
 
   loadDirectChat(chatId: number): void {
