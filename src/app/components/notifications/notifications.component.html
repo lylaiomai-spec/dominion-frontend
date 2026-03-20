@@ -19,6 +19,13 @@
       <span class="label" i18n="@@notifications.mentions">Mentions</span>
     </div>
   }
+
+  @if (dmNotifications().length > 0) {
+    <div class="notification-block direct-messages" (click)="openModal('dm')">
+      <span class="count">{{ dmNotifications().length }}</span>
+      <span class="label" i18n="@@notifications.directMessages">Direct messages</span>
+    </div>
+  }
 </div>
 
 @if (activeModal) {
@@ -88,6 +95,25 @@
                 </span>
               </div>
               <button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeModal === 'dm') {
+        <h2 i18n="@@notifications.directMessages">Direct messages</h2>
+        <div class="feed-list">
+          @for (item of dmNotifications(); track item.chat_id) {
+            <div class="feed-item">
+              <a class="feed-item-content dm-entry" [routerLink]="['/direct-chat']">
+                <span class="dm-chat-label">
+                  <span i18n="@@notifications.chatWith">Chat with</span>
+                  <strong>{{ item.username }}</strong>
+                </span>
+                <span class="dm-unread-count">
+                  {{ item.unread_count }}&nbsp;<span i18n="@@notifications.newMessages">new messages</span>
+                </span>
+              </a>
             </div>
           }
         </div>
