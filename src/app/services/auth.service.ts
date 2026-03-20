@@ -97,7 +97,6 @@ export class AuthService {
   }
 
   logout() {
-    console.trace('[AuthService] logout() called!');
     this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
       next: () => this.clearLocalAuth(true),
       error: () => this.clearLocalAuth(true)
@@ -105,7 +104,6 @@ export class AuthService {
   }
 
   public clearLocalAuth(notify: boolean = true) {
-    console.trace('[AuthService] clearLocalAuth called!');
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
@@ -127,15 +125,12 @@ export class AuthService {
     if (storedLocale !== user.interface_language) {
       localStorage.setItem('locale', user.interface_language);
       if (!wasGuest) {
-        console.warn('[AuthService] updateUser: locale changed while authenticated — reloading page', { storedLocale, newLocale: user.interface_language, wasGuest });
-        console.trace('[AuthService] updateUser reload call stack');
         window.location.reload();
       }
     }
   }
 
   private handleAuth(response: AuthResponse, navigate: boolean = true) {
-    console.log('[AuthService] handleAuth called, navigate=', navigate, 'current wasGuest=', this.currentUser()?.id === 0);
     localStorage.setItem('access_token', response.access_token);
     localStorage.setItem('refresh_token', response.refresh_token);
     this.updateUser(response.user);

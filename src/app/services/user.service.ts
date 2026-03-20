@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { UserShort } from '../models/UserShort';
 import { UserProfileResponse, UpdateSettingsRequest, User, UpdateSettingsResponse, UserListItem } from '../models/User';
 import { Observable, from } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -18,7 +18,6 @@ export class UserService {
     effect(() => {
       if (this.authService.isAuthenticated()) {
         if (!this.privateKeySignal()) {
-          console.log('[UserService] user is authenticated and key is null — restoring from IndexedDB');
           this.tryRestorePrivateKey();
         }
       } else {
@@ -84,12 +83,9 @@ export class UserService {
   }
 
   loadAndDecryptPrivateKey(hashedPassword: string): Observable<void> {
-    console.log('[UserService] loadAndDecryptPrivateKey: fetching encrypted key from server...');
     return this.apiService.get<{ private_key: string; iv: string; salt: string }>('user/private-key').pipe(
-      tap(data => console.log('[UserService] loadAndDecryptPrivateKey: received key data from server', data)),
       switchMap(data => from(this.decryptPrivateKey(data.private_key, data.iv, data.salt, hashedPassword))),
       switchMap(key => {
-        console.log('[UserService] loadAndDecryptPrivateKey: decryption successful, saving to signal and IndexedDB');
         this.privateKeySignal.set(key);
         return from(this.savePrivateKeyToDb(key));
       })
@@ -192,10 +188,7 @@ export class UserService {
     this.loadPrivateKeyFromDb()
       .then(key => {
         if (key) {
-          console.log('[UserService] private key restored from IndexedDB');
           this.privateKeySignal.set(key);
-        } else {
-          console.warn('[UserService] no private key found in IndexedDB');
         }
       })
       .catch(err => console.error('[UserService] failed to restore private key from IndexedDB', err));
