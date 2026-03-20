@@ -15,12 +15,13 @@ export class UserService {
   readonly privateKey = this.privateKeySignal.asReadonly();
 
   constructor() {
-    if (this.authService.isAuthenticated()) {
-      this.tryRestorePrivateKey();
-    }
-
     effect(() => {
-      if (!this.authService.isAuthenticated()) {
+      if (this.authService.isAuthenticated()) {
+        if (!this.privateKeySignal()) {
+          console.log('[UserService] user is authenticated and key is null — restoring from IndexedDB');
+          this.tryRestorePrivateKey();
+        }
+      } else {
         this.privateKeySignal.set(null);
         this.clearPrivateKeyFromDb().catch(() => {});
       }
@@ -186,8 +187,15 @@ export class UserService {
 
   private tryRestorePrivateKey(): void {
     this.loadPrivateKeyFromDb()
-      .then(key => { if (key) this.privateKeySignal.set(key); })
-      .catch(err => console.error('Failed to restore private key from IndexedDB', err));
+      .then(key => {
+        if (key) {
+          console.log('[UserService] private key restored from IndexedDB');
+          this.privateKeySignal.set(key);
+        } else {
+          console.warn('[UserService] no private key found in IndexedDB');
+        }
+      })
+      .catch(err => console.error('[UserService] failed to restore private key from IndexedDB', err));
   }
 
   private openKeyStore(): Promise<IDBDatabase> {
