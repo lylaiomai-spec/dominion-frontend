@@ -9,14 +9,14 @@
 .user-avatar img {
   width: 100px;
   height: 100px;
-  border: 1px solid #3e5c3e;
+  border: 1px solid #d1bc9b;
   padding: 2px;
-  background: #000;
+  background: #fcfaf2;
 }
 
 .add-char-link {
   cursor: pointer;
-  color: #4ade80;
+  color: #7a5d3b;
   text-decoration: underline;
 }
 
