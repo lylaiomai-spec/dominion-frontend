@@ -83,7 +83,7 @@ export class DirectChatService {
           }
         }
       },
-      error: (err) => console.error('Failed to load messages', err)
+      error: (err) => console.error('DirectChatService: failed to load messages', err)
     });
   }
 
