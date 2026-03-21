@@ -85,6 +85,7 @@ export const TRANSLATIONS_RU = {
   "nav.rules": "Правила",
   "nav.userlist": "Список пользователей",
   "footer.poweredBy": "Работает на Cuento",
+  "footer.privacyPolicy": "Политика конфиденциальности",
   "notifications.announcements": "Объявления",
   "notifications.myGamePosts": "Посты в моих играх",
   "notifications.newGames": "Новые игры",
