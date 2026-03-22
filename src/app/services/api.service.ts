@@ -13,15 +13,11 @@ export class ApiService {
   private readonly apiUrl = environment.apiUrl;
 
   private getHeaders(): HttpHeaders {
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
+    let headers = new HttpHeaders();
     const token = this.authService.authToken();
     if (token) {
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
-
     return headers;
   }
 

@@ -1,0 +1,45 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h2 i18n="@@imageUpload.title">Upload Images</h2>
+
+    <div class="entries">
+      @for (entry of entries(); track entry.id) {
+        <div class="entry">
+          @if (entry.state === 'idle') {
+            <input type="file" accept="image/*" (change)="onFileChange($event, entry)" />
+            <button type="button" class="btn-remove" (click)="remove(entry)" title="Remove">&#x2715;</button>
+          }
+          @if (entry.state === 'uploading') {
+            <div class="loader-row">
+              <span class="loader"></span>
+              <span i18n="@@imageUpload.uploading">Uploading…</span>
+            </div>
+          }
+          @if (entry.state === 'done') {
+            <div class="result-row">
+              <img class="thumbnail-preview" [src]="entry.thumbnailUrl" alt="thumbnail" />
+              <div class="insert-links">
+                <a href="#" (click)="$event.preventDefault(); insertUrl(entry.thumbnailUrl)" i18n="@@imageUpload.insertThumbnail">Insert thumbnail</a>
+                <a href="#" (click)="$event.preventDefault(); insertUrl(entry.url)" i18n="@@imageUpload.insertFull">Insert full image</a>
+              </div>
+            </div>
+          }
+          @if (entry.state === 'error') {
+            <div class="error-row">
+              <span class="error-text">{{ entry.error }}</span>
+              <button type="button" class="button" (click)="retry(entry)" i18n="@@imageUpload.retry">Retry</button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="actions">
+      <button type="button" class="button" (click)="addField()" i18n="@@imageUpload.addMore">+ Add image</button>
+      <div class="actions-right">
+        <button type="button" class="button" (click)="close.emit()" i18n="@@imageUpload.cancel">Cancel</button>
+        <button type="button" class="button btn-primary" (click)="upload()" [disabled]="!hasFilesToUpload" i18n="@@imageUpload.upload">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>

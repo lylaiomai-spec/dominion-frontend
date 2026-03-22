@@ -19,6 +19,7 @@
               <td id="button-code" title="Code" i18n-title="@@postform.code" (click)="insertTag('code')"><i class="bi bi-code-slash"></i></td>
               <td id="button-color" title="Color" i18n-title="@@postform.color" (click)="toggleArea('color')"><i class="bi bi-palette"></i></td>
               <td id="button-smile" title="Smile" i18n-title="@@postform.smile" (click)="toggleArea('smile')"><i class="bi bi-emoji-smile"></i></td>
+              <td id="button-image" title="Upload image" i18n-title="@@postform.uploadImage" (click)="showImageUpload = true"><i class="bi bi-image"></i></td>
             </tr>
             </tbody>
           </table>
@@ -73,4 +74,11 @@
         </div>
       </div>
     </fieldset>
+
+@if (showImageUpload) {
+  <app-image-upload
+    (close)="showImageUpload = false"
+    (insert)="onInsertImage($event)">
+  </app-image-upload>
+}
 

@@ -4,10 +4,11 @@ import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {UserService} from '../../services/user.service';
 import {UserShort} from '../../models/UserShort';
 import {CommonModule} from '@angular/common';
+import {ImageUploadComponent} from '../image-upload/image-upload.component';
 
 @Component({
   selector: 'app-post-form',
-  imports: [CommonModule],
+  imports: [CommonModule, ImageUploadComponent],
   templateUrl: './post-form.component.html',
   standalone: true,
   styleUrl: './post-form.component.css'
@@ -20,6 +21,7 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
   private userService = inject(UserService);
 
   activeArea: string | null = null;
+  showImageUpload = false;
 
   fonts = ['Arial', 'Verdana', 'Georgia', 'Times New Roman', 'Courier New', 'Impact'];
   colors = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'purple', 'gray', 'silver'];
@@ -111,6 +113,17 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
 
     this.mentionResults = [];
     this.mentionAtPos = -1;
+  }
+
+  onInsertImage(url: string) {
+    const textarea = this.messageField.nativeElement;
+    const start = textarea.selectionStart;
+    const text = textarea.value;
+    const tag = `[img]${url}[/img]`;
+    textarea.value = text.substring(0, start) + tag + text.substring(start);
+    textarea.focus();
+    const newPos = start + tag.length;
+    textarea.setSelectionRange(newPos, newPos);
   }
 
   closeMention() {

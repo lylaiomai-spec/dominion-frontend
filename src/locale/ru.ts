@@ -84,6 +84,7 @@ export const TRANSLATIONS_RU = {
   "nav.episodelist": "Список эпизодов",
   "nav.rules": "Правила",
   "nav.userlist": "Список пользователей",
+  "postform.uploadImage": "Загрузить изображение",
   "footer.poweredBy": "Работает на Cuento",
   "footer.privacyPolicy": "Политика конфиденциальности",
   "notifications.announcements": "Объявления",
@@ -166,5 +167,13 @@ export const TRANSLATIONS_RU = {
   "masklist.avatar": "Аватар",
   "masklist.maskName": "Имя маски",
   "masklist.noAvatar": "Нет аватара",
-  "masklist.unnamedMask": "Безымянная маска"
+  "masklist.unnamedMask": "Безымянная маска",
+  "imageUpload.title": "Загрузка изображений",
+  "imageUpload.uploading": "Загрузка…",
+  "imageUpload.insertThumbnail": "Вставить миниатюру",
+  "imageUpload.insertFull": "Вставить полное изображение",
+  "imageUpload.retry": "Повторить",
+  "imageUpload.addMore": "+ Добавить изображение",
+  "imageUpload.cancel": "Отмена",
+  "imageUpload.upload": "Загрузить"
 };
