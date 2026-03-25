@@ -24,6 +24,9 @@ import { SettingsComponent } from './settings/settings.component';
 import { ActiveTopicsComponent } from './active-topics/active-topics.component';
 import { MaskListComponent } from './mask-list/mask-list.component';
 import { RecoveryCodesComponent } from './recovery-codes/recovery-codes.component';
+import { NotFoundComponent } from './error-pages/not-found/not-found.component';
+import { ForbiddenComponent } from './error-pages/forbidden/forbidden.component';
+import { ServerErrorComponent } from './error-pages/server-error/server-error.component';
 
 
 export const routes: Routes = [
@@ -169,5 +172,23 @@ export const routes: Routes = [
         title: 'Admin - Permissions'
       }
     ]
+  },
+  {
+    path: '403',
+    component: ForbiddenComponent,
+    title: 'Forbidden',
+    data: { pageId: 'pun-403' }
+  },
+  {
+    path: '500',
+    component: ServerErrorComponent,
+    title: 'Server Error',
+    data: { pageId: 'pun-500' }
+  },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    title: 'Page Not Found',
+    data: { pageId: 'pun-404' }
   }
 ];
