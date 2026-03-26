@@ -30,7 +30,7 @@ export class CharacterviewComponent implements OnInit {
         next: (data) => this.characterService.characterSignal.set(data),
         error: (err) => {
           if (err.status === 404) {
-            this.router.navigate(['/404']);
+            setTimeout(() => this.router.navigate(['/404']));
           } else {
             console.error('Failed to load character', err);
           }

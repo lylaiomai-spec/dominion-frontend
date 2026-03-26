@@ -2,7 +2,7 @@ import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationData } from '../../models/event';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { DirectChatService } from '../../services/direct-chat.service';
 
 @Component({
@@ -15,6 +15,7 @@ import { DirectChatService } from '../../services/direct-chat.service';
 export class NotificationsComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private directChatService = inject(DirectChatService);
+  private router = inject(Router);
 
   systemNotifications = this.notificationService.systemNotifications;
   gameNotifications = this.notificationService.gameNotifications;
@@ -38,7 +39,12 @@ export class NotificationsComponent implements OnInit {
   }
 
   dismissNotification(notification: NotificationData, event: MouseEvent) {
-    event.stopPropagation(); // Prevent modal from closing
+    event.stopPropagation();
     this.notificationService.dismissNotification(notification);
+  }
+
+  onNotificationClick(item: NotificationData) {
+    this.notificationService.dismissNotification(item);
+    this.closeModal();
   }
 }

@@ -26,7 +26,7 @@ export class PostPageComponent implements OnInit, OnDestroy {
           next: (data) => this.topicService.singlePostSignal.set(data),
           error: (err) => {
             if (err.status === 404) {
-              this.router.navigate(['/404']);
+              setTimeout(() => this.router.navigate(['/404']));
             } else {
               console.error('Failed to load post', err);
             }

@@ -161,7 +161,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
             next: (data) => this.topicService.setTopic(data),
             error: (err) => {
               if (err.status === 404) {
-                this.router.navigate(['/404']);
+                setTimeout(() => this.router.navigate(['/404']));
               } else {
                 console.error('Failed to load topic', err);
               }
@@ -190,16 +190,11 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       if ((pageState.page && pageState.page !== currentInputPage) || currentPostId) {
         this.router.navigate([], {
           relativeTo: this.route,
-          queryParams: { page: pageState.page, post_id: null }, // Remove post_id once resolved
+          queryParams: { page: pageState.page, post_id: null },
           queryParamsHandling: 'merge',
-          replaceUrl: true
+          replaceUrl: true,
+          ...(currentPostId ? { fragment: String(currentPostId) } : {})
         });
-      }
-
-      if (currentPostId) {
-        setTimeout(() => {
-          document.getElementById(String(currentPostId))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 0);
       }
     });
   }

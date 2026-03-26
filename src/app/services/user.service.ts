@@ -24,7 +24,7 @@ export class UserService {
         this.privateKeySignal.set(null);
         this.clearPrivateKeyFromDb().catch(() => {});
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   private usersOnPageSignal = signal<UserShort[]>([]);

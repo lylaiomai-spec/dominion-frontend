@@ -33,7 +33,7 @@ export class UserProfileComponent implements OnInit {
         next: (data) => this.userService.userProfileSignal.set(data),
         error: (err) => {
           if (err.status === 404) {
-            this.router.navigate(['/404']);
+            setTimeout(() => this.router.navigate(['/404']));
           } else {
             console.error('Failed to load user profile', err);
           }

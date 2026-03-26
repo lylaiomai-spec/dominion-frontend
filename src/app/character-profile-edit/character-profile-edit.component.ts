@@ -42,7 +42,7 @@ export class CharacterProfileEditComponent implements OnInit {
       if (!this.is_mask && !this.isNewMask) {
         this.currentProfileData.set(this.characterService.characterProfile());
       }
-    }, { allowSignalWrites: true });
+    });
 
     // Update form fields when profile data changes
     effect(() => {

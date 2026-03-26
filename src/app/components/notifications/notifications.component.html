@@ -71,7 +71,7 @@
               <tr>
                 <td>
                   @if (item.game?.topic_id) {
-                    <a [routerLink]="['/viewtopic', item.game!.topic_id]">{{ item.game?.topic_name || 'Unknown Topic' }}</a>
+                    <a [routerLink]="['/viewtopic', item.game!.topic_id]" (click)="onNotificationClick(item)">{{ item.game?.topic_name || 'Unknown Topic' }}</a>
                   } @else {
                     {{ item.game?.topic_name || 'Unknown Topic' }}
                   }
@@ -95,7 +95,9 @@
                 <span>
                   {{ item.mention?.user_name || 'User' }} mentioned you in
                   @if (item.mention?.topic_id) {
-                    <a [routerLink]="['/viewtopic', item.mention!.topic_id]">{{ item.title || 'Topic' }}</a>
+                    <a [routerLink]="['/viewtopic', item.mention!.topic_id]"
+                       [queryParams]="{post_id: item.mention!.post_id}"
+                       (click)="onNotificationClick(item)">{{ item.mention!.topicName || 'Topic' }}</a>
                   } @else {
                     {{ item.title || 'Topic' }}
                   }
@@ -112,10 +114,10 @@
         <div class="feed-list">
           @for (item of directMessageNotifications(); track item.id) {
             <div class="feed-item">
-              <div class="feed-item-content">
+              <a class="feed-item-content" [routerLink]="['/direct-chat']" (click)="onNotificationClick(item)">
                 <span class="date">{{ item.date_created | date:'short' }}</span>
                 <p>{{ item.message }}</p>
-              </div>
+              </a>
               <button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button>
             </div>
           }
@@ -127,7 +129,7 @@
         <div class="feed-list">
           @for (item of dmNotifications(); track item.chat_id) {
             <div class="feed-item">
-              <a class="feed-item-content dm-entry" [routerLink]="['/direct-chat']">
+              <a class="feed-item-content dm-entry" [routerLink]="['/direct-chat']" (click)="closeModal()">
                 <span class="dm-chat-label">
                   <span i18n="@@notifications.chatWith">Chat with</span>
                   <strong>{{ item.username }}</strong>
