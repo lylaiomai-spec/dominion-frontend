@@ -1732,13 +1732,13 @@ blockquote cite {
   padding: 5px 10px 4px;
   font-style: normal;
   font-size: 0.85em;
-  color: #9c7d58;
+  color: #333;
   font-weight: bold;
   border-bottom: 1px solid #e9e3d5;
 }
 
 blockquote p, blockquote > *:not(cite) {
-  padding: 6px 10px;
+  padding: 6px 10px 6px 16px;
   margin: 0;
   color: #333;
   font-size: 0.95em;
