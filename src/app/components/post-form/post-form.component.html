@@ -82,8 +82,8 @@
       <p i18n="@@postform.spoilerTitle">Spoiler title</p>
       <input #spoilerTitleInput type="text" />
       <div class="spoiler-modal-actions">
-        <button (click)="insertSpoiler(spoilerTitleInput.value)" i18n="@@postform.spoilerInsert">Insert</button>
-        <button (click)="showSpoilerModal = false" i18n="@@postform.spoilerCancel">Cancel</button>
+        <button type="button" (click)="insertSpoiler(spoilerTitleInput.value)" i18n="@@postform.spoilerInsert">Insert</button>
+        <button type="button" (click)="showSpoilerModal = false" i18n="@@postform.spoilerCancel">Cancel</button>
       </div>
     </div>
   </div>
