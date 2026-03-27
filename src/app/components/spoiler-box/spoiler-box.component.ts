@@ -27,13 +27,24 @@ export class SpoilerBoxComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const host: HTMLElement = this.el.nativeElement;
-    const header = host.querySelector('.spoiler-header');
-    const content = host.querySelector('.spoiler-content');
+    const title = host.getAttribute('data-title') ?? '';
+    const innerContent = host.innerHTML;
 
-    if (header && content) {
-      header.addEventListener('click', () => {
-        content.classList.toggle('open');
-      });
-    }
+    host.innerHTML = '';
+
+    const header = document.createElement('div');
+    header.className = 'spoiler-header';
+    header.textContent = title;
+
+    const content = document.createElement('div');
+    content.className = 'spoiler-content';
+    content.innerHTML = innerContent;
+
+    header.addEventListener('click', () => {
+      content.classList.toggle('open');
+    });
+
+    host.appendChild(header);
+    host.appendChild(content);
   }
 }
