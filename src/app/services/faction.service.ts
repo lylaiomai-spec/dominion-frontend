@@ -50,7 +50,20 @@ export class FactionService {
     })
   }
 
-  createFaction(name: string, parentId: number | null): Observable<Faction> {
-    return this.apiService.post<Faction>('faction/create', { name, parent_id: parentId });
+  factionTree = signal<Faction[]>([]);
+
+  loadFactionTree(): void {
+    this.apiService.get<Faction[]>('faction-tree').subscribe({
+      next: (data) => this.factionTree.set(data),
+      error: (err) => console.error('Failed to load faction tree', err)
+    });
+  }
+
+  updateFaction(id: number, payload: Faction): Observable<Faction> {
+    return this.apiService.post<Faction>(`faction/update/${id}`, payload);
+  }
+
+  createFaction(faction: Faction): Observable<Faction> {
+    return this.apiService.post<Faction>('faction/create', faction);
   }
 }

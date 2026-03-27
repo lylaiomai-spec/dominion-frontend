@@ -175,5 +175,15 @@ export const TRANSLATIONS_RU = {
   "imageUpload.retry": "Повторить",
   "imageUpload.addMore": "+ Добавить изображение",
   "imageUpload.cancel": "Отмена",
-  "imageUpload.upload": "Загрузить"
+  "imageUpload.upload": "Загрузить",
+  "faction.newFaction": "Новая фракция",
+  "faction.name": "Название",
+  "faction.level": "Уровень",
+  "faction.description": "Описание",
+  "faction.icon": "Иконка",
+  "faction.parent_id": "ID родителя",
+  "faction.show_on_profile": "Показывать в профиле",
+  "faction.addChild": "Добавить дочернюю",
+  "common.add": "Добавить",
+  "common.save": "Сохранить"
 };

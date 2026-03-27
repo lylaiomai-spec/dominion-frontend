@@ -1,0 +1,56 @@
+<div class="factions-container">
+  <h2 i18n="@@admin.factions">Factions</h2>
+
+  @for (faction of factions(); track faction.id) {
+    <form (submit)="save(faction); $event.preventDefault()" [style.margin-left.px]="faction.level * 24">
+      <fieldset class="faction-fieldset">
+        @if (isNew(faction)) {
+          <legend i18n="@@faction.newFaction">New faction</legend>
+        } @else {
+          <legend>{{ faction.name || 'Faction #' + faction.id }}</legend>
+        }
+
+        <div class="field-row">
+          <label [for]="'name-' + faction.id" i18n="@@faction.name">Name</label>
+          <input [id]="'name-' + faction.id" type="text" [(ngModel)]="faction.name" [name]="'name-' + faction.id" required />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'level-' + faction.id" i18n="@@faction.level">Level</label>
+          <input [id]="'level-' + faction.id" type="number" [(ngModel)]="faction.level" [name]="'level-' + faction.id" />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'description-' + faction.id" i18n="@@faction.description">Description</label>
+          <textarea [id]="'description-' + faction.id" [(ngModel)]="faction.description" [name]="'description-' + faction.id"></textarea>
+        </div>
+
+        <div class="field-row">
+          <label [for]="'icon-' + faction.id" i18n="@@faction.icon">Icon</label>
+          <input [id]="'icon-' + faction.id" type="text" [(ngModel)]="faction.icon" [name]="'icon-' + faction.id" />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'parent-' + faction.id" i18n="@@faction.parent_id">Parent ID</label>
+          <input [id]="'parent-' + faction.id" type="number" [(ngModel)]="faction.parent_id" [name]="'parent-' + faction.id" />
+        </div>
+
+        <div class="field-row field-row--checkbox">
+          <input [id]="'show-' + faction.id" type="checkbox" [(ngModel)]="faction.show_on_profile" [name]="'show-' + faction.id" />
+          <label [for]="'show-' + faction.id" i18n="@@faction.show_on_profile">Show on profile</label>
+        </div>
+
+        <div class="form-actions">
+          @if (isNew(faction)) {
+            <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
+          } @else {
+            <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+          }
+          @if (!isNew(faction)) {
+            <button type="button" (click)="addChild(faction)" i18n="@@faction.addChild">Add Child</button>
+          }
+        </div>
+      </fieldset>
+    </form>
+  }
+</div>

@@ -18,6 +18,7 @@ import {CharacterCreateComponent} from './character-create/character-create.comp
 import {EpisodeTemplateEditComponent} from './admin/episode-template-edit/episode-template-edit.component';
 import {CharacterProfileTemplateEditComponent} from './admin/character-profile-template-edit/character-profile-template-edit.component';
 import {PermissionMatrixComponent} from './admin/permission-matrix/permission-matrix.component';
+import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -166,6 +167,11 @@ export const routes: Routes = [
         path: 'character-profile-template',
         component: CharacterProfileTemplateEditComponent,
         title: 'Admin - Character Profile Template'
+      },
+      {
+        path: 'factions',
+        component: AdminFactionsComponent,
+        title: 'Admin - Factions'
       },
       {
         path: 'permissions',
