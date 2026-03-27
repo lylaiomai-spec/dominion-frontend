@@ -22,6 +22,9 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
 
   activeArea: string | null = null;
   showImageUpload = false;
+  showSpoilerModal = false;
+  private spoilerSelStart = 0;
+  private spoilerSelEnd = 0;
 
   fonts = ['Arial', 'Verdana', 'Georgia', 'Times New Roman', 'Courier New', 'Impact'];
   colors = ['black', 'white', 'red', 'blue', 'green', 'yellow', 'purple', 'gray', 'silver'];
@@ -113,6 +116,25 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
 
     this.mentionResults = [];
     this.mentionAtPos = -1;
+  }
+
+  openSpoilerModal() {
+    const textarea = this.messageField.nativeElement;
+    this.spoilerSelStart = textarea.selectionStart;
+    this.spoilerSelEnd = textarea.selectionEnd;
+    this.showSpoilerModal = true;
+  }
+
+  insertSpoiler(title: string) {
+    const textarea = this.messageField.nativeElement;
+    const text = textarea.value;
+    const selectedText = text.substring(this.spoilerSelStart, this.spoilerSelEnd);
+    const tag = `[spoiler=${title}]${selectedText}[/spoiler]`;
+    textarea.value = text.substring(0, this.spoilerSelStart) + tag + text.substring(this.spoilerSelEnd);
+    this.showSpoilerModal = false;
+    textarea.focus();
+    const newPos = this.spoilerSelStart + tag.length;
+    textarea.setSelectionRange(newPos, newPos);
   }
 
   onInsertImage(url: string) {

@@ -20,6 +20,7 @@
               <td id="button-color" title="Color" i18n-title="@@postform.color" (click)="toggleArea('color')"><i class="bi bi-palette"></i></td>
               <td id="button-smile" title="Smile" i18n-title="@@postform.smile" (click)="toggleArea('smile')"><i class="bi bi-emoji-smile"></i></td>
               <td id="button-image" title="Upload image" i18n-title="@@postform.uploadImage" (click)="showImageUpload = true"><i class="bi bi-image"></i></td>
+              <td id="button-spoiler" title="Spoiler" (click)="openSpoilerModal()"><i class="bi bi-eye-slash"></i></td>
             </tr>
             </tbody>
           </table>
@@ -74,6 +75,19 @@
         </div>
       </div>
     </fieldset>
+
+@if (showSpoilerModal) {
+  <div class="spoiler-modal-backdrop" (click)="showSpoilerModal = false">
+    <div class="spoiler-modal" (click)="$event.stopPropagation()">
+      <p i18n="@@postform.spoilerTitle">Spoiler title</p>
+      <input #spoilerTitleInput type="text" />
+      <div class="spoiler-modal-actions">
+        <button (click)="insertSpoiler(spoilerTitleInput.value)" i18n="@@postform.spoilerInsert">Insert</button>
+        <button (click)="showSpoilerModal = false" i18n="@@postform.spoilerCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (showImageUpload) {
   <app-image-upload
