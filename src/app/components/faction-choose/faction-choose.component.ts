@@ -36,40 +36,42 @@ export class FactionChooseComponent implements OnInit {
 
   ngOnInit() {
     if (this.initialFactions.length > 0) {
-      this.loadInitialFactions(0);
+      this.initFromKnownFactions();
     } else {
       this.addFactionLevel(0);
     }
   }
 
-  loadInitialFactions(index: number) {
-    const parentId = index === 0 ? 0 : this.initialFactions[index - 1].id;
+  private initFromKnownFactions() {
+    // Directly set levels from known factions — no need to "find" them in a list
+    this.factionLevels.set(
+      this.initialFactions.map((faction, i) => ({
+        label: `Faction ${i + 1}`,
+        options: [faction],
+        selectedId: faction.id
+      }))
+    );
 
-    // If parentId is temporary (negative), we can't load children from backend.
-    // We assume no children for temporary factions yet, unless we manage them locally.
-    if (parentId < 0) {
-       // Handle local children if needed, for now stop loading.
-       return;
-    }
-
-    this.factionService.getFactionChildren(parentId).subscribe(children => {
-      if (children.length > 0 || this.factionLevels().length === 0) {
-        const selectedId = index < this.initialFactions.length ? this.initialFactions[index].id : null;
-
-        this.factionLevels.update(levels => [
-          ...levels,
-          {
-            label: `Faction ${levels.length + 1}`,
-            options: children,
-            selectedId: selectedId
+    // Load full options for each level in the background so the user can change selections
+    this.initialFactions.forEach((faction, index) => {
+      const parentId = index === 0 ? 0 : this.initialFactions[index - 1].id;
+      if (parentId < 0) return;
+      this.factionService.getFactionChildren(parentId).subscribe(children => {
+        this.factionLevels.update(levels => {
+          const updated = [...levels];
+          if (updated[index]) {
+            const inList = children.some(c => c.id === faction.id);
+            const options = inList ? children : [faction, ...children];
+            updated[index] = { ...updated[index], options };
           }
-        ]);
-
-        if (selectedId !== null && index < this.initialFactions.length) {
-          this.loadInitialFactions(index + 1);
-        }
-      }
+          return updated;
+        });
+      });
     });
+
+    // Load children of the last selected faction to allow deeper selection
+    const lastId = this.initialFactions[this.initialFactions.length - 1].id;
+    this.addFactionLevel(lastId);
   }
 
   addFactionLevel(parentId: number) {

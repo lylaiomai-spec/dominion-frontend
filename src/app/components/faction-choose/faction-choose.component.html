@@ -11,9 +11,9 @@
           [name]="'faction-level-' + i"
           [(ngModel)]="level.selectedId"
           (ngModelChange)="onFactionChange(i)">
-          <option [value]="null">Select a faction</option>
+          <option [ngValue]="null">Select a faction</option>
           @for (faction of level.options; track faction.id) {
-            <option [value]="faction.id">{{ faction.name }}</option>
+            <option [ngValue]="faction.id">{{ faction.name }}</option>
           }
         </select>
         <button type="button" class="add-btn" (click)="openCreateModal(i)">+</button>
