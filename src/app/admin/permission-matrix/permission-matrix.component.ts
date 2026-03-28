@@ -55,6 +55,8 @@ export class PermissionMatrixComponent implements OnInit {
     return PermissionType[numericKey];
   }
 
+  saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+
   saveMatrix() {
     const checkedPermissions: string[] = [];
     const matrixMap = this.matrixMap();
@@ -71,9 +73,18 @@ export class PermissionMatrixComponent implements OnInit {
       }
     }
 
+    this.saveState.set('loading');
     this.permissionService.savePermissionMatrix(checkedPermissions).subscribe({
-      next: () => console.log('Permissions saved successfully'),
-      error: (err) => console.error('Failed to save permissions', err)
+      next: () => this.flashState('success'),
+      error: (err) => {
+        console.error('Failed to save permissions', err);
+        this.flashState('error');
+      }
     });
+  }
+
+  private flashState(state: 'success' | 'error') {
+    this.saveState.set(state);
+    setTimeout(() => this.saveState.set('idle'), 3000);
   }
 }

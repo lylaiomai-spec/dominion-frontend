@@ -12,7 +12,14 @@
     </fieldset>
 
     <div class="form-actions">
-      <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+      <button type="submit" class="btn-save" [class]="'btn-save btn-save--' + saveState()" [disabled]="saveState() === 'loading'">
+        @switch (saveState()) {
+          @case ('loading') { <span class="spinner"></span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.save">Save</span> }
+        }
+      </button>
     </div>
   </form>
 </div>

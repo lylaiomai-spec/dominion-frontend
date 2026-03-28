@@ -185,5 +185,7 @@ export const TRANSLATIONS_RU = {
   "faction.show_on_profile": "Показывать в профиле",
   "faction.addChild": "Добавить дочернюю",
   "common.add": "Добавить",
-  "common.save": "Сохранить"
+  "common.save": "Сохранить",
+  "common.saved": "Сохранено",
+  "common.saveFailed": "Ошибка"
 };
