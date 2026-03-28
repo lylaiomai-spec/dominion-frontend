@@ -24,16 +24,23 @@ jobs:
         # This creates the static files in the /dist folder
         run: npm run build -- --configuration production
 
+      - name: Clear old files
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: find /var/www/frontend -mindepth 1 -delete
+
       - name: Deploy to Droplet via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Verify your 'outputPath' in angular.json. Usually it's dist/<project-name>/browser
           source: "dist/cuento-frontend/browser/*"
           target: "/var/www/frontend"
-          strip_components: 3 # Adjust this to match the number of folders in 'source'
+          strip_components: 3
           overwrite: true
 
       - name: Fix Permissions
