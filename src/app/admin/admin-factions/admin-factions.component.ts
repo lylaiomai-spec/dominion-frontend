@@ -15,11 +15,30 @@ export class AdminFactionsComponent implements OnInit {
   private factionService = inject(FactionService);
 
   factions = this.factionService.factionTree;
+  pendingFactions = this.factionService.pendingFactions;
 
   private tempIdCounter = -1;
 
   ngOnInit() {
     this.factionService.loadFactionTree();
+    this.factionService.loadPendingFactions();
+  }
+
+  approve(faction: Faction) {
+    this.factionService.updateFactionStatus(faction.id, 0).subscribe({
+      next: () => {
+        this.factionService.pendingFactions.update(list => list.filter(f => f.id !== faction.id));
+        this.factionService.loadFactionTree();
+      },
+      error: (err) => console.error('Failed to approve faction', err)
+    });
+  }
+
+  decline(faction: Faction) {
+    this.factionService.updateFactionStatus(faction.id, 1).subscribe({
+      next: () => this.factionService.pendingFactions.update(list => list.filter(f => f.id !== faction.id)),
+      error: (err) => console.error('Failed to decline faction', err)
+    });
   }
 
   addChild(faction: Faction) {
@@ -30,6 +49,7 @@ export class AdminFactionsComponent implements OnInit {
       description: null,
       icon: null,
       parent_id: faction.id,
+      faction_status: 0,
       show_on_profile: false,
       characters: []
     };

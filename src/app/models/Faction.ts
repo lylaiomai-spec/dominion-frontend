@@ -7,6 +7,7 @@ export interface Faction {
   level: number,
   description: string|null,
   icon: string|null,
+  faction_status: number,
   show_on_profile: boolean,
   characters: Character[]
 }
