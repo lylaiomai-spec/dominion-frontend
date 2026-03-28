@@ -19,6 +19,7 @@ import {EpisodeTemplateEditComponent} from './admin/episode-template-edit/episod
 import {CharacterProfileTemplateEditComponent} from './admin/character-profile-template-edit/character-profile-template-edit.component';
 import {PermissionMatrixComponent} from './admin/permission-matrix/permission-matrix.component';
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
+import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -167,6 +168,11 @@ export const routes: Routes = [
         path: 'character-profile-template',
         component: CharacterProfileTemplateEditComponent,
         title: 'Admin - Character Profile Template'
+      },
+      {
+        path: 'settings',
+        component: AdminSettingsComponent,
+        title: 'Admin - Settings'
       },
       {
         path: 'factions',
