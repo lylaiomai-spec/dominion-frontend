@@ -15,14 +15,16 @@
               <option [ngValue]="faction.id">{{ faction.name }}</option>
             }
           </select>
-          <button type="button" class="add-btn" (click)="openCreateModal(pathIndex, i)">+</button>
+          @if (allowCreate) {
+            <button type="button" class="add-btn" (click)="openCreateModal(pathIndex, i)">+</button>
+          }
         </div>
       </div>
     }
   </fieldset>
 }
 
-@if (showModal) {
+@if (allowCreate && showModal) {
   <app-faction-create-modal
     [parentId]="activeParentId"
     (close)="onModalClose()"

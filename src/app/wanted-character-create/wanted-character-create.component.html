@@ -9,6 +9,7 @@
           <span class="input"><input id="req_name" type="text" name="req_name" [value]="characterName" size="80" maxlength="70" /></span>
         </p>
         <app-faction-paths
+          [allowCreate]="false"
           (factionsChange)="onFactionsChanged($event)">
         </app-faction-paths>
       </div>

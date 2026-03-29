@@ -36,7 +36,8 @@ export class TopicService {
     type: TopicType.general,
     status: TopicStatus.active,
     episode: null,
-    character: null
+    character: null,
+    wanted_character: null
   });
   readonly topic = this.topicSignal.asReadonly();
 

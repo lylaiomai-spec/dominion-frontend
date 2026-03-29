@@ -1,5 +1,6 @@
 import {Episode} from './Episode';
 import {Character} from './Character';
+import {WantedCharacter} from './WantedCharacter';
 import {SubforumPermissions} from './Subforum';
 
 export interface Topic {
@@ -21,6 +22,7 @@ export interface Topic {
   status: TopicStatus;
   episode: Episode|null;
   character: Character|null;
+  wanted_character: WantedCharacter|null;
   can_edit?: boolean;
   not_viewed?: boolean;
   permissions?: SubforumPermissions | null;
@@ -29,7 +31,8 @@ export interface Topic {
 export enum TopicType {
   general = 0,
   episode = 1,
-  character = 2
+  character = 2,
+  wanted_character = 3
 }
 
 export enum TopicStatus {

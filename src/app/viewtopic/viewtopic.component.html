@@ -48,6 +48,9 @@
       <app-episode-header [episode]="topic().episode" ></app-episode-header>
     }
   }
+  @if(isWantedCharacter() && topic().wanted_character != null) {
+    <app-wanted-character-header [wantedCharacter]="topic().wanted_character"></app-wanted-character-header>
+  }
   @if(isCharacter() && topic().character != null) {
     @if (editingTopic()) {
       <app-character-create

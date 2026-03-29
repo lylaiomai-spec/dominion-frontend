@@ -22,6 +22,7 @@ export class FactionPathsComponent implements OnInit {
   private factionService = inject(FactionService);
 
   @Input() initialFactions: Faction[] = [];
+  @Input() allowCreate: boolean = true;
   @Output() factionsChange = new EventEmitter<Faction[][]>();
 
   pathLevels = signal<FactionLevel[][]>([[]]);

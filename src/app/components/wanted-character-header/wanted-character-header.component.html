@@ -1,0 +1,38 @@
+@if (wantedCharacter != null) {
+  <div class="wanted-character-header">
+    <h2>{{ wantedCharacter.name }}</h2>
+
+    @if (wantedCharacter.factions && wantedCharacter.factions.length > 0) {
+      <div class="wanted-character-factions">
+        <h3 i18n="@@wantedCharacter.factions">Factions</h3>
+        <ul>
+          @for (faction of wantedCharacter.factions; track faction.id) {
+            <li>{{ faction.name }}</li>
+          }
+        </ul>
+      </div>
+    }
+
+    @if (customFields.length > 0) {
+      <div class="wanted-character-custom-fields">
+        <ul>
+          @for (field of customFields; track field.fieldMachineName) {
+            <li>
+              @switch (field.type) {
+                @case ('short_text') {
+                  <app-short-text-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-short-text-field-display>
+                }
+                @case ('long_text') {
+                  <app-long-text-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-long-text-field-display>
+                }
+                @case ('number') {
+                  <app-number-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-number-field-display>
+                }
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  </div>
+}

@@ -11,6 +11,7 @@ import {BreadcrumbItem, BreadcrumbsComponent} from '../components/breadcrumbs/br
 import {ForumService} from '../services/forum.service';
 import {TopicReadByComponent} from '../components/topic-read-by/topic-read-by.component';
 import { CharacterSheetHeaderComponent } from '../components/character-sheet-header/character-sheet-header.component';
+import { WantedCharacterHeaderComponent } from '../components/wanted-character-header/wanted-character-header.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe'
 import { CharacterService } from '../services/character.service';
 import { AuthService } from '../services/auth.service';
@@ -37,6 +38,7 @@ function coerceToPage(value: unknown): number {
     BreadcrumbsComponent,
     TopicReadByComponent,
     CharacterSheetHeaderComponent,
+    WantedCharacterHeaderComponent,
     SafeHtmlPipe,
     EpisodeCreateComponent,
     CharacterCreateComponent
@@ -194,6 +196,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   isEpisode() { return this.topic().type === TopicType.episode; }
   isGeneral() { return this.topic().type === TopicType.general; }
   isCharacter() { return this.topic().type === TopicType.character; }
+  isWantedCharacter() { return this.topic().type === TopicType.wanted_character; }
 
   ngOnInit() {
     this.pageLoadedSubscription = this.topicService.pageLoaded$.subscribe(pageState => {
