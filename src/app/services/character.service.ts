@@ -49,15 +49,8 @@ export class CharacterService {
     })
   }
 
-  saveCharacterTemplate(template: FieldTemplate[]): void {
-    this.apiService.post('template/character/update', template).subscribe({
-      next: (data) => {
-        console.log('Character template saved successfully', data);
-      },
-      error: (err) => {
-        console.error('Failed to save character template', err);
-      }
-    })
+  saveCharacterTemplate(template: FieldTemplate[]) {
+    return this.apiService.post('template/character/update', template);
   }
 
   loadShortCharacterList(term: string): void {
@@ -122,15 +115,8 @@ export class CharacterService {
     });
   }
 
-  saveCharacterProfileTemplate(template: FieldTemplate[]): void {
-    this.apiService.post('template/character_profile/update', template).subscribe({
-      next: (data) => {
-        console.log('Character profile template saved successfully', data);
-      },
-      error: (err) => {
-        console.error('Failed to save character profile template', err);
-      }
-    })
+  saveCharacterProfileTemplate(template: FieldTemplate[]) {
+    return this.apiService.post('template/character_profile/update', template);
   }
 
   createCharacter(data: CreateCharacterRequest) {
@@ -179,9 +165,7 @@ export class CharacterService {
     });
   }
 
-  saveWantedCharacterTemplate(template: FieldTemplate[]): void {
-    this.apiService.post('template/wanted_character/update', template).subscribe({
-      error: (err) => console.error('Failed to save wanted character template', err)
-    });
+  saveWantedCharacterTemplate(template: FieldTemplate[]) {
+    return this.apiService.post('template/wanted_character/update', template);
   }
 }

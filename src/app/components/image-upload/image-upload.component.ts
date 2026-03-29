@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
-import { ApiService } from '../../services/api.service';
+import { ImageService } from '../../services/image.service';
 
 interface ImageEntry {
   id: number;
@@ -21,7 +21,7 @@ export class ImageUploadComponent {
   @Output() close = new EventEmitter<void>();
   @Output() insert = new EventEmitter<string>();
 
-  private apiService = inject(ApiService);
+  private imageService = inject(ImageService);
 
   private nextId = 0;
   entries = signal<ImageEntry[]>([this.newEntry()]);
@@ -51,15 +51,8 @@ export class ImageUploadComponent {
     const toUpload = this.entries().filter(e => e.state === 'idle' && e.file !== null);
     for (const entry of toUpload) {
       this.updateEntry(entry.id, { state: 'uploading' });
-      const formData = new FormData();
-      formData.append('file', entry.file!);
-
-      this.apiService.post<{ url: string; thumbnail_url: string }>(
-        'image/upload',
-        formData
-      ).subscribe({
+      this.imageService.upload(entry.file!).subscribe({
         next: (res) => {
-          console.log(res)
           this.updateEntry(entry.id, { url: res.url, thumbnailUrl: res.thumbnail_url, state: 'done' });
         },
         error: () => {

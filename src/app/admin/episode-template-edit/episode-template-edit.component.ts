@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EpisodeService } from '../../services/episode.service';
@@ -18,6 +18,7 @@ interface FieldTemplateForm extends FieldTemplate {
 export class EpisodeTemplateEditComponent implements OnInit {
   episodeService = inject(EpisodeService);
   fields: FieldTemplateForm[] = [];
+  saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   fieldTypes = ['string', 'text', 'int', 'decimal', 'date'];
   contentFieldTypes = ['short_text', 'number', 'decimal', 'long_text', 'image'];
@@ -64,8 +65,11 @@ export class EpisodeTemplateEditComponent implements OnInit {
   }
 
   saveTemplate() {
-    console.log('Saving template:', this.fields);
-    let data = this.fields.filter(field => field.machine_field_name !== '');
-    this.episodeService.saveEpisodeTemplate(data);
+    this.saveState.set('loading');
+    const data = this.fields.filter(field => field.machine_field_name !== '');
+    this.episodeService.saveEpisodeTemplate(data).subscribe({
+      next: () => { this.saveState.set('success'); setTimeout(() => this.saveState.set('idle'), 3000); },
+      error: () => { this.saveState.set('error'); setTimeout(() => this.saveState.set('idle'), 3000); }
+    });
   }
 }

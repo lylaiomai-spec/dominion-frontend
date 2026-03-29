@@ -64,15 +64,8 @@ export class EpisodeService {
     });
   }
 
-  saveEpisodeTemplate(template: FieldTemplate[]): void {
-    this.apiService.post('template/episode/update', template).subscribe({
-      next: (data) => {
-        console.log('Episode template saved successfully', data);
-      },
-      error: (err) => {
-        console.error('Failed to save episode template', err);
-      }
-    })
+  saveEpisodeTemplate(template: FieldTemplate[]) {
+    return this.apiService.post('template/episode/update', template);
   }
 
   createEpisode(data: any) {

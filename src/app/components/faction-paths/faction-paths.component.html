@@ -1,0 +1,31 @@
+@for (path of pathLevels(); track $index; let pathIndex = $index) {
+  <fieldset>
+    <legend>Choose Faction</legend>
+    @for (level of path; track $index; let i = $index) {
+      <div class="faction-field">
+        <label [for]="'faction-' + pathIndex + '-' + i">{{ level.label }}:</label>
+        <div class="select-group">
+          <select
+            [id]="'faction-' + pathIndex + '-' + i"
+            [name]="'faction-level-' + pathIndex + '-' + i"
+            [(ngModel)]="level.selectedId"
+            (ngModelChange)="onFactionChange(pathIndex, i)">
+            <option [ngValue]="null">Select a faction</option>
+            @for (faction of level.options; track faction.id) {
+              <option [ngValue]="faction.id">{{ faction.name }}</option>
+            }
+          </select>
+          <button type="button" class="add-btn" (click)="openCreateModal(pathIndex, i)">+</button>
+        </div>
+      </div>
+    }
+  </fieldset>
+}
+
+@if (showModal) {
+  <app-faction-create-modal
+    [parentId]="activeParentId"
+    (close)="onModalClose()"
+    (created)="onFactionCreated($event)">
+  </app-faction-create-modal>
+}

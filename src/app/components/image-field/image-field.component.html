@@ -1,4 +1,41 @@
 @if (showFieldName) {
-  <label [for]="fieldName">{{ fieldName }}</label>
+  <label [attr.for]="fieldName">{{ fieldName }}</label>
 }
-<input type="text" [id]="fieldName" [name]="name" [value]="fieldValue" >
+
+<div class="mode-toggle">
+  <button type="button" [class.active]="mode === 'upload'" (click)="mode = 'upload'" i18n="@@imageField.uploadImage">Upload image</button>
+  <button type="button" [class.active]="mode === 'url'" (click)="mode = 'url'" i18n="@@imageField.useUrl">Use URL</button>
+</div>
+
+@if (mode === 'upload') {
+  <div class="upload-section">
+    <input type="file" accept="image/*" (change)="onFileChange($event)" />
+
+    @if (uploadState === 'idle' && selectedFile) {
+      <button type="button" class="btn-upload" (click)="upload()" i18n="@@imageField.upload">Upload</button>
+    }
+    @if (uploadState === 'uploading') {
+      <div class="upload-status">
+        <span class="spinner"></span>
+        <span i18n="@@imageField.uploading">Uploading…</span>
+      </div>
+    }
+    @if (uploadState === 'done') {
+      <div class="upload-status">
+        <img class="preview" [src]="value" alt="" />
+      </div>
+    }
+    @if (uploadState === 'error') {
+      <div class="upload-status error-row">
+        <span class="error-text">{{ errorMessage }}</span>
+        <button type="button" (click)="upload()" i18n="@@imageField.retry">Retry</button>
+      </div>
+    }
+  </div>
+}
+
+@if (mode === 'url') {
+  <input type="text" [attr.id]="fieldName" [(ngModel)]="value" />
+}
+
+<input type="hidden" [attr.name]="name" [value]="value" />

@@ -1,11 +1,10 @@
 import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CharacterService } from '../services/character.service';
-import { FactionService } from '../services/faction.service';
 import { ShortTextFieldComponent } from '../components/short-text-field/short-text-field.component';
 import { LongTextFieldComponent } from '../components/long-text-field/long-text-field.component';
 import { ImageFieldComponent } from '../components/image-field/image-field.component';
-import { FactionChooseComponent } from '../components/faction-choose/faction-choose.component';
+import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
 import { CreateCharacterRequest, Character } from '../models/Character';
 import { Topic, TopicType, TopicStatus } from '../models/Topic';
 import { Faction } from '../models/Faction';
@@ -14,14 +13,13 @@ import { PreviewService } from '../services/preview.service';
 
 @Component({
   selector: 'app-character-create',
-  imports: [ShortTextFieldComponent, LongTextFieldComponent, ImageFieldComponent, FactionChooseComponent, CommonModule],
+  imports: [ShortTextFieldComponent, LongTextFieldComponent, ImageFieldComponent, FactionPathsComponent, CommonModule],
   templateUrl: './character-create.component.html',
   standalone: true,
   styleUrl: './character-create.component.css'
 })
 export class CharacterCreateComponent implements OnInit {
   characterService = inject(CharacterService);
-  factionService = inject(FactionService);
   previewService = inject(PreviewService);
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -65,43 +63,10 @@ export class CharacterCreateComponent implements OnInit {
   populateForm(data: Character) {
     this.characterName = data.name;
     this.characterAvatar = data.avatar || '';
-
-    if (data.factions && data.factions.length > 0) {
-      const factions = data.factions;
-      const factionMap = new Map(factions.map(f => [f.id, f]));
-      const usedAsParent = new Set(
-        factions.map(f => f.parent_id).filter((id): id is number => id != null)
-      );
-      const leaves = factions.filter(f => !usedAsParent.has(f.id));
-
-      this.factionPaths = leaves.map(leaf => {
-        const path: Faction[] = [];
-        let current: Faction | undefined = leaf;
-        while (current) {
-          path.unshift(current);
-          current = current.parent_id != null ? factionMap.get(current.parent_id) : undefined;
-        }
-        return path;
-      });
-
-      if (this.factionPaths.length === 0) {
-        this.factionPaths = [[]];
-      }
-    }
   }
 
-  onFactionsChanged(index: number, factions: Faction[]) {
-    this.factionPaths[index] = factions;
-  }
-
-  addFactionPath() {
-    this.factionPaths.push([]);
-  }
-
-  removeFactionPath(index: number) {
-    if (this.factionPaths.length > 1) {
-      this.factionPaths.splice(index, 1);
-    }
+  onFactionsChanged(paths: Faction[][]) {
+    this.factionPaths = paths;
   }
 
   getFieldValue(machineName: string): any {

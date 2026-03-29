@@ -21,6 +21,7 @@ import {PermissionMatrixComponent} from './admin/permission-matrix/permission-ma
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
 import {CharacterClaimsComponent} from './admin/character-claims/character-claims.component';
 import {WantedCharacterTemplateEditComponent} from './admin/wanted-character-template-edit/wanted-character-template-edit.component';
+import {WantedCharacterCreateComponent} from './wanted-character-create/wanted-character-create.component';
 import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.component';
 import {PreviewComponent} from './preview/preview.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
@@ -99,6 +100,12 @@ export const routes: Routes = [
     component: CharacterCreateComponent,
     title: 'Create Character',
     data: { pageId: 'pun-create-character' }
+  },
+  {
+    path: 'wanted-character-create',
+    component: WantedCharacterCreateComponent,
+    title: 'Create Wanted Character',
+    data: { pageId: 'pun-create-wanted-character' }
   },
   {
     path: 'viewtopic/:id',

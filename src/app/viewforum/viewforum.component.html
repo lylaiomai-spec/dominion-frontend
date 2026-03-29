@@ -39,6 +39,9 @@
             @if (subforum()?.permissions?.subforum_create_character_topic) {
               <a routerLink="/character-create" [queryParams]="{fid: subforum()?.id}" class="button"><span i18n="@@topiccreate.character">Character</span></a>
             }
+            @if (subforum()?.permissions?.subforum_create_wanted_character_topic) {
+              <a routerLink="/wanted-character-create" [queryParams]="{fid: subforum()?.id}" class="button"><span i18n="@@topiccreate.wantedCharacter">Wanted character</span></a>
+            }
           </div>
           <div class="clearer"></div>
         </div>
@@ -100,6 +103,9 @@
             }
             @if (subforum()?.permissions?.subforum_create_character_topic) {
               <a routerLink="/character-create" [queryParams]="{fid: subforum()?.id}" class="button"><span i18n="@@topiccreate.character">Character</span></a>
+            }
+            @if (subforum()?.permissions?.subforum_create_wanted_character_topic) {
+              <a routerLink="/wanted-character-create" [queryParams]="{fid: subforum()?.id}" class="button"><span i18n="@@topiccreate.wantedCharacter">Wanted character</span></a>
             }
           </div>
           <p class="conr">
