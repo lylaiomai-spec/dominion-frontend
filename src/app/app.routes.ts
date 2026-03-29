@@ -20,6 +20,7 @@ import {CharacterProfileTemplateEditComponent} from './admin/character-profile-t
 import {PermissionMatrixComponent} from './admin/permission-matrix/permission-matrix.component';
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
 import {CharacterClaimsComponent} from './admin/character-claims/character-claims.component';
+import {WantedCharacterTemplateEditComponent} from './admin/wanted-character-template-edit/wanted-character-template-edit.component';
 import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.component';
 import {PreviewComponent} from './preview/preview.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
@@ -196,6 +197,11 @@ export const routes: Routes = [
         path: 'character-claims',
         component: CharacterClaimsComponent,
         title: 'Admin - Character Claims'
+      },
+      {
+        path: 'wanted-character-template',
+        component: WantedCharacterTemplateEditComponent,
+        title: 'Admin - Wanted Character Template'
       }
     ]
   },

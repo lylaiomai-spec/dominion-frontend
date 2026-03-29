@@ -168,4 +168,20 @@ export class CharacterService {
   acceptCharacter(id: number) {
     return this.apiService.post(`character/accept/${id}`, {});
   }
+
+  private wantedCharacterTemplateSignal = signal<FieldTemplate[]>([]);
+  readonly wantedCharacterTemplate = this.wantedCharacterTemplateSignal.asReadonly();
+
+  loadWantedCharacterTemplate(): void {
+    this.apiService.get<FieldTemplate[]>('template/wanted_character/get').subscribe({
+      next: (data) => this.wantedCharacterTemplateSignal.set(data.sort((a, b) => a.order - b.order)),
+      error: (err) => console.error('Failed to load wanted character template', err)
+    });
+  }
+
+  saveWantedCharacterTemplate(template: FieldTemplate[]): void {
+    this.apiService.post('template/wanted_character/update', template).subscribe({
+      error: (err) => console.error('Failed to save wanted character template', err)
+    });
+  }
 }

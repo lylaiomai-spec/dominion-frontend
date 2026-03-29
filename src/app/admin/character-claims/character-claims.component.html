@@ -1,4 +1,4 @@
-<h2>Character Claims</h2>
+<h2 i18n="@@characterClaims.title">Character Claims</h2>
 
 <div class="claims-tree">
   @for (faction of factions(); track faction.id) {
@@ -11,26 +11,32 @@
         @if (faction.description) {
           <span class="faction-description">{{ faction.description }}</span>
         }
-        <button type="button" class="btn-add-claim" (click)="openModal(faction.id)">Add claim</button>
+        <button type="button" class="btn-add-claim" (click)="openModal(faction.id)" i18n="@@characterClaims.addClaim">Add claim</button>
       </div>
 
       @if (faction.claims.length > 0) {
         <table class="claims-table">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Claimed</th>
-              <th>Can Change Name</th>
-              <th>Last Claim Date</th>
-              <th>User ID</th>
+              <th i18n="@@characterClaims.colName">Name</th>
+              <th i18n="@@characterClaims.colClaimed">Claimed</th>
+              <th i18n="@@characterClaims.colCanChangeName">Can Change Name</th>
+              <th i18n="@@characterClaims.colLastClaimDate">Last Claim Date</th>
+              <th i18n="@@characterClaims.colUserId">User ID</th>
             </tr>
           </thead>
           <tbody>
             @for (claim of faction.claims; track claim.id) {
               <tr [class.is-claimed]="claim.is_claimed">
                 <td>{{ claim.name }}</td>
-                <td>{{ claim.is_claimed ? 'Yes' : 'No' }}</td>
-                <td>{{ claim.can_change_name ? 'Yes' : 'No' }}</td>
+                <td>
+                  @if (claim.is_claimed) { <span i18n="@@common.yes">Yes</span> }
+                  @else { <span i18n="@@common.no">No</span> }
+                </td>
+                <td>
+                  @if (claim.can_change_name) { <span i18n="@@common.yes">Yes</span> }
+                  @else { <span i18n="@@common.no">No</span> }
+                </td>
                 <td>{{ claim.last_claim_date ? (claim.last_claim_date | date:'dd.MM.yyyy HH:mm') : '—' }}</td>
                 <td>{{ claim.is_claimed ? claim.user_id : '—' }}</td>
               </tr>
@@ -38,7 +44,7 @@
           </tbody>
         </table>
       } @else {
-        <p class="no-claims">No claims</p>
+        <p class="no-claims" i18n="@@characterClaims.noClaims">No claims</p>
       }
     </div>
   }
@@ -47,23 +53,23 @@
 @if (modalFactionId !== null) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal" (click)="$event.stopPropagation()">
-      <h3>Add claim</h3>
+      <h3 i18n="@@characterClaims.addClaim">Add claim</h3>
       <form (submit)="submitClaim(); $event.preventDefault()">
         <div class="field-row">
-          <label for="claim-name">Name</label>
+          <label for="claim-name" i18n="@@characterClaims.fieldName">Name</label>
           <input id="claim-name" type="text" [(ngModel)]="form.name" name="name" required />
         </div>
         <div class="field-row">
-          <label for="claim-description">Description</label>
+          <label for="claim-description" i18n="@@characterClaims.fieldDescription">Description</label>
           <textarea id="claim-description" [(ngModel)]="form.description" name="description"></textarea>
         </div>
         <div class="field-row field-row--checkbox">
           <input id="claim-can-change-name" type="checkbox" [(ngModel)]="form.can_change_name" name="can_change_name" />
-          <label for="claim-can-change-name">Can change name</label>
+          <label for="claim-can-change-name" i18n="@@characterClaims.fieldCanChangeName">Can change name</label>
         </div>
         <div class="modal-actions">
-          <button type="submit" class="btn-primary">Add</button>
-          <button type="button" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
+          <button type="button" (click)="closeModal()" i18n="@@common.cancel">Cancel</button>
         </div>
       </form>
     </div>
