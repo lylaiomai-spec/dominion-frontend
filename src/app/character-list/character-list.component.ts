@@ -1,12 +1,14 @@
-import {Component, computed, inject, OnInit, Signal} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { CharacterService } from '../services/character.service';
 import { Faction } from '../models/Faction';
 
 @Component({
   selector: 'app-character-list',
   imports: [
-    RouterLink
+    RouterLink,
+    FormsModule
   ],
   templateUrl: './character-list.component.html',
   standalone: true,
@@ -14,10 +16,12 @@ import { Faction } from '../models/Faction';
 })
 export class CharacterListComponent implements OnInit {
   characterService = inject(CharacterService);
-  // Access the signal directly
   characterList = this.characterService.characterList;
 
-  // Computed signal to group factions
+  showCharacters = signal(true);
+  showImportantRoles = signal(true);
+  showWantedCharacters = signal(true);
+
   groupedCharacterList = computed(() => {
     const list = this.characterList();
     if (!list || list.length === 0) {
@@ -28,25 +32,41 @@ export class CharacterListComponent implements OnInit {
     let currentGroup: Faction[] | null = null;
 
     for (const faction of list) {
-      // Start a new group for Level 0
       if (faction.level === 0) {
         if (currentGroup) {
           groups.push(currentGroup);
         }
         currentGroup = [faction];
-      }
-      // Add descendants to the current group
-      else if (currentGroup) {
+      } else if (currentGroup) {
         currentGroup.push(faction);
       }
     }
 
-    // Push the last group
     if (currentGroup) {
       groups.push(currentGroup);
     }
 
     return groups;
+  });
+
+  filteredGroupedCharacterList = computed(() => {
+    const showChars = this.showCharacters();
+    const showRoles = this.showImportantRoles();
+    const showWanted = this.showWantedCharacters();
+
+    return this.groupedCharacterList()
+      .map(group =>
+        group.map(faction => ({
+          ...faction,
+          characters: (faction.characters ?? []).filter(char => {
+            if (!char.is_claim && showChars) return true;
+            if (char.is_claim && char.wanted_character_id == null && showRoles) return true;
+            if (char.wanted_character_id != null && showWanted) return true;
+            return false;
+          })
+        }))
+      )
+      .filter(group => group.some(faction => faction.characters.length > 0));
   });
 
   ngOnInit() {

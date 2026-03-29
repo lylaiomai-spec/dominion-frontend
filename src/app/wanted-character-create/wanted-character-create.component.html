@@ -10,6 +10,7 @@
         </p>
         <app-faction-paths
           [allowCreate]="false"
+          [initialFactions]="initialData?.factions ?? []"
           (factionsChange)="onFactionsChanged($event)">
         </app-faction-paths>
       </div>
@@ -22,20 +23,23 @@
             @if (field.content_field_type === 'short_text' || field.content_field_type === 'number') {
               <app-short-text-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-short-text-field>
             }
             @if (field.content_field_type === 'long_text') {
               <app-long-text-field
                 [fieldName]="field.human_field_name"
                 [name]="field.machine_field_name"
-                [rows]="10">
+                [rows]="10"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-long-text-field>
             }
             @if (field.content_field_type === 'image') {
               <app-image-field
                 [fieldName]="field.human_field_name"
-                [name]="field.machine_field_name">
+                [name]="field.machine_field_name"
+                [fieldValue]="getFieldValue(field.machine_field_name)">
               </app-image-field>
             }
           </p>
@@ -45,6 +49,9 @@
 
     <p class="formsubmit">
       <input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" />
+      @if (cancel.observed) {
+        <button type="button" class="button" (click)="onCancel()" i18n="@@topiccreate.cancel">Cancel</button>
+      }
     </p>
   </form>
 </div>

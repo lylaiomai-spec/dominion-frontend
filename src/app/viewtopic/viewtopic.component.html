@@ -49,7 +49,15 @@
     }
   }
   @if(isWantedCharacter() && topic().wanted_character != null) {
-    <app-wanted-character-header [wantedCharacter]="topic().wanted_character"></app-wanted-character-header>
+    @if (editingTopic()) {
+      <app-wanted-character-create
+        [initialData]="topic().wanted_character"
+        (formSubmit)="onUpdateWantedCharacter($event)"
+        (cancel)="cancelEditTopic()">
+      </app-wanted-character-create>
+    } @else {
+      <app-wanted-character-header [wantedCharacter]="topic().wanted_character"></app-wanted-character-header>
+    }
   }
   @if(isCharacter() && topic().character != null) {
     @if (editingTopic()) {

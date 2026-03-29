@@ -25,4 +25,8 @@ export class WantedCharacterService {
   save(data: any): Observable<any> {
     return this.apiService.post('wanted-character/create', data);
   }
+
+  update(id: number, data: any): Observable<any> {
+    return this.apiService.put(`wanted-character/update/${id}`, data);
+  }
 }

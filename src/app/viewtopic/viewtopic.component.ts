@@ -19,6 +19,8 @@ import { BoardService } from '../services/board.service';
 import { Subject, Subscription } from 'rxjs';
 import { EpisodeCreateComponent } from '../episode-create/episode-create.component';
 import { CharacterCreateComponent } from '../character-create/character-create.component';
+import { WantedCharacterCreateComponent } from '../wanted-character-create/wanted-character-create.component';
+import { WantedCharacterService } from '../services/wanted-character.service';
 import { EpisodeService } from '../services/episode.service';
 import { PreviewService } from '../services/preview.service';
 
@@ -41,7 +43,8 @@ function coerceToPage(value: unknown): number {
     WantedCharacterHeaderComponent,
     SafeHtmlPipe,
     EpisodeCreateComponent,
-    CharacterCreateComponent
+    CharacterCreateComponent,
+    WantedCharacterCreateComponent
   ],
   templateUrl: './viewtopic.component.html',
   standalone: true,
@@ -52,6 +55,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   forumService = inject(ForumService);
   characterService = inject(CharacterService);
   episodeService = inject(EpisodeService);
+  wantedCharacterService = inject(WantedCharacterService);
   authService = inject(AuthService);
   boardService = inject(BoardService);
   previewService = inject(PreviewService);
@@ -441,6 +445,19 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
         this.cancelEditTopic();
       },
       error: (err: any) => console.error('Failed to update character', err)
+    });
+  }
+
+  onUpdateWantedCharacter(payload: any) {
+    const wantedCharId = this.topic().wanted_character?.id;
+    if (!wantedCharId) return;
+
+    this.wantedCharacterService.update(wantedCharId, payload).subscribe({
+      next: () => {
+        if (this.id()) this.topicService.loadTopic(this.id()!).subscribe({ next: (data) => this.topicService.setTopic(data) });
+        this.cancelEditTopic();
+      },
+      error: (err: any) => console.error('Failed to update wanted character', err)
     });
   }
 

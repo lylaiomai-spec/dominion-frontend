@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WantedCharacterService } from '../services/wanted-character.service';
@@ -7,6 +7,7 @@ import { LongTextFieldComponent } from '../components/long-text-field/long-text-
 import { ImageFieldComponent } from '../components/image-field/image-field.component';
 import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
 import { Faction } from '../models/Faction';
+import { WantedCharacter } from '../models/WantedCharacter';
 
 @Component({
   selector: 'app-wanted-character-create',
@@ -25,6 +26,10 @@ export class WantedCharacterCreateComponent implements OnInit {
   characterName: string = '';
   factionPaths: Faction[][] = [[]];
 
+  @Input() initialData: WantedCharacter | null = null;
+  @Output() formSubmit = new EventEmitter<any>();
+  @Output() cancel = new EventEmitter<void>();
+
   ngOnInit() {
     this.wantedCharacterService.loadTemplate();
     this.route.queryParams.subscribe(params => {
@@ -32,6 +37,22 @@ export class WantedCharacterCreateComponent implements OnInit {
         this.subforumId = +params['fid'];
       }
     });
+
+    if (this.initialData) {
+      this.characterName = this.initialData.name;
+    }
+  }
+
+  getFieldValue(machineName: string): any {
+    if (this.initialData?.custom_fields?.custom_fields) {
+      const field = this.initialData.custom_fields.custom_fields[machineName];
+      return field ? field.content : null;
+    }
+    return null;
+  }
+
+  onCancel() {
+    this.cancel.emit();
   }
 
   onFactionsChanged(paths: Faction[][]) {
@@ -76,15 +97,19 @@ export class WantedCharacterCreateComponent implements OnInit {
       factions
     };
 
-    this.wantedCharacterService.save(request).subscribe({
-      next: (response: any) => {
-        if (response?.id) {
-          this.router.navigate(['/viewtopic', response.id]);
-        } else {
-          this.router.navigate(['/viewforum', this.subforumId]);
-        }
-      },
-      error: (err) => console.error('Failed to save wanted character', err)
-    });
+    if (this.formSubmit.observed) {
+      this.formSubmit.emit(request);
+    } else {
+      this.wantedCharacterService.save(request).subscribe({
+        next: (response: any) => {
+          if (response?.id) {
+            this.router.navigate(['/viewtopic', response.id]);
+          } else {
+            this.router.navigate(['/viewforum', this.subforumId]);
+          }
+        },
+        error: (err) => console.error('Failed to save wanted character', err)
+      });
+    }
   }
 }

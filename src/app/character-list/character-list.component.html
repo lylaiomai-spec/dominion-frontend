@@ -3,8 +3,23 @@
     <h1><span i18n="@@characterList.title">Character List</span></h1>
   </div>
 
+  <div class="character-list-filters">
+    <label>
+      <input type="checkbox" [ngModel]="showCharacters()" (ngModelChange)="showCharacters.set($event)" />
+      <span i18n="@@characterList.filter.characters">Characters</span>
+    </label>
+    <label>
+      <input type="checkbox" [ngModel]="showImportantRoles()" (ngModelChange)="showImportantRoles.set($event)" />
+      <span i18n="@@characterList.filter.importantRoles">Important roles</span>
+    </label>
+    <label>
+      <input type="checkbox" [ngModel]="showWantedCharacters()" (ngModelChange)="showWantedCharacters.set($event)" />
+      <span i18n="@@characterList.filter.wantedCharacters">Wanted characters</span>
+    </label>
+  </div>
+
   <div class="character-tree">
-    @for (group of groupedCharacterList(); track group[0]?.id || $index) {
+    @for (group of filteredGroupedCharacterList(); track group[0]?.id || $index) {
       <div class="category">
         <div class="maintitle">
           <h2 class="faction-title"><span>{{ group[0].name }}</span></h2>
