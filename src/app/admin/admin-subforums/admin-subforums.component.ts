@@ -47,8 +47,13 @@ export class AdminSubforumsComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const data = this.categoryService.homeCategories();
-      this.categories = JSON.parse(JSON.stringify(data));
+      const copy: Category[] = JSON.parse(JSON.stringify(this.categoryService.homeCategories()));
+      for (const cat of copy) {
+        for (const sub of cat.subforums) {
+          sub.category_id = cat.id;
+        }
+      }
+      this.categories = copy;
     });
   }
 
@@ -92,7 +97,12 @@ export class AdminSubforumsComponent implements OnInit {
   updateSubforum(subforum: Subforum, descEl: HTMLTextAreaElement) {
     const key = `sub-${subforum.id}`;
     this.setUpdateState(key, 'loading');
-    const body = { ...subforum, description: descEl.value };
+    const body = {
+      name: subforum.name,
+      position: subforum.position,
+      category_id: subforum.category_id,
+      description: descEl.value
+    };
     this.apiService.post(`subforum/update/${subforum.id}`, body).subscribe({
       next: () => this.flashUpdateState(key, 'success'),
       error: () => this.flashUpdateState(key, 'error')
