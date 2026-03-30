@@ -24,6 +24,8 @@ import {WantedCharacterTemplateEditComponent} from './admin/wanted-character-tem
 import {WantedCharacterCreateComponent} from './wanted-character-create/wanted-character-create.component';
 import {WantedCharacterListComponent} from './wanted-character-list/wanted-character-list.component';
 import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.component';
+import {AdminSubforumsComponent} from './admin/admin-subforums/admin-subforums.component';
+import {TopicCommanderComponent} from './admin/topic-commander/topic-commander.component';
 import {PreviewComponent} from './preview/preview.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
 import { UserListComponent } from './user-list/user-list.component';
@@ -216,6 +218,16 @@ export const routes: Routes = [
         path: 'wanted-character-template',
         component: WantedCharacterTemplateEditComponent,
         title: 'Admin - Wanted Character Template'
+      },
+      {
+        path: 'subforums',
+        component: AdminSubforumsComponent,
+        title: 'Admin - Subforums'
+      },
+      {
+        path: 'topic-commander',
+        component: TopicCommanderComponent,
+        title: 'Admin - Topic Commander'
       }
     ]
   },

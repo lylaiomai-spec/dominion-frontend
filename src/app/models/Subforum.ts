@@ -2,6 +2,7 @@ export interface Subforum {
   id: number;
   name: string;
   description: string;
+  description_html?: string;
   category_id: number;
   position: number;
   topic_number: number;

@@ -1,0 +1,112 @@
+<div class="nc-shell">
+  <div class="nc-titlebar">Topic Commander</div>
+
+  <div class="nc-toolbar">
+    <div class="nc-toolbar-half">
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(left)" [disabled]="!hasSelection(left)" (click)="archiveTopics(left)">Archive</button>
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(left)" [disabled]="!hasSelection(left)" (click)="openTopics(left)">Open</button>
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(left)" [disabled]="!hasSelection(left)" (click)="deleteTopics(left)">Delete</button>
+      <button class="nc-btn" [class.nc-btn--active]="canMoveLeftToRight()" [disabled]="!canMoveLeftToRight()" (click)="moveTopics(left, right)">Move &rarr;</button>
+    </div>
+    <div class="nc-toolbar-half">
+      <button class="nc-btn" [class.nc-btn--active]="canMoveRightToLeft()" [disabled]="!canMoveRightToLeft()" (click)="moveTopics(right, left)">&larr; Move</button>
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(right)" [disabled]="!hasSelection(right)" (click)="archiveTopics(right)">Archive</button>
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(right)" [disabled]="!hasSelection(right)" (click)="openTopics(right)">Open</button>
+      <button class="nc-btn" [class.nc-btn--active]="hasSelection(right)" [disabled]="!hasSelection(right)" (click)="deleteTopics(right)">Delete</button>
+    </div>
+  </div>
+
+  <div class="nc-panels">
+    <!-- LEFT PANEL -->
+    <div class="nc-panel">
+      <div class="nc-panel-header">
+        @if (left.view === 'topics' && left.openSubforum) {
+          {{ left.openSubforum.name }}
+        } @else {
+          Subforums
+        }
+      </div>
+
+      <div class="nc-panel-body">
+        @if (left.loading) {
+          <div class="nc-loading">Loading...</div>
+        } @else if (left.view === 'topics') {
+          <div class="nc-row nc-row--back" (click)="backToSubforums(left)">
+            <span class="nc-back">[..]</span>
+          </div>
+          @for (topic of left.topics; track topic.id) {
+            <div
+              class="nc-row nc-row--topic"
+              [class.nc-row--selected]="left.selectedTopicIds.has(topic.id)"
+              (click)="toggleTopic(left, topic.id)"
+            >
+              <span class="nc-checkbox">{{ left.selectedTopicIds.has(topic.id) ? '[x]' : '[ ]' }}</span>
+              <span class="nc-topic-name">{{ topic.name }}</span>
+              <span class="nc-topic-meta">{{ topic.post_number }}</span>
+            </div>
+          }
+          @if (left.topics.length === 0) {
+            <div class="nc-empty">No topics</div>
+          }
+        } @else {
+          @for (category of categories; track category.id) {
+            <div class="nc-category">{{ category.name }}</div>
+            @for (subforum of category.subforums; track subforum.id) {
+              <div class="nc-row nc-row--subforum" (click)="openSubforum(left, subforum)">
+                <span class="nc-arrow">&rsaquo;</span>
+                <span class="nc-subforum-name">{{ subforum.name }}</span>
+                <span class="nc-subforum-meta">{{ subforum.topic_number }}</span>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="nc-panel">
+      <div class="nc-panel-header">
+        @if (right.view === 'topics' && right.openSubforum) {
+          {{ right.openSubforum.name }}
+        } @else {
+          Subforums
+        }
+      </div>
+
+      <div class="nc-panel-body">
+        @if (right.loading) {
+          <div class="nc-loading">Loading...</div>
+        } @else if (right.view === 'topics') {
+          <div class="nc-row nc-row--back" (click)="backToSubforums(right)">
+            <span class="nc-back">[..]</span>
+          </div>
+          @for (topic of right.topics; track topic.id) {
+            <div
+              class="nc-row nc-row--topic"
+              [class.nc-row--selected]="right.selectedTopicIds.has(topic.id)"
+              (click)="toggleTopic(right, topic.id)"
+            >
+              <span class="nc-checkbox">{{ right.selectedTopicIds.has(topic.id) ? '[x]' : '[ ]' }}</span>
+              <span class="nc-topic-name">{{ topic.name }}</span>
+              <span class="nc-topic-meta">{{ topic.post_number }}</span>
+            </div>
+          }
+          @if (right.topics.length === 0) {
+            <div class="nc-empty">No topics</div>
+          }
+        } @else {
+          @for (category of categories; track category.id) {
+            <div class="nc-category">{{ category.name }}</div>
+            @for (subforum of category.subforums; track subforum.id) {
+              <div class="nc-row nc-row--subforum" (click)="openSubforum(right, subforum)">
+                <span class="nc-arrow">&rsaquo;</span>
+                <span class="nc-subforum-name">{{ subforum.name }}</span>
+                <span class="nc-subforum-meta">{{ subforum.topic_number }}</span>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  </div>
+</div>

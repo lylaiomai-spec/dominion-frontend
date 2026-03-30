@@ -252,5 +252,22 @@ export const TRANSLATIONS_RU = {
   "wantedCharacterList.cardView": "Карточки",
   "wantedCharacterList.listView": "Список",
   "wantedCharacterList.filters": "Фильтры",
-  "wantedCharacterList.factions": "Фракции"
+  "wantedCharacterList.factions": "Фракции",
+  "admin.subforums": "Подфорумы",
+  "admin.topicCommander": "Topic Commander",
+  "subforum.title": "Подфорумы",
+  "subforum.categoryLegend": "Категория: {$INTERPOLATION}",
+  "subforum.subforumLegend": "Подфорум: {$INTERPOLATION}",
+  "subforum.newCategory": "Новая категория",
+  "subforum.newSubforum": "Новый подфорум",
+  "subforum.name": "Название",
+  "subforum.description": "Описание",
+  "subforum.position": "Позиция",
+  "subforum.addSubforum": "+ Добавить подфорум",
+  "subforum.addCategory": "+ Добавить категорию",
+  "common.update": "Обновить",
+  "common.delete": "Удалить",
+  "common.deleted": "Удалено",
+  "common.create": "Создать",
+  "common.created": "Создано"
 };

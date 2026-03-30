@@ -1,0 +1,175 @@
+.subforums-container {
+  padding: 1rem;
+}
+
+.category-fieldset {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.subforum-fieldset {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.fields input {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.description-field {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.description-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.fieldset-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-save {
+  padding: 0.5rem 1.25rem;
+  min-width: 90px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.btn-save--idle,
+.btn-save--loading {
+  background-color: #007bff;
+}
+
+.btn-save--idle:hover {
+  background-color: #0069d9;
+}
+
+.btn-save--success {
+  background-color: #28a745;
+}
+
+.btn-save--error {
+  background-color: #dc3545;
+}
+
+.btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.btn-delete {
+  padding: 0.5rem 1.25rem;
+  min-width: 90px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.btn-delete--idle,
+.btn-delete--loading {
+  background-color: #dc3545;
+}
+
+.btn-delete--idle:hover {
+  background-color: #c82333;
+}
+
+.btn-delete--success {
+  background-color: #28a745;
+}
+
+.btn-delete--error {
+  background-color: #6c757d;
+}
+
+.btn-delete:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.subforum-fieldset--new,
+.category-fieldset--new {
+  border-style: dashed;
+  border-color: #aaa;
+}
+
+.add-actions {
+  margin-top: 0.75rem;
+}
+
+.btn-add {
+  padding: 0.4rem 1rem;
+  background-color: transparent;
+  border: 1px dashed #888;
+  border-radius: 4px;
+  color: #555;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-add:hover {
+  border-color: #007bff;
+  color: #007bff;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

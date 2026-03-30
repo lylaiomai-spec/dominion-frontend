@@ -1,0 +1,187 @@
+<div class="subforums-container">
+  <h2 i18n="@@subforum.title">Subforums</h2>
+
+  @for (category of categories; track category.id) {
+    <fieldset class="category-fieldset">
+      <legend i18n="@@subforum.categoryLegend">Category: {{ category.name }}</legend>
+
+      <div class="fields">
+        <label>
+          <span i18n="@@subforum.name">Name</span>
+          <input type="text" [(ngModel)]="category.name" [name]="'cat-name-' + category.id" />
+        </label>
+        <label>
+          <span i18n="@@subforum.position">Position</span>
+          <input type="number" [(ngModel)]="category.position" [name]="'cat-pos-' + category.id" />
+        </label>
+      </div>
+
+      <div class="fieldset-actions">
+        <button
+          type="button"
+          [class]="'btn-save btn-save--' + getUpdateState('cat-' + category.id)"
+          [disabled]="getUpdateState('cat-' + category.id) === 'loading'"
+          (click)="updateCategory(category)"
+        >
+          @switch (getUpdateState('cat-' + category.id)) {
+            @case ('loading') { <span class="spinner"></span> }
+            @case ('success') { <span i18n="@@common.saved">Saved</span> }
+            @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+            @default { <span i18n="@@common.update">Update</span> }
+          }
+        </button>
+        <button
+          type="button"
+          [class]="'btn-delete btn-delete--' + getDeleteState('cat-' + category.id)"
+          [disabled]="getDeleteState('cat-' + category.id) === 'loading'"
+          (click)="deleteCategory(category.id)"
+        >
+          @switch (getDeleteState('cat-' + category.id)) {
+            @case ('loading') { <span class="spinner"></span> }
+            @case ('success') { <span i18n="@@common.deleted">Deleted</span> }
+            @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+            @default { <span i18n="@@common.delete">Delete</span> }
+          }
+        </button>
+      </div>
+
+      @for (subforum of category.subforums; track subforum.id) {
+        <fieldset class="subforum-fieldset">
+          <legend i18n="@@subforum.subforumLegend">Subforum: {{ subforum.name }}</legend>
+
+          <div class="fields">
+            <label>
+              <span i18n="@@subforum.name">Name</span>
+              <input type="text" [(ngModel)]="subforum.name" [name]="'sub-name-' + subforum.id" />
+            </label>
+            <label>
+              <span i18n="@@subforum.position">Position</span>
+              <input type="number" [(ngModel)]="subforum.position" [name]="'sub-pos-' + subforum.id" />
+            </label>
+          </div>
+
+          <div class="description-field">
+            <label><span i18n="@@subforum.description">Description</span></label>
+            <app-bb-toolbar [textarea]="subDesc" [showSpoiler]="false" [showImageUpload]="false"></app-bb-toolbar>
+            <textarea #subDesc [name]="'sub-desc-' + subforum.id" [value]="subforum.description" rows="4"></textarea>
+          </div>
+
+          <div class="fieldset-actions">
+            <button
+              type="button"
+              [class]="'btn-save btn-save--' + getUpdateState('sub-' + subforum.id)"
+              [disabled]="getUpdateState('sub-' + subforum.id) === 'loading'"
+              (click)="updateSubforum(subforum, subDesc)"
+            >
+              @switch (getUpdateState('sub-' + subforum.id)) {
+                @case ('loading') { <span class="spinner"></span> }
+                @case ('success') { <span i18n="@@common.saved">Saved</span> }
+                @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+                @default { <span i18n="@@common.update">Update</span> }
+              }
+            </button>
+            <button
+              type="button"
+              [class]="'btn-delete btn-delete--' + getDeleteState('sub-' + subforum.id)"
+              [disabled]="getDeleteState('sub-' + subforum.id) === 'loading'"
+              (click)="deleteSubforum(subforum.id)"
+            >
+              @switch (getDeleteState('sub-' + subforum.id)) {
+                @case ('loading') { <span class="spinner"></span> }
+                @case ('success') { <span i18n="@@common.deleted">Deleted</span> }
+                @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+                @default { <span i18n="@@common.delete">Delete</span> }
+              }
+            </button>
+          </div>
+        </fieldset>
+      }
+
+      @for (draft of (newSubforums[category.id] || []); track draft._tempId) {
+        <fieldset class="subforum-fieldset subforum-fieldset--new">
+          <legend i18n="@@subforum.newSubforum">New Subforum</legend>
+
+          <div class="fields">
+            <label>
+              <span i18n="@@subforum.name">Name</span>
+              <input type="text" [(ngModel)]="draft.name" [name]="'new-sub-name-' + draft._tempId" />
+            </label>
+            <label>
+              <span i18n="@@subforum.position">Position</span>
+              <input type="number" [(ngModel)]="draft.position" [name]="'new-sub-pos-' + draft._tempId" />
+            </label>
+          </div>
+
+          <div class="description-field">
+            <label><span i18n="@@subforum.description">Description</span></label>
+            <app-bb-toolbar [textarea]="newSubDesc" [showSpoiler]="false" [showImageUpload]="false"></app-bb-toolbar>
+            <textarea #newSubDesc [name]="'new-sub-desc-' + draft._tempId" rows="4"></textarea>
+          </div>
+
+          <div class="fieldset-actions">
+            <button
+              type="button"
+              [class]="'btn-save btn-save--' + getCreateState(draft._tempId)"
+              [disabled]="getCreateState(draft._tempId) === 'loading'"
+              (click)="createSubforum(category.id, draft, newSubDesc)"
+            >
+              @switch (getCreateState(draft._tempId)) {
+                @case ('loading') { <span class="spinner"></span> }
+                @case ('success') { <span i18n="@@common.created">Created</span> }
+                @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+                @default { <span i18n="@@common.create">Create</span> }
+              }
+            </button>
+            <button type="button" class="btn-delete btn-delete--idle" (click)="removeNewSubforum(category.id, draft._tempId)">
+              <span i18n="@@common.delete">Delete</span>
+            </button>
+          </div>
+        </fieldset>
+      }
+
+      <div class="add-actions">
+        <button type="button" class="btn-add" (click)="addNewSubforum(category.id)" i18n="@@subforum.addSubforum">+ Add Subforum</button>
+      </div>
+    </fieldset>
+  }
+
+  @for (draft of newCategories; track draft._tempId) {
+    <fieldset class="category-fieldset category-fieldset--new">
+      <legend i18n="@@subforum.newCategory">New Category</legend>
+
+      <div class="fields">
+        <label>
+          <span i18n="@@subforum.name">Name</span>
+          <input type="text" [(ngModel)]="draft.name" [name]="'new-cat-name-' + draft._tempId" />
+        </label>
+        <label>
+          <span i18n="@@subforum.position">Position</span>
+          <input type="number" [(ngModel)]="draft.position" [name]="'new-cat-pos-' + draft._tempId" />
+        </label>
+      </div>
+
+      <div class="fieldset-actions">
+        <button
+          type="button"
+          [class]="'btn-save btn-save--' + getCreateState(draft._tempId)"
+          [disabled]="getCreateState(draft._tempId) === 'loading'"
+          (click)="createCategory(draft)"
+        >
+          @switch (getCreateState(draft._tempId)) {
+            @case ('loading') { <span class="spinner"></span> }
+            @case ('success') { <span i18n="@@common.created">Created</span> }
+            @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+            @default { <span i18n="@@common.create">Create</span> }
+          }
+        </button>
+        <button type="button" class="btn-delete btn-delete--idle" (click)="removeNewCategory(draft._tempId)">
+          <span i18n="@@common.delete">Delete</span>
+        </button>
+      </div>
+    </fieldset>
+  }
+
+  <div class="add-actions">
+    <button type="button" class="btn-add" (click)="addNewCategory()" i18n="@@subforum.addCategory">+ Add Category</button>
+  </div>
+</div>
