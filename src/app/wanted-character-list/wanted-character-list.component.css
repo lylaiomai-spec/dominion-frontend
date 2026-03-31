@@ -1,3 +1,7 @@
+.field-value--image {
+  max-width: 100%;
+}
+
 .dashboard-layout {
   display: flex;
   gap: 20px;
@@ -75,6 +79,49 @@
   background: #fff;
   width: 100%;
   box-sizing: border-box;
+  position: relative;
+  max-height: 350px;
+  overflow: hidden;
+}
+
+.wanted-card--expanded {
+  max-height: none;
+}
+
+.wanted-card--expanded .card-show-more {
+  display: none;
+}
+
+.card-show-more {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, #fff);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
+.card-show-more span {
+  font-size: 0.85em;
+  color: #555;
+  text-decoration: underline;
+}
+
+.card-hide {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.card-hide span {
+  font-size: 0.85em;
+  color: #555;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .card-name {

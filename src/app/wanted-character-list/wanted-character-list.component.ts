@@ -83,6 +83,20 @@ export class WantedCharacterListComponent implements OnInit {
     return this.selectedFactions().includes(id);
   }
 
+  expandedCards = signal<Set<number>>(new Set());
+
+  isExpanded(id: number): boolean {
+    return this.expandedCards().has(id);
+  }
+
+  expandCard(id: number) {
+    this.expandedCards.update(s => new Set(s).add(id));
+  }
+
+  collapseCard(id: number) {
+    this.expandedCards.update(s => { const n = new Set(s); n.delete(id); return n; });
+  }
+
   factionsString(wc: WantedCharacter): string {
     return (wc.factions ?? []).map(f => f.name).join(', ');
   }
