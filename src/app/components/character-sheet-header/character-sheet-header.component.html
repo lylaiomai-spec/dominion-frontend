@@ -53,7 +53,7 @@
   </div>
 </div>
 
-@if (isAdmin() && context === 'topic' && character.character_status === 2) {
+@if (isAdmin() && character.character_status === 2) {
   <div class="admin-actions">
     <button class="button" [disabled]="hasPendingFactions" (click)="acceptCharacter()">Accept</button>
     @if (hasPendingFactions) {
