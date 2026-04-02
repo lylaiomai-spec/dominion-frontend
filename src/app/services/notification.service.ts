@@ -92,7 +92,13 @@ export class NotificationService {
       return;
     }
 
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      this.explicitlyClosed = true;
       this.ws.close();
     }
 
@@ -102,6 +108,7 @@ export class NotificationService {
     }
     this.token = authToken;
     this.explicitlyClosed = false;
+    this.reconnectAttempts = 0;
     this._doConnect();
   }
 
