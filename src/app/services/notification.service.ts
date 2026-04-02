@@ -92,18 +92,8 @@ export class NotificationService {
       return;
     }
 
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-
-    if (this.ws) {
-      this.ws.onopen = null;
-      this.ws.onclose = null;
-      this.ws.onerror = null;
-      this.ws.onmessage = null;
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
       this.ws.close();
-      this.ws = null;
     }
 
     if (!authToken) {
@@ -112,7 +102,6 @@ export class NotificationService {
     }
     this.token = authToken;
     this.explicitlyClosed = false;
-    this.reconnectAttempts = 0;
     this._doConnect();
   }
 
@@ -143,32 +132,22 @@ export class NotificationService {
 
   private _doConnect(): void {
     if (!this.token) return;
-
-    if (this.connectionTimeout) {
-      clearTimeout(this.connectionTimeout);
-      this.connectionTimeout = null;
-    }
-
     const urlWithAuth = `${this.url}?token=${this.token}`;
-    const ws = new WebSocket(urlWithAuth);
-    this.ws = ws;
+    this.ws = new WebSocket(urlWithAuth);
 
     this.connectionTimeout = window.setTimeout(() => {
-      if (ws.readyState === WebSocket.CONNECTING) {
-        ws.close();
+      if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
+        this.ws.close();
       }
     }, 10000);
 
-    ws.onopen = () => {
-      if (ws !== this.ws) return;
+    this.ws.onopen = () => {
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
-      this.connectionTimeout = null;
       this.reconnectAttempts = 0;
       this.processMessageQueue();
     };
 
-    ws.onmessage = (event) => {
-      if (ws !== this.ws) return;
+    this.ws.onmessage = (event) => {
       try {
         this.handleNotification(JSON.parse(event.data));
       } catch (error) {
@@ -176,16 +155,12 @@ export class NotificationService {
       }
     };
 
-    ws.onerror = (event) => {
+    this.ws.onerror = (event) => {
       console.error('WebSocket error:', event);
     };
 
-    ws.onclose = () => {
-      if (ws !== this.ws) return;
-      if (this.connectionTimeout) {
-        clearTimeout(this.connectionTimeout);
-        this.connectionTimeout = null;
-      }
+    this.ws.onclose = () => {
+      if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
       this.ws = null;
       if (!this.explicitlyClosed) {
         this.handleConnectionFailure();
@@ -194,20 +169,16 @@ export class NotificationService {
   }
 
   private handleConnectionFailure() {
-    if (this.authService.isAccessTokenExpired()) {
-      this.authService.refreshToken().subscribe({
-        next: (response) => {
-          this.token = response.access_token;
-          this.scheduleReconnect();
-        },
-        error: (err) => {
-          console.error('NotificationService: Token refresh failed.', err);
-          this.scheduleReconnect();
-        }
-      });
-    } else {
-      this.scheduleReconnect();
-    }
+    this.authService.refreshToken().subscribe({
+      next: (response) => {
+        this.token = response.access_token;
+        this.scheduleReconnect();
+      },
+      error: (err) => {
+        console.error('NotificationService: Token refresh failed.', err);
+        this.scheduleReconnect();
+      }
+    });
   }
 
   private processMessageQueue() {
