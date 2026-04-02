@@ -97,9 +97,13 @@ export class NotificationService {
       this.reconnectTimer = null;
     }
 
-    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
-      this.explicitlyClosed = true;
+    if (this.ws) {
+      this.ws.onopen = null;
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.onmessage = null;
       this.ws.close();
+      this.ws = null;
     }
 
     if (!authToken) {
@@ -139,22 +143,32 @@ export class NotificationService {
 
   private _doConnect(): void {
     if (!this.token) return;
+
+    if (this.connectionTimeout) {
+      clearTimeout(this.connectionTimeout);
+      this.connectionTimeout = null;
+    }
+
     const urlWithAuth = `${this.url}?token=${this.token}`;
-    this.ws = new WebSocket(urlWithAuth);
+    const ws = new WebSocket(urlWithAuth);
+    this.ws = ws;
 
     this.connectionTimeout = window.setTimeout(() => {
-      if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
-        this.ws.close();
+      if (ws.readyState === WebSocket.CONNECTING) {
+        ws.close();
       }
     }, 10000);
 
-    this.ws.onopen = () => {
+    ws.onopen = () => {
+      if (ws !== this.ws) return;
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
+      this.connectionTimeout = null;
       this.reconnectAttempts = 0;
       this.processMessageQueue();
     };
 
-    this.ws.onmessage = (event) => {
+    ws.onmessage = (event) => {
+      if (ws !== this.ws) return;
       try {
         this.handleNotification(JSON.parse(event.data));
       } catch (error) {
@@ -162,12 +176,16 @@ export class NotificationService {
       }
     };
 
-    this.ws.onerror = (event) => {
+    ws.onerror = (event) => {
       console.error('WebSocket error:', event);
     };
 
-    this.ws.onclose = (event) => {
-      if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
+    ws.onclose = () => {
+      if (ws !== this.ws) return;
+      if (this.connectionTimeout) {
+        clearTimeout(this.connectionTimeout);
+        this.connectionTimeout = null;
+      }
       this.ws = null;
       if (!this.explicitlyClosed) {
         this.handleConnectionFailure();
