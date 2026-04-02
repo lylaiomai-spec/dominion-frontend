@@ -168,6 +168,7 @@ export const TRANSLATIONS_RU = {
   "userprofile.posts": "Постов",
   "userprofile.lastPost": "Последний пост",
   "userprofile.noCharacters": "У данного пользователя пока нет созданных персонажей.",
+  "userprofile.editProfile": "Редактировать профиль",
   "breadcrumbs.youAreHere": "Вы здесь",
   "topicreadby.title": "Тему просматривают",
   "topicreadby.guests": "Гостей",

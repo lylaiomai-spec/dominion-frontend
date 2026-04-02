@@ -16,6 +16,9 @@
         </div>
         <div class="profile-actions">
           <a [routerLink]="['/user-masks', profile.user_id]" i18n="@@userprofile.masks">User's Masks</a>
+          @if (isOwnProfile()) {
+            <a routerLink="/settings" i18n="@@nav.settings">Settings</a>
+          }
         </div>
         <div class="clearer"></div>
       </div>
@@ -41,6 +44,9 @@
                 <div class="intd">
                   <div class="tclcon">
                     <a [routerLink]="['/character', char.id]">{{ char.name }}</a>
+                    @if (isOwnProfile()) {
+                      <a [routerLink]="['/character-profile-update', char.id]" i18n="@@userprofile.editProfile">Edit profile</a>
+                    }
                   </div>
                 </div>
               </td>
