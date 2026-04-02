@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, effect, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CharacterService } from '../../services/character.service';
@@ -18,6 +18,7 @@ interface FieldTemplateForm extends FieldTemplate {
 export class CharacterProfileTemplateEditComponent implements OnInit {
   characterService = inject(CharacterService);
   fields: FieldTemplateForm[] = [];
+  saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   fieldTypes = ['string', 'text', 'int', 'decimal', 'date'];
   contentFieldTypes = ['short_text', 'number', 'decimal', 'long_text', 'image'];
@@ -64,8 +65,11 @@ export class CharacterProfileTemplateEditComponent implements OnInit {
   }
 
   saveTemplate() {
-    console.log('Saving template:', this.fields);
-    let data = this.fields.filter(field => field.machine_field_name !== '');
-    this.characterService.saveCharacterProfileTemplate(data);
+    const data = this.fields.filter(field => field.machine_field_name !== '');
+    this.saveState.set('loading');
+    this.characterService.saveCharacterProfileTemplate(data).subscribe({
+      next: () => { this.saveState.set('success'); setTimeout(() => this.saveState.set('idle'), 3000); },
+      error: () => { this.saveState.set('error'); setTimeout(() => this.saveState.set('idle'), 3000); }
+    });
   }
 }
