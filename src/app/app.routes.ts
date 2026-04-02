@@ -35,6 +35,8 @@ import { MaskListComponent } from './mask-list/mask-list.component';
 import { RecoveryCodesComponent } from './recovery-codes/recovery-codes.component';
 import { SettingsRestorationCodesComponent } from './settings-restoration-codes/settings-restoration-codes.component';
 import { RestorePasswordComponent } from './restore-password/restore-password.component';
+import { adminGuard } from './guards/admin.guard';
+import { CharacterFieldListComponent } from './character-field-list/character-field-list.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { NotFoundComponent } from './error-pages/not-found/not-found.component';
 import { ForbiddenComponent } from './error-pages/forbidden/forbidden.component';
@@ -148,6 +150,12 @@ export const routes: Routes = [
     data: { pageId: 'pun-character-list' }
   },
   {
+    path: 'character-field-list/:field',
+    component: CharacterFieldListComponent,
+    title: 'Character Field List',
+    data: { pageId: 'pun-character-field-list' }
+  },
+  {
     path: 'user-list',
     component: UserListComponent,
     title: 'User List',
@@ -186,6 +194,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminWrapperComponent,
+    canActivate: [adminGuard],
     data: { pageId: 'pun-admin' },
     children: [
       {

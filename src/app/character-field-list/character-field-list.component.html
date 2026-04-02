@@ -1,0 +1,14 @@
+<div id="pun-main" class="main">
+  <div class="main-header">
+    <h1>{{ humanFieldName() }}</h1>
+  </div>
+  <div class="main-content">
+    <div class="container">
+      <ul>
+        @for (item of items(); track $index) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>
