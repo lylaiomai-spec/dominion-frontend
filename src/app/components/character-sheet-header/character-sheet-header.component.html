@@ -63,4 +63,16 @@
     }
   </div>
 }
+
+@if (isAdmin() && character.character_status === 0) {
+  <div class="admin-actions">
+    <button class="button" (click)="deactivateCharacter()" i18n="@@character.deactivate">Deactivate the character</button>
+  </div>
+}
+
+@if (isAdmin() && character.character_status === 1) {
+  <div class="admin-actions">
+    <button class="button" (click)="activateCharacter()" i18n="@@character.activate">Activate character</button>
+  </div>
+}
 }

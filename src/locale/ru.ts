@@ -184,6 +184,8 @@ export const TRANSLATIONS_RU = {
   "postform.spoilerCancel": "Отмена",
   "faction.newFaction": "Новая фракция",
   "character.pendingFactions": "Персонаж не может быть одобрен, пока все его фракции не будут подтверждены в разделе администратора.",
+  "character.deactivate": "Деактивировать персонажа",
+  "character.activate": "Активировать персонажа",
   "faction.pendingTitle": "Ожидающие подтверждения",
   "faction.approve": "Принять",
   "faction.decline": "Отклонить",

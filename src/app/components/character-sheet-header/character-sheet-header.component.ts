@@ -79,12 +79,37 @@ export class CharacterSheetHeaderComponent implements OnInit, OnChanges {
     if (this.character) {
       this.characterService.acceptCharacter(this.character.id).subscribe({
         next: () => {
-          console.log('Character accepted successfully');
           if (this.character) {
             this.character.character_status = 1;
           }
         },
         error: (err) => console.error('Failed to accept character', err)
+      });
+    }
+  }
+
+  activateCharacter() {
+    if (this.character) {
+      this.characterService.activateCharacter(this.character.id).subscribe({
+        next: () => {
+          if (this.character) {
+            this.character.character_status = 0;
+          }
+        },
+        error: (err) => console.error('Failed to activate character', err)
+      });
+    }
+  }
+
+  deactivateCharacter() {
+    if (this.character) {
+      this.characterService.deactivateCharacter(this.character.id).subscribe({
+        next: () => {
+          if (this.character) {
+            this.character.character_status = 1;
+          }
+        },
+        error: (err) => console.error('Failed to deactivate character', err)
       });
     }
   }

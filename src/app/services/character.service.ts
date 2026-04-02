@@ -155,6 +155,14 @@ export class CharacterService {
     return this.apiService.post(`character/accept/${id}`, {});
   }
 
+  activateCharacter(id: number) {
+    return this.apiService.post(`character/activate/${id}`, {});
+  }
+
+  deactivateCharacter(id: number) {
+    return this.apiService.post(`character/deactivate/${id}`, {});
+  }
+
   private wantedCharacterTemplateSignal = signal<FieldTemplate[]>([]);
   readonly wantedCharacterTemplate = this.wantedCharacterTemplateSignal.asReadonly();
 
