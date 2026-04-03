@@ -25,6 +25,7 @@ export const TRANSLATIONS_RU = {
   "viewtopic.reply": "Ответить",
   "viewtopic.share": "Поделиться",
   "viewtopic.profile": "Профиль",
+  "viewtopic.character": "Персонаж",
   "viewtopic.quote": "Цитировать",
   "viewtopic.edit": "Редактировать",
   "postform.quickReply": "Быстрый ответ",

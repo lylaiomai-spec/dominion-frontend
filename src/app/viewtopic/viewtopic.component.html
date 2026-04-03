@@ -84,7 +84,7 @@
     </h3>
     <div class="container">
       <div class="post-main">
-        <app-character-profile [post]="post"></app-character-profile>
+        <app-character-profile [post]="post" (authorClicked)="onAuthorMention($event)"></app-character-profile>
 
         <div class="post-body">
           <div class="post-box">
@@ -105,7 +105,12 @@
       </div>
       <div class="post-footer">
         <div class="conl">
-          <p class="post-contacts"><span><a href="/profile/{{ post.user_profile?.user_id ?? post.character_profile?.user_id }}" i18n="@@viewtopic.profile">Profile</a></span></p>
+          <p class="post-contacts">
+            <span><a href="/profile/{{ post.author_user_id }}" i18n="@@viewtopic.profile">Profile</a></span>
+            @if (post.character_profile?.character_id) {
+              <span><a [routerLink]="['/character', post.character_profile!.character_id]" i18n="@@viewtopic.character">Character</a></span>
+            }
+          </p>
         </div>
         <div class="conr">
           <p class="post-links">

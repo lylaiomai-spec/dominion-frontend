@@ -13,4 +13,6 @@ export interface Post {
   date_created: string;
   date_created_localized: string;
   can_edit?: boolean;
+  author_user_id: number;
+  author_user_name: string;
 }
