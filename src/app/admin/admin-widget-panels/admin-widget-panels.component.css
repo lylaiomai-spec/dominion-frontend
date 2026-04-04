@@ -1,0 +1,20 @@
+.panels-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.panels-table th,
+.panels-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.panels-table thead th {
+  border-bottom: 2px solid #ccc;
+  font-weight: bold;
+}
+
+.panels-table tbody tr:hover {
+  background: #f9f9f9;
+}

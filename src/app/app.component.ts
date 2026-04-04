@@ -1,4 +1,4 @@
-import {Component, effect, inject, OnInit, computed} from '@angular/core';
+import {Component, effect, inject, OnInit, computed, signal} from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
 import {FooterComponent} from './components/footer/footer.component';
 import {NavlinksComponent} from './components/navlinks/navlinks.component';
@@ -9,6 +9,8 @@ import {AuthService} from './services/auth.service';
 import {UserService} from './services/user.service';
 import {NotificationsComponent} from './components/notifications/notifications.component';
 import {NotificationService} from './services/notification.service';
+import {ApiService} from './services/api.service';
+import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +27,10 @@ export class AppComponent implements OnInit {
   boardService = inject(BoardService);
   authService = inject(AuthService);
   private userService = inject(UserService);
+  private apiService = inject(ApiService);
+  private sanitizer = inject(DomSanitizer);
+
+  headerPanelHtml = signal<SafeHtml>('');
 
   title = computed(() => this.boardService.board().site_name || 'Cuento');
 
@@ -62,8 +68,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.boardService.loadBoard();
-
-
+    this.apiService.getText('panel/header/content').subscribe({
+      next: html => this.headerPanelHtml.set(this.sanitizer.bypassSecurityTrustHtml(html)),
+      error: () => {}
+    });
   }
 
   private setupRouteListener() {

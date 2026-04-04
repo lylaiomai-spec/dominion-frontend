@@ -38,6 +38,10 @@ import { SettingsRestorationCodesComponent } from './settings-restoration-codes/
 import { RestorePasswordComponent } from './restore-password/restore-password.component';
 import { adminGuard } from './guards/admin.guard';
 import { CharacterFieldListComponent } from './character-field-list/character-field-list.component';
+import { AdminWidgetPanelsComponent } from './admin/admin-widget-panels/admin-widget-panels.component';
+import { AdminWidgetPanelEditComponent } from './admin/admin-widget-panel-edit/admin-widget-panel-edit.component';
+import { AdminWidgetsComponent } from './admin/admin-widgets/admin-widgets.component';
+import { AdminWidgetEditComponent } from './admin/admin-widget-edit/admin-widget-edit.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { NotFoundComponent } from './error-pages/not-found/not-found.component';
 import { ForbiddenComponent } from './error-pages/forbidden/forbidden.component';
@@ -257,6 +261,31 @@ export const routes: Routes = [
         path: 'users',
         component: AdminUsersComponent,
         title: 'Admin - Users'
+      },
+      {
+        path: 'widget-panels',
+        component: AdminWidgetPanelsComponent,
+        title: 'Admin - Widget Panels'
+      },
+      {
+        path: 'widget-panels/:key',
+        component: AdminWidgetPanelEditComponent,
+        title: 'Admin - Edit Widget Panel'
+      },
+      {
+        path: 'widgets',
+        component: AdminWidgetsComponent,
+        title: 'Admin - Widgets'
+      },
+      {
+        path: 'widget/new',
+        component: AdminWidgetEditComponent,
+        title: 'Admin - Create Widget'
+      },
+      {
+        path: 'widget/:id',
+        component: AdminWidgetEditComponent,
+        title: 'Admin - Edit Widget'
       }
     ]
   },

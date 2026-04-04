@@ -1,0 +1,31 @@
+.widget-form {
+  max-width: 600px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+}
+
+.config-fields {
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  margin-top: 8px;
+}

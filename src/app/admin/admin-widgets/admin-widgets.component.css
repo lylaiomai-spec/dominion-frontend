@@ -1,0 +1,31 @@
+.widgets-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.widgets-header h2 {
+  margin: 0;
+}
+
+.widgets-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.widgets-table th,
+.widgets-table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.widgets-table thead th {
+  border-bottom: 2px solid #ccc;
+  font-weight: bold;
+}
+
+.widgets-table tbody tr:hover {
+  background: #f9f9f9;
+}

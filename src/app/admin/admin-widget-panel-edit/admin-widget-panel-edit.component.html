@@ -1,0 +1,33 @@
+@if (panel(); as panel) {
+  <fieldset class="panel-form">
+    <legend>{{ panel.key }}</legend>
+
+    <div class="field">
+      <app-bb-toolbar [textarea]="contentEl" [showSpoiler]="false" [showImageUpload]="false"></app-bb-toolbar>
+      <textarea #contentEl [value]="panel.content ?? ''" rows="10"></textarea>
+    </div>
+
+    <div class="field field--toggle">
+      <label>
+        <input type="checkbox" [(ngModel)]="panel.is_hidden" />
+        <span i18n="@@admin.widgetPanels.isHidden">Hidden</span>
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button
+        type="button"
+        [class]="'btn-save btn-save--' + saveState()"
+        [disabled]="saveState() === 'loading'"
+        (click)="save(contentEl)"
+      >
+        @switch (saveState()) {
+          @case ('loading') { <span class="spinner"></span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.update">Update</span> }
+        }
+      </button>
+    </div>
+  </fieldset>
+}

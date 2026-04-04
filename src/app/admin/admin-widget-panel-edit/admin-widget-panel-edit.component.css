@@ -1,0 +1,23 @@
+.panel-form {
+  max-width: 800px;
+}
+
+.panel-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.field {
+  margin-bottom: 12px;
+}
+
+.field--toggle label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.form-actions {
+  margin-top: 12px;
+}

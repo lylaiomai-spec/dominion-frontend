@@ -1,0 +1,24 @@
+<h2 i18n="@@admin.widgetPanels">Widget Panels</h2>
+
+<table class="panels-table">
+  <thead>
+    <tr>
+      <th i18n="@@admin.widgetPanels.colKey">Key</th>
+      <th i18n="@@admin.widgetPanels.colStatus">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (panel of panels(); track panel.key) {
+      <tr>
+        <td><a [routerLink]="['/admin/widget-panels', panel.key]">{{ panel.key }}</a></td>
+        <td>
+          @if (panel.is_hidden) {
+            <span i18n="@@admin.widgetPanels.hidden">Hidden</span>
+          } @else {
+            <span i18n="@@admin.widgetPanels.visible">Visible</span>
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -1,4 +1,3 @@
-<div id="html-top"></div>
 <div id="pun">
   <div [id]="pageId" class="punbb">
     <div id="pun-title" class="section">
@@ -11,6 +10,8 @@
     </div>
 
     <div id="pun-navlinks" class="section" app-navlinks></div>
+
+    <div id="header-widget-panel" [innerHTML]="headerPanelHtml()"></div>
 
     <div id="pun-status" class="section">
       <div class="container">

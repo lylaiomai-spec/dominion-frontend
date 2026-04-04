@@ -28,6 +28,13 @@ export class ApiService {
     });
   }
 
+  getText(endpoint: string): Observable<string> {
+    return this.http.get(`${this.apiUrl}/${endpoint}`, {
+      headers: this.getHeaders(),
+      responseType: 'text'
+    });
+  }
+
   post<T>(endpoint: string, body: any): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}/${endpoint}`, body, {
       headers: this.getHeaders()
