@@ -8,6 +8,7 @@ import { WantedCharacter } from '../models/WantedCharacter';
 import { Faction } from '../models/Faction';
 import { CustomFieldsData, CustomFieldValue } from '../models/Character';
 import { FieldTemplate } from '../models/FieldTemplate';
+import { FieldDisplayComponent } from '../components/field-display/field-display.component';
 
 interface ProcessedField {
   fieldName: string;
@@ -19,7 +20,7 @@ interface ProcessedField {
 @Component({
   selector: 'app-wanted-character-list',
   standalone: true,
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule, FormsModule, FieldDisplayComponent],
   templateUrl: './wanted-character-list.component.html',
   styleUrl: './wanted-character-list.component.css'
 })

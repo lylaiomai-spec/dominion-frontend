@@ -41,14 +41,7 @@
                   @for (field of getFields(wc); track field.fieldName) {
                     @if (field.fieldValue) {
                       <li>
-                        <span class="field-name">{{ field.fieldName }}:</span>
-                        @if (field.type === 'long_text') {
-                          <span class="field-value" [innerHTML]="field.fieldValue"></span>
-                        } @else if (field.type === 'image') {
-                          <img class="field-value field-value--image" [src]="field.fieldValue" [alt]="field.fieldName" loading="lazy" />
-                        } @else {
-                          <span class="field-value">{{ field.fieldValue }}</span>
-                        }
+                        <app-field-display [type]="field.type" [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-field-display>
                       </li>
                     }
                   }
