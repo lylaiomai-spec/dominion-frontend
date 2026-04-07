@@ -1,6 +1,13 @@
 @if (wantedCharacter != null) {
   <div class="wanted-character-header">
-    <h2>{{ wantedCharacter.name }}</h2>
+    <h2>
+      {{ wantedCharacter.name }}
+      @if (wantedCharacter.wanted_character_status === 0) {
+        <span class="status-badge status-active" i18n="@@common.statusActive">Active</span>
+      } @else if (wantedCharacter.wanted_character_status === 1) {
+        <span class="status-badge status-inactive" i18n="@@common.statusInactive">Inactive</span>
+      }
+    </h2>
 
     @if (wantedCharacter.factions && wantedCharacter.factions.length > 0) {
       <div class="wanted-character-factions">

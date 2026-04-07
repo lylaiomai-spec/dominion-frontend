@@ -50,4 +50,12 @@ export class WantedCharacterService {
   update(id: number, data: any): Observable<any> {
     return this.apiService.post(`wanted-character/update/${id}`, data);
   }
+
+  activate(id: number): Observable<{ wanted_character_status: number, topic_status: number }> {
+    return this.apiService.post<{ wanted_character_status: number, topic_status: number }>(`wanted-character/activate/${id}`, null);
+  }
+
+  deactivate(id: number): Observable<{ wanted_character_status: number, topic_status: number }> {
+    return this.apiService.post<{ wanted_character_status: number, topic_status: number }>(`wanted-character/deactivate/${id}`, null);
+  }
 }

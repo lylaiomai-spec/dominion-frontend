@@ -80,4 +80,12 @@ export class EpisodeService {
     return this.apiService.post(`episode/update/${id}`, data);
   }
 
+  activateEpisode(id: number) {
+    return this.apiService.post<{ episode_status: number, topic_status: number }>(`episode/activate/${id}`, null);
+  }
+
+  deactivateEpisode(id: number) {
+    return this.apiService.post<{ episode_status: number, topic_status: number }>(`episode/deactivate/${id}`, null);
+  }
+
 }

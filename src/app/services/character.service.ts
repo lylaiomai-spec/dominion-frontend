@@ -156,11 +156,11 @@ export class CharacterService {
   }
 
   activateCharacter(id: number) {
-    return this.apiService.post(`character/activate/${id}`, {});
+    return this.apiService.post<{ character_status: number, topic_status: number }>(`character/activate/${id}`, null);
   }
 
   deactivateCharacter(id: number) {
-    return this.apiService.post(`character/deactivate/${id}`, {});
+    return this.apiService.post<{ character_status: number, topic_status: number }>(`character/deactivate/${id}`, null);
   }
 
   private wantedCharacterTemplateSignal = signal<FieldTemplate[]>([]);

@@ -1,7 +1,14 @@
 @if(episode != null) {
 <div class="episode-header">
   <div class="episode-info">
-    <h2>{{ episode.name }}</h2>
+    <h2>
+      {{ episode.name }}
+      @if (episode.episode_status === 0) {
+        <span class="status-badge status-active" i18n="@@common.statusActive">Active</span>
+      } @else if (episode.episode_status === 1) {
+        <span class="status-badge status-inactive" i18n="@@common.statusInactive">Inactive</span>
+      }
+    </h2>
     @if (episode.open_to_everyone) {
       <div class="episode-open-badge" i18n="@@episode.openToEveryone">Open to everyone</div>
     }

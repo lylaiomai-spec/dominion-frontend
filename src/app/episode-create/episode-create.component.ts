@@ -3,6 +3,7 @@ import { FormArray, FormControl, ReactiveFormsModule, FormsModule } from '@angul
 import { CommonModule } from '@angular/common';
 import { EpisodeService } from '../services/episode.service';
 import { CharacterService } from '../services/character.service';
+import { TopicService } from '../services/topic.service';
 import { FieldInputComponent } from '../components/field-input/field-input.component';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,6 +22,7 @@ import { PreviewService } from '../services/preview.service';
 export class EpisodeCreateComponent implements OnInit {
   episodeService = inject(EpisodeService);
   characterService = inject(CharacterService);
+  topicService = inject(TopicService);
   maskService = inject(MaskService);
   previewService = inject(PreviewService);
   router = inject(Router);
@@ -31,6 +33,9 @@ export class EpisodeCreateComponent implements OnInit {
   @Input() initialData: Episode | null = null;
   @Output() formSubmit = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<void>();
+
+  statusActive = signal(false);
+  showConfirmModal = signal(false);
 
   // Character inputs
   characterControls = new FormArray([new FormControl('')]);
@@ -52,6 +57,39 @@ export class EpisodeCreateComponent implements OnInit {
   constructor() {
     this.setupAutocomplete(0);
     this.setupMaskAutocomplete(0);
+  }
+
+  activate() {
+    if (!this.initialData) return;
+    this.episodeService.activateEpisode(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.episode_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateEpisodeStatus(res.episode_status);
+      },
+      error: (err) => console.error('Failed to activate episode', err)
+    });
+  }
+
+  requestDeactivate() {
+    this.showConfirmModal.set(true);
+  }
+
+  confirmDeactivate() {
+    if (!this.initialData) return;
+    this.episodeService.deactivateEpisode(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.episode_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateEpisodeStatus(res.episode_status);
+        this.showConfirmModal.set(false);
+      },
+      error: (err) => console.error('Failed to deactivate episode', err)
+    });
+  }
+
+  cancelDeactivate() {
+    this.showConfirmModal.set(false);
   }
 
   ngOnInit() {
@@ -103,6 +141,7 @@ export class EpisodeCreateComponent implements OnInit {
       this.previewService.clear();
     }
 
+    this.statusActive.set((this.initialData?.episode_status ?? 1) === 0);
     this.episodeService.loadEpisodeTemplate();
     this.route.queryParams.subscribe(params => {
       if (params['fid']) {
@@ -136,8 +175,15 @@ export class EpisodeCreateComponent implements OnInit {
       this.characterControls.push(new FormControl(''));
       this.selectedCharacterIds.push(null);
       this.setupAutocomplete(0);
+    }
 
-      // Initialize masks logic (can be expanded if episodes return initial masks)
+    if (data.masks && data.masks.length > 0) {
+      data.masks.forEach((mask, index) => {
+        this.maskControls.push(new FormControl(mask.mask_name ?? ''));
+        this.selectedMaskIds.push(mask.id);
+        this.setupMaskAutocomplete(index);
+      });
+    } else {
       this.maskControls.push(new FormControl(''));
       this.selectedMaskIds.push(null);
       this.setupMaskAutocomplete(0);

@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CharacterService } from '../services/character.service';
+import { TopicService } from '../services/topic.service';
 import { FieldInputComponent } from '../components/field-input/field-input.component';
 import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
 import { CreateCharacterRequest, Character } from '../models/Character';
@@ -18,6 +19,7 @@ import { PreviewService } from '../services/preview.service';
 })
 export class CharacterCreateComponent implements OnInit {
   characterService = inject(CharacterService);
+  topicService = inject(TopicService);
   previewService = inject(PreviewService);
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -32,6 +34,10 @@ export class CharacterCreateComponent implements OnInit {
 
   characterName: string = '';
   characterAvatar: string = '';
+
+  statusActive = signal(false);
+  isPending = false;
+  showConfirmModal = signal(false);
 
   ngOnInit() {
     const previewState = this.previewService.state();
@@ -55,7 +61,42 @@ export class CharacterCreateComponent implements OnInit {
 
     if (this.initialData) {
       this.populateForm(this.initialData);
+      this.statusActive.set(this.initialData.character_status === 0);
+      this.isPending = this.initialData.character_status === 2;
     }
+  }
+
+  activate() {
+    if (this.isPending || !this.initialData) return;
+    this.characterService.activateCharacter(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.character_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateCharacterStatus(res.character_status);
+      },
+      error: (err) => console.error('Failed to activate character', err)
+    });
+  }
+
+  requestDeactivate() {
+    this.showConfirmModal.set(true);
+  }
+
+  confirmDeactivate() {
+    if (!this.initialData) return;
+    this.characterService.deactivateCharacter(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.character_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateCharacterStatus(res.character_status);
+        this.showConfirmModal.set(false);
+      },
+      error: (err) => console.error('Failed to deactivate character', err)
+    });
+  }
+
+  cancelDeactivate() {
+    this.showConfirmModal.set(false);
   }
 
   populateForm(data: Character) {

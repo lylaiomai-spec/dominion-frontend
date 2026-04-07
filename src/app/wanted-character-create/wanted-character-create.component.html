@@ -1,8 +1,19 @@
-<h1><span i18n="@@topiccreate.wantedCharacter">Wanted character</span></h1>
+@if (!cancel.observed) {
+  <h1><span i18n="@@topiccreate.wantedCharacter">Wanted character</span></h1>
+}
 <div id="post-form" class="formal">
   <form id="post" class="container" (submit)="onSubmit($event)">
     <fieldset>
-      <legend><span i18n="@@topiccreate.writeMessage">Write your message and click "Send"</span></legend>
+      <legend style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span i18n="@@topiccreate.writeMessage">Write your message and click "Send"</span>
+        @if (cancel.observed) {
+          @if (statusActive()) {
+            <button type="button" class="button btn-deactivate" (click)="requestDeactivate()" i18n="@@common.deactivate">Deactivate</button>
+          } @else {
+            <button type="button" class="button btn-activate" (click)="activate()" i18n="@@common.activate">Activate</button>
+          }
+        }
+      </legend>
       <div class="fs-box hashelp">
         <p class="inputfield required longinput">
           <label for="req_name"><ng-container i18n="@@topiccreate.characterName">Name</ng-container> <em><ng-container i18n="@@topiccreate.required">(Required)</ng-container></em></label><br />
@@ -34,3 +45,16 @@
     </p>
   </form>
 </div>
+
+@if (showConfirmModal()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h2 i18n="@@common.deactivateConfirmTitle">Deactivate wanted character?</h2>
+      <p i18n="@@common.deactivateWantedConfirmText">This will make the wanted character inactive. Are you sure?</p>
+      <div class="buttons">
+        <button type="button" class="button btn-deactivate" (click)="confirmDeactivate()" i18n="@@common.deactivate">Deactivate</button>
+        <button type="button" class="button" (click)="cancelDeactivate()" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

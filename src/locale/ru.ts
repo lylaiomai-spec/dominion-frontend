@@ -28,6 +28,7 @@ export const TRANSLATIONS_RU = {
   "viewtopic.character": "Персонаж",
   "viewtopic.quote": "Цитировать",
   "viewtopic.edit": "Редактировать",
+  "viewtopic.topicClosed": "Эта тема закрыта и больше не принимает новые сообщения.",
   "viewtopic.topicFull": "Эта тема заполнена и больше не принимает новые сообщения.",
   "postform.quickReply": "Быстрый ответ",
   "postform.writeMessage": "Напишите ваше сообщение и нажмите «Отправить»",
@@ -386,5 +387,14 @@ export const TRANSLATIONS_RU = {
   "admin.design.uploadCustomStyle": "Загрузить custom_style.css",
   "admin.design.uploadMainStyle": "Загрузить main_style.css",
   "admin.design.previousVersions": "Предыдущие версии",
-  "admin.design.view": "Открыть"
+  "admin.design.view": "Открыть",
+  "common.statusActive": "Активен",
+  "common.statusInactive": "Неактивен",
+  "common.statusPending": "На рассмотрении",
+  "common.activate": "Активировать",
+  "common.deactivate": "Деактивировать",
+  "common.deactivateConfirmTitle": "Деактивировать?",
+  "common.deactivateConfirmText": "Персонаж станет неактивным. Продолжить?",
+  "common.deactivateEpisodeConfirmText": "Эпизод станет неактивным. Продолжить?",
+  "common.deactivateWantedConfirmText": "Желаемый персонаж станет неактивным. Продолжить?"
 };

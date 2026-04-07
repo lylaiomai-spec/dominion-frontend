@@ -16,6 +16,9 @@
   margin-top: 0;
   font-size: 2em;
   color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .episode-characters h3,
@@ -65,4 +68,24 @@
 
 .ep-fld {
   margin-bottom: 10px;
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-active {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-inactive {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
 }

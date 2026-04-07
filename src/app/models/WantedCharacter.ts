@@ -12,4 +12,5 @@ export interface WantedCharacter {
   topic_id: number;
   custom_fields: CustomFieldsData;
   factions: Faction[] | null;
+  wanted_character_status?: number;
 }

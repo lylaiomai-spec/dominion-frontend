@@ -7,6 +7,7 @@ export interface Episode {
   masks: ShortMask[];
   custom_fields: CustomFieldsData;
   open_to_everyone: boolean;
+  episode_status?: number;
 }
 
 export interface EpisodeFilterRequest {

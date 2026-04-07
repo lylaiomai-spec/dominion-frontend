@@ -140,6 +140,31 @@ export class TopicService {
     this.topicSignal.set(enrichedTopic);
   }
 
+  updateTopicStatus(status: number) {
+    this.topicSignal.update(topic => ({ ...topic, status }));
+  }
+
+  updateEpisodeStatus(episodeStatus: number) {
+    this.topicSignal.update(topic => ({
+      ...topic,
+      episode: topic.episode ? { ...topic.episode, episode_status: episodeStatus } : null
+    }));
+  }
+
+  updateCharacterStatus(characterStatus: number) {
+    this.topicSignal.update(topic => ({
+      ...topic,
+      character: topic.character ? { ...topic.character, character_status: characterStatus } : null
+    }));
+  }
+
+  updateWantedCharacterStatus(wantedCharacterStatus: number) {
+    this.topicSignal.update(topic => ({
+      ...topic,
+      wanted_character: topic.wanted_character ? { ...topic.wanted_character, wanted_character_status: wantedCharacterStatus } : null
+    }));
+  }
+
   private handleNewPost(post: Post) {
     const enrichedPost = this.enrichPostWithPermissions(post);
 

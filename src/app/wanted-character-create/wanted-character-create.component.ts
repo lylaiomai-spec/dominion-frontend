@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, inject, OnInit, Input, Output, EventEmitter, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { WantedCharacterService } from '../services/wanted-character.service';
@@ -6,6 +6,7 @@ import { FieldInputComponent } from '../components/field-input/field-input.compo
 import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
 import { Faction } from '../models/Faction';
 import { WantedCharacter } from '../models/WantedCharacter';
+import { TopicService } from '../services/topic.service';
 
 @Component({
   selector: 'app-wanted-character-create',
@@ -16,6 +17,7 @@ import { WantedCharacter } from '../models/WantedCharacter';
 })
 export class WantedCharacterCreateComponent implements OnInit {
   private wantedCharacterService = inject(WantedCharacterService);
+  private topicService = inject(TopicService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -28,7 +30,44 @@ export class WantedCharacterCreateComponent implements OnInit {
   @Output() formSubmit = new EventEmitter<any>();
   @Output() cancel = new EventEmitter<void>();
 
+  statusActive = signal(false);
+  showConfirmModal = signal(false);
+
+  activate() {
+    if (!this.initialData) return;
+    this.wantedCharacterService.activate(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.wanted_character_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateWantedCharacterStatus(res.wanted_character_status);
+      },
+      error: (err) => console.error('Failed to activate wanted character', err)
+    });
+  }
+
+  requestDeactivate() {
+    this.showConfirmModal.set(true);
+  }
+
+  confirmDeactivate() {
+    if (!this.initialData) return;
+    this.wantedCharacterService.deactivate(this.initialData.id).subscribe({
+      next: (res) => {
+        this.statusActive.set(res.wanted_character_status === 0);
+        this.topicService.updateTopicStatus(res.topic_status);
+        this.topicService.updateWantedCharacterStatus(res.wanted_character_status);
+        this.showConfirmModal.set(false);
+      },
+      error: (err) => console.error('Failed to deactivate wanted character', err)
+    });
+  }
+
+  cancelDeactivate() {
+    this.showConfirmModal.set(false);
+  }
+
   ngOnInit() {
+    this.statusActive.set((this.initialData?.wanted_character_status ?? 1) === 0);
     this.wantedCharacterService.loadTemplate();
     this.route.queryParams.subscribe(params => {
       if (params['fid']) {
