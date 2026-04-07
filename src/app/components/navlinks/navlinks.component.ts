@@ -39,7 +39,13 @@ export class NavlinksComponent {
       this.authService.login({ username, password }).subscribe({
         next: () => {
           const url = link.config['url'];
-          this.router.navigateByUrl(url || '/');
+          if (url) {
+            this.router.navigateByUrl(url);
+          } else if (this.router.url === '/') {
+            window.location.reload();
+          } else {
+            this.router.navigateByUrl('/');
+          }
         },
         error: (err) => console.error('Navlink login failed', err)
       });
