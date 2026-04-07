@@ -16,6 +16,13 @@
       <li id="navregister"><a routerLink="/register"><span i18n="@@nav.register">Register</span></a></li>
       <li id="navlogin"><a routerLink="/login"><span i18n="@@nav.login">Login</span></a></li>
       }
+      @for (link of additionalNavlinks(); track link.id) {
+        @if (isLoginNavlinkActive(link)) {
+          <li><span class="navlink-inactive">{{ link.title }}</span></li>
+        } @else {
+          <li><a href="#" (click)="handleNavlink($event, link)">{{ link.title }}</a></li>
+        }
+      }
     </ul>
 </div>
 <div id="pun-ulinks" class="section">

@@ -28,6 +28,7 @@ import {AdminSubforumsComponent} from './admin/admin-subforums/admin-subforums.c
 import {TopicCommanderComponent} from './admin/topic-commander/topic-commander.component';
 import {AdminUsersComponent} from './admin/admin-users/admin-users.component';
 import {AdminCreateUserComponent} from './admin/admin-create-user/admin-create-user.component';
+import {AdminAdditionalNavlinksComponent} from './admin/admin-additional-navlinks/admin-additional-navlinks.component';
 import {PreviewComponent} from './preview/preview.component';
 import {CharacterProfileEditComponent} from './character-profile-edit/character-profile-edit.component';
 import { UserListComponent } from './user-list/user-list.component';
@@ -298,6 +299,11 @@ export const routes: Routes = [
         path: 'design',
         component: AdminDesignComponent,
         title: 'Admin - Design'
+      },
+      {
+        path: 'additional-navlinks',
+        component: AdminAdditionalNavlinksComponent,
+        title: 'Admin - Additional Navlinks'
       }
     ]
   },

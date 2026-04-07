@@ -1,0 +1,84 @@
+<div class="navlinks-container">
+  <h2 i18n="@@admin.additionalNavlinks">Additional Navlinks</h2>
+
+  @for (link of navlinks(); track link.id) {
+    <form (submit)="save(link); $event.preventDefault()">
+      <fieldset class="navlink-fieldset">
+        @if (isNew(link)) {
+          <legend i18n="@@adminNavlinks.newLink">New link</legend>
+        } @else {
+          <legend>{{ link.title || 'Link #' + link.id }}</legend>
+        }
+
+        <div class="field-row">
+          <label [for]="'title-' + link.id" i18n="@@adminNavlinks.title">Title</label>
+          <input [id]="'title-' + link.id" type="text" [(ngModel)]="link.title" [name]="'title-' + link.id" required />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'type-' + link.id" i18n="@@adminNavlinks.type">Type</label>
+          <select [id]="'type-' + link.id" [(ngModel)]="link.type" [name]="'type-' + link.id">
+            <option [ngValue]="NavlinkType.Link" i18n="@@adminNavlinks.typeLink">Link</option>
+            <option [ngValue]="NavlinkType.Login" i18n="@@adminNavlinks.typeLogin">Login</option>
+          </select>
+        </div>
+
+        @if (link.type == NavlinkType.Link) {
+          <div class="field-row">
+            <label [for]="'url-' + link.id" i18n="@@adminNavlinks.url">URL</label>
+            <input [id]="'url-' + link.id" type="text" [(ngModel)]="link.config['url']" [name]="'url-' + link.id" />
+          </div>
+        }
+        @if (link.type == NavlinkType.Login) {
+          <div class="field-row">
+            <label [for]="'login-username-' + link.id" i18n="@@common.username">Username</label>
+            <input [id]="'login-username-' + link.id" type="text" [(ngModel)]="link.config['username']" [name]="'login-username-' + link.id" required />
+          </div>
+          <div class="field-row">
+            <label [for]="'login-password-' + link.id" i18n="@@common.password">Password</label>
+            <input [id]="'login-password-' + link.id" type="text" [(ngModel)]="link.config['password']" [name]="'login-password-' + link.id" required />
+          </div>
+          <div class="field-row">
+            <label [for]="'login-url-' + link.id" i18n="@@adminNavlinks.url">URL</label>
+            <input [id]="'login-url-' + link.id" type="text" [(ngModel)]="link.config['url']" [name]="'login-url-' + link.id" />
+          </div>
+        }
+
+        <div class="field-row field-row--roles">
+          <span class="roles-label" i18n="@@adminNavlinks.roles">Roles</span>
+          <div class="roles-checkboxes">
+            @for (role of allRoles(); track role.id) {
+              <label class="role-option">
+                <input
+                  type="checkbox"
+                  [checked]="hasRole(link, role.id)"
+                  (change)="toggleRole(link, role.id, $any($event.target).checked)"
+                  [name]="'role-' + link.id + '-' + role.id"
+                />
+                {{ role.name }}
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="field-row field-row--checkbox">
+          <input [id]="'inactive-' + link.id" type="checkbox" [(ngModel)]="link.is_inactive" [name]="'inactive-' + link.id" />
+          <label [for]="'inactive-' + link.id" i18n="@@adminNavlinks.isInactive">Inactive</label>
+        </div>
+
+        <div class="form-actions">
+          @if (isNew(link)) {
+            <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
+          } @else {
+            <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+          }
+          <button type="button" class="btn-delete" (click)="delete(link)" i18n="@@common.delete">Delete</button>
+        </div>
+      </fieldset>
+    </form>
+  }
+
+  <div class="add-row">
+    <button type="button" class="btn-primary" (click)="addNavlink()" i18n="@@adminNavlinks.addNew">Add new link</button>
+  </div>
+</div>

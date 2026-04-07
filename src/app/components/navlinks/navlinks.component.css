@@ -1,3 +1,8 @@
 #pun-ulinks .container {
   display: flex;
 }
+
+.navlink-inactive {
+  opacity: 0.4;
+  cursor: default;
+}
