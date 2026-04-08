@@ -68,7 +68,7 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
 
     const before = text.substring(0, this.mentionAtPos);
     const after = text.substring(cursor);
-    const inserted = `@${user.username}\u200A`;
+    const inserted = `@${user.username}\u200A, `;
 
     textarea.value = before + inserted + after;
     textarea.focus();
