@@ -71,9 +71,9 @@ export class PostFormComponent implements AfterViewInit, OnDestroy {
     const inserted = `@${user.username}\u200A, `;
 
     textarea.value = before + inserted + after;
-    textarea.focus();
     const newPos = this.mentionAtPos + inserted.length;
-    textarea.setSelectionRange(newPos, newPos);
+    textarea.focus();
+    setTimeout(() => textarea.setSelectionRange(newPos, newPos));
 
     this.mentionResults = [];
     this.mentionAtPos = -1;

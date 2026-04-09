@@ -273,8 +273,9 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     const mention = `@${username}\u200A, `;
     const start = textarea.selectionStart ?? textarea.value.length;
     textarea.value = textarea.value.slice(0, start) + mention + textarea.value.slice(start);
-    textarea.selectionStart = textarea.selectionEnd = start + mention.length;
+    const newPos = start + mention.length;
     textarea.focus();
+    setTimeout(() => { textarea.selectionStart = textarea.selectionEnd = newPos; });
     document.getElementById('post-form')?.scrollIntoView({ behavior: 'smooth' });
   }
 
