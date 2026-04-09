@@ -34,6 +34,10 @@ export class ToastComponent implements OnInit {
   }
 
   remove(toastId: number) {
+    const notification = this.notifications.find(n => n.id === toastId);
+    if (notification) {
+      this.notificationService.dismissNotification(notification);
+    }
     this.notifications = this.notifications.filter(n => n.id !== toastId);
   }
 }
