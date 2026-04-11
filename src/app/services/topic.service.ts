@@ -187,7 +187,7 @@ export class TopicService {
 
     // Check if the current user is the author and redirect if so
     const currentUser = this.authService.currentUser();
-    if (currentUser && enrichedPost.user_profile && currentUser.id === enrichedPost.user_profile.user_id) {
+    if (currentUser && post.user_profile && currentUser.id === post.user_profile.user_id) {
       const totalPosts = this.topic().post_number;
       const postsPerPage = this.boardService.board().posts_per_page || 15;
       const lastPage = Math.ceil(totalPosts / postsPerPage);
