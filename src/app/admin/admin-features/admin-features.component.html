@@ -1,5 +1,6 @@
-<div>
+<div class="features-container">
   <h2 i18n="@@adminFeatures.title">Features</h2>
+  <a routerLink="/admin/currency" i18n="@@adminFeatures.currencyLink">Currency settings</a>
 
   <table cellspacing="0">
     <thead>
@@ -10,7 +11,7 @@
       </tr>
     </thead>
     <tbody>
-      @for (feature of features(); track feature.id) {
+      @for (feature of features(); track feature.key) {
         <tr>
           <td>{{ feature.name }}</td>
           <td>{{ feature.description }}</td>

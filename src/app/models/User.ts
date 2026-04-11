@@ -11,6 +11,7 @@ export interface User {
   disable_sound?: boolean;
   interface_design?: string | null;
   roles: Role[];
+  currency_amount?: number;
 }
 export interface Role {
   id: number;
@@ -23,6 +24,7 @@ export interface UserProfile {
   avatar: string;
   total_posts: number;
   total_general_posts: number;
+  currency_amount?: number;
 }
 
 export interface UserProfileResponse {

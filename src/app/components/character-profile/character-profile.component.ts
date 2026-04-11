@@ -7,6 +7,7 @@ import { CharacterProfile, CustomFieldsData, CustomFieldValue } from '../../mode
 import { FormsModule } from '@angular/forms';
 import { CharacterService } from '../../services/character.service';
 import { AuthService } from '../../services/auth.service';
+import { FeatureService } from '../../services/feature.service';
 import { NumberFieldDisplayComponent } from '../number-field-display/number-field-display.component';
 import { ImageFieldDisplayComponent } from '../image-field-display/image-field-display.component';
 import { CroppedImageFieldDisplayComponent } from '../cropped-image-field-display/cropped-image-field-display.component';
@@ -20,6 +21,7 @@ import { CroppedImageFieldDisplayComponent } from '../cropped-image-field-displa
 export class CharacterProfileComponent implements OnInit {
   private characterService = inject(CharacterService);
   public authService = inject(AuthService);
+  protected featureService = inject(FeatureService);
 
   @Input() post?: Post;
   @Input() accountName: string = '';

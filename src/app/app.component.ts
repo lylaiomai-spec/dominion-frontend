@@ -7,6 +7,7 @@ import {ToastComponent} from './components/toast/toast.component';
 import {ScrollNavComponent} from './components/scroll-nav/scroll-nav.component';
 import {BoardService} from './services/board.service';
 import {AuthService} from './services/auth.service';
+import {FeatureService} from './services/feature.service';
 import {UserService} from './services/user.service';
 import {NotificationsComponent} from './components/notifications/notifications.component';
 import {NotificationService} from './services/notification.service';
@@ -43,6 +44,7 @@ export class AppComponent implements OnInit {
   currentUser = this.authService.currentUser;
   currentDate = new Date();
   private notificationService = inject(NotificationService);
+  private featureService = inject(FeatureService);
   private injector = inject(Injector);
 
   constructor() {
@@ -74,6 +76,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.boardService.loadBoard();
+    this.featureService.loadFeatures();
     this.loadHeaderPanel();
 
     this.notificationService.panelReload$.subscribe(event => {
