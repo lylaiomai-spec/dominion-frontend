@@ -1,6 +1,6 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {RouterLink} from '@angular/router';
-import {Episode, EpisodeFilterRequest} from '../models/Episode';
+import {ActivatedRoute, Router, RouterLink} from '@angular/router';
+import {EpisodeFilterRequest} from '../models/Episode';
 import {CharacterShort} from '../models/Character';
 import {FormsModule} from '@angular/forms';
 import {TopicStatus} from '../models/Topic';
@@ -8,7 +8,7 @@ import {EpisodeService} from '../services/episode.service';
 import {CharacterService} from '../services/character.service';
 import {FactionService} from '../services/faction.service';
 import {CommonModule} from '@angular/common';
-import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged, forkJoin, Subject} from 'rxjs';
 import {Faction} from '../models/Faction';
 
 
@@ -26,6 +26,8 @@ export class EpisodeListComponent implements OnInit {
   protected episodeService = inject(EpisodeService);
   protected characterService = inject(CharacterService);
   protected factionService = inject(FactionService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   protected currentPage: number = 1;
   protected totalPages: number = 1;
@@ -39,7 +41,6 @@ export class EpisodeListComponent implements OnInit {
   protected characterSuggestions = this.characterService.shortCharacterList;
   protected factions = this.factionService.factions;
 
-  // Subject to handle search input debouncing
   private characterSearchTerms = new Subject<string>();
 
   constructor() {
@@ -55,11 +56,44 @@ export class EpisodeListComponent implements OnInit {
       this.characterService.loadShortCharacterList(term);
     });
 
+    const params = this.route.snapshot.queryParamMap;
+
+    const subforums = params.get('subforums');
+    if (subforums) {
+      this.selectedSubforums = subforums.split(',').map(Number).filter(n => !isNaN(n));
+    }
+
+    const factions = params.get('factions');
+    if (factions) {
+      this.selectedFactions = factions.split(',').map(Number).filter(n => !isNaN(n));
+    }
+
+    const page = params.get('page');
+    if (page) {
+      this.currentPage = parseInt(page, 10) || 1;
+    }
+
+    const characterIds = params.get('characters');
+    if (characterIds) {
+      const ids = characterIds.split(',').map(Number).filter(n => !isNaN(n));
+      if (ids.length > 0) {
+        forkJoin(ids.map(id => this.characterService.loadCharacter(id))).subscribe(characters => {
+          this.selectedCharacters = characters.map(c => ({ id: c.id, name: c.name, avatar: c.avatar ?? '' }));
+          this.applyFilters();
+        });
+        return;
+      }
+    }
+
     this.applyFilters();
   }
 
-  protected isSelected(id: number): boolean {
+  protected isSubforumSelected(id: number): boolean {
     return this.selectedSubforums.includes(id);
+  }
+
+  protected isFactionSelected(id: number): boolean {
+    return this.selectedFactions.includes(id);
   }
 
   protected toggleForum(id: number): void {
@@ -76,13 +110,10 @@ export class EpisodeListComponent implements OnInit {
   }
 
   protected selectCharacter(character: CharacterShort) {
-    // Check if character is not already selected
     if (!this.selectedCharacters.find(c => c.id === character.id)) {
       this.selectedCharacters.push(character);
     }
-    // Clear search
     this.characterSearchQuery = '';
-    // Clear suggestions in service
     this.characterService.loadShortCharacterList('');
   }
 
@@ -110,7 +141,31 @@ export class EpisodeListComponent implements OnInit {
       page: this.currentPage
     };
 
+    this.updateUrlParams();
     this.episodeService.loadEpisodeListPage(this.currentPage, request);
+  }
+
+  private updateUrlParams(): void {
+    const queryParams: Record<string, string | number> = {};
+
+    if (this.selectedSubforums.length > 0) {
+      queryParams['subforums'] = this.selectedSubforums.join(',');
+    }
+    if (this.selectedCharacters.length > 0) {
+      queryParams['characters'] = this.selectedCharacters.map(c => c.id).join(',');
+    }
+    if (this.selectedFactions.length > 0) {
+      queryParams['factions'] = this.selectedFactions.join(',');
+    }
+    if (this.currentPage > 1) {
+      queryParams['page'] = this.currentPage;
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true
+    });
   }
 
   protected readonly TopicStatus = TopicStatus;
