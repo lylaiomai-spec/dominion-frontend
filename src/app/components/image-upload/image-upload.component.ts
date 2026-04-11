@@ -1,4 +1,5 @@
 import { Component, EventEmitter, inject, Output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ImageService } from '../../services/image.service';
 
 interface ImageEntry {
@@ -13,7 +14,7 @@ interface ImageEntry {
 @Component({
   selector: 'app-image-upload',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './image-upload.component.html',
 })
 export class ImageUploadComponent {
@@ -21,6 +22,9 @@ export class ImageUploadComponent {
   @Output() insert = new EventEmitter<string>();
 
   private imageService = inject(ImageService);
+
+  mode: 'upload' | 'link' = 'upload';
+  directLink = '';
 
   private nextId = 0;
   entries = signal<ImageEntry[]>([this.newEntry()]);
@@ -63,6 +67,12 @@ export class ImageUploadComponent {
 
   insertUrl(url: string) {
     this.insert.emit(url);
+  }
+
+  insertDirectLink() {
+    if (this.directLink.trim()) {
+      this.insert.emit(this.directLink.trim());
+    }
   }
 
   retry(entry: ImageEntry) {
