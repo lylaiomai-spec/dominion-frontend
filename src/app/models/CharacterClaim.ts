@@ -1,3 +1,24 @@
+export interface ClaimRecord {
+  id: number;
+  claim_id: number;
+  user_id: number | null;
+  guest_hash: string | null;
+  is_guest: boolean;
+  claim_date: string;
+  claim_expiration_date: string;
+  character_id: number | null;
+  claim_created_with_character_sheet: boolean | null;
+}
+
+export interface ClaimAutocompleteItem {
+  id: number;
+  name: string;
+  is_claimed: boolean | null;
+  claim_expiration_date: string | null;
+  user_id: number | null;
+  guest_hash: string | null;
+}
+
 export interface CharacterClaim {
   id: number;
   name: string;

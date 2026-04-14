@@ -43,8 +43,81 @@
       }
     </fieldset>
 
+    <fieldset class="claim-block">
+      <div class="fs-box">
+        @if (isEditMode() && claimBlockLocked()) {
+          <p class="inputfield">
+            @if (hasExistingClaim()) {
+              <span i18n="@@charactercreate.claimLockedHas">
+                Active claim until {{ initialData?.claim_record?.claim_expiration_date | date:'mediumDate' }}.
+              </span>
+            } @else {
+              <span i18n="@@charactercreate.claimLockedNone">No claim set.</span>
+            }
+            &nbsp;
+            <button type="button" class="button" (click)="requestUnlockClaimBlock()" i18n="@@charactercreate.claimEdit">Edit</button>
+          </p>
+        } @else {
+          <p class="inputfield">
+            <label i18n="@@charactercreate.claimQuestion">Is this a claim on an existing character?</label><br />
+            <label>
+              <input type="radio" name="claim_type" value="no"
+                [checked]="claimType() === 'no'"
+                (change)="onClaimTypeChange('no')" />
+              <ng-container i18n="@@charactercreate.claimNo">No</ng-container>
+            </label>
+            &nbsp;
+            <label>
+              <input type="radio" name="claim_type" value="wanted"
+                [checked]="claimType() === 'wanted'"
+                (change)="onClaimTypeChange('wanted')" />
+              <ng-container i18n="@@charactercreate.claimWanted">Yes, for a wanted character</ng-container>
+            </label>
+            &nbsp;
+            <label>
+              <input type="radio" name="claim_type" value="direct"
+                [checked]="claimType() === 'direct'"
+                (change)="onClaimTypeChange('direct')" />
+              <ng-container i18n="@@charactercreate.claimDirect">Yes (no wanted character)</ng-container>
+            </label>
+          </p>
+
+          @if (claimType() === 'wanted' || claimType() === 'direct') {
+            <div class="inputfield longinput">
+              <label for="claim_query">
+                @if (claimType() === 'wanted') {
+                  <ng-container i18n="@@charactercreate.claimWantedLabel">Wanted character</ng-container>
+                } @else {
+                  <ng-container i18n="@@charactercreate.claimNameLabel">Claim</ng-container>
+                }
+              </label><br />
+              <div class="input-wrapper" style="position: relative;">
+                <input id="claim_query" type="text" name="claim_query" size="80" autocomplete="off"
+                  [ngModel]="claimQuery()"
+                  (ngModelChange)="onClaimQueryChange($event)" />
+                @if (claimSuggestions().length > 0) {
+                  <div class="suggestions-dropdown">
+                    @for (item of claimSuggestions(); track item.id) {
+                      <div class="suggestion-item" (click)="selectClaimItem(item)">
+                        <span>{{ item.name }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
+              @if (isOwnClaim()) {
+                <p class="claim-own-note" i18n="@@charactercreate.claimOwnNote">
+                  You have claimed this character until {{ selectedClaimItem()?.claim_expiration_date | date:'mediumDate' }}
+                </p>
+              }
+            </div>
+          }
+        }
+      </div>
+    </fieldset>
+
     <p class="formsubmit">
-      <input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" />
+      <input type="submit" class="button submit" name="submit" value="Send" i18n-value="@@topiccreate.send" accesskey="s" [disabled]="isClaimBlocked()" />
       @if (cancel.observed) {
         <button type="button" class="button" (click)="onCancel()" i18n="@@topiccreate.cancel">Cancel</button>
       } @else {
@@ -54,6 +127,38 @@
   </form>
 </div>
 <div id="ajaxpostpreview"></div>
+
+@if (showClaimUnlockModal()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      @if (hasExistingClaim()) {
+        <h2 i18n="@@charactercreate.claimChangeTitle">Change claim?</h2>
+        <p i18n="@@charactercreate.claimChangeText">Changing this will remove your current claim. Are you sure?</p>
+      } @else {
+        <h2 i18n="@@charactercreate.claimAddTitle">Claim a character?</h2>
+        <p i18n="@@charactercreate.claimAddText">Are you sure you want to claim a character?</p>
+      }
+      <div class="buttons">
+        <button type="button" class="button submit" (click)="confirmUnlockClaimBlock()" i18n="@@common.confirm">Confirm</button>
+        <button type="button" class="button" (click)="cancelUnlockClaimBlock()" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showClaimBlockedModal()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h2 i18n="@@charactercreate.claimBlockedTitle">Character already claimed</h2>
+      <p i18n="@@charactercreate.claimBlockedText">
+        This character is claimed by another user until {{ selectedClaimItem()?.claim_expiration_date | date:'mediumDate' }}.
+      </p>
+      <div class="buttons">
+        <button type="button" class="button" (click)="dismissClaimBlockedModal()" i18n="@@common.ok">OK</button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (showConfirmModal()) {
   <div class="modal-overlay">

@@ -34,6 +34,11 @@
             <div class="wanted-card" [class.wanted-card--expanded]="isExpanded(wc.id)">
               <div class="card-name">
                 <a [routerLink]="['/viewtopic', wc.topic_id]">{{ wc.name }}</a>
+                @if (wc.claim_record) {
+                  <span class="claim-badge" i18n="@@wantedCharacterList.claimedUntil">
+                    Claimed until {{ wc.claim_record.claim_expiration_date | date:'mediumDate' }}
+                  </span>
+                }
               </div>
               @if (wc.factions && wc.factions.length > 0) {
                 <div class="card-factions">{{ factionsString(wc) }}</div>
@@ -56,6 +61,11 @@
               } @else {
                 <div class="card-hide">
                   <span (click)="collapseCard(wc.id)">Hide</span>
+                </div>
+              }
+              @if (isAuthenticated() && !wc.claim_record) {
+                <div class="card-actions">
+                  <button class="button" (click)="claimWantedCharacter(wc)" i18n="@@wantedCharacterList.claim">Claim</button>
                 </div>
               }
             </div>

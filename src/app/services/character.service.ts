@@ -3,6 +3,7 @@ import { ApiService } from './api.service';
 import { FieldTemplate } from "../models/FieldTemplate";
 import { Faction } from "../models/Faction";
 import { CharacterShort, CharacterProfile, CreateCharacterRequest, Character, CharacterListItem } from "../models/Character";
+import { ClaimAutocompleteItem } from "../models/CharacterClaim";
 
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
@@ -175,5 +176,28 @@ export class CharacterService {
 
   saveWantedCharacterTemplate(template: FieldTemplate[]) {
     return this.apiService.post('template/wanted_character/update', template);
+  }
+
+  private claimAutocompleteSignal = signal<ClaimAutocompleteItem[]>([]);
+  readonly claimAutocomplete = this.claimAutocompleteSignal.asReadonly();
+
+  loadWantedCharacterAutocomplete(term: string): void {
+    if (!term) { this.claimAutocompleteSignal.set([]); return; }
+    this.apiService.get<ClaimAutocompleteItem[]>(`wanted-character-autocomplete/${term}`).subscribe({
+      next: (data) => this.claimAutocompleteSignal.set(data),
+      error: (err) => { console.error('Failed to load wanted character autocomplete', err); this.claimAutocompleteSignal.set([]); }
+    });
+  }
+
+  loadClaimAutocomplete(term: string): void {
+    if (!term) { this.claimAutocompleteSignal.set([]); return; }
+    this.apiService.get<ClaimAutocompleteItem[]>(`claim-autocomplete/${term}`).subscribe({
+      next: (data) => this.claimAutocompleteSignal.set(data),
+      error: (err) => { console.error('Failed to load claim autocomplete', err); this.claimAutocompleteSignal.set([]); }
+    });
+  }
+
+  clearClaimAutocomplete(): void {
+    this.claimAutocompleteSignal.set([]);
   }
 }

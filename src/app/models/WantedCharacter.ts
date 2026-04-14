@@ -1,4 +1,5 @@
 import { CustomFieldsData } from './Character';
+import { ClaimRecord } from './CharacterClaim';
 import { Faction } from './Faction';
 
 export interface GetWantedCharacterListRequest {
@@ -23,4 +24,5 @@ export interface WantedCharacter {
   custom_fields: CustomFieldsData;
   factions: Faction[] | null;
   wanted_character_status?: number;
+  claim_record: ClaimRecord | null;
 }

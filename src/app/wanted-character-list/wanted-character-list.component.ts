@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WantedCharacterService } from '../services/wanted-character.service';
 import { FactionService } from '../services/faction.service';
+import { AuthService } from '../services/auth.service';
 import { WantedCharacter } from '../models/WantedCharacter';
 import { Faction } from '../models/Faction';
 import { CustomFieldsData, CustomFieldValue } from '../models/Character';
@@ -26,6 +27,9 @@ interface ProcessedField {
 export class WantedCharacterListComponent implements OnInit {
   private wantedCharacterService = inject(WantedCharacterService);
   private factionService = inject(FactionService);
+  private authService = inject(AuthService);
+
+  isAuthenticated = this.authService.isAuthenticated;
 
   cardView = signal(true);
   selectedFactions: number[] = [];
@@ -116,6 +120,13 @@ export class WantedCharacterListComponent implements OnInit {
 
   factionsString(wc: WantedCharacter): string {
     return (wc.factions ?? []).map(f => f.name).join(', ');
+  }
+
+  claimWantedCharacter(wc: WantedCharacter) {
+    this.wantedCharacterService.createClaimRecord(wc.id).subscribe({
+      next: () => this.loadPage(),
+      error: (err) => console.error('Failed to claim wanted character', err)
+    });
   }
 
   getFields(wc: WantedCharacter): ProcessedField[] {

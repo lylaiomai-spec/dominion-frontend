@@ -1,24 +1,30 @@
-import { Component, inject, OnInit, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CharacterService } from '../services/character.service';
 import { TopicService } from '../services/topic.service';
+import { AuthService } from '../services/auth.service';
 import { FieldInputComponent } from '../components/field-input/field-input.component';
 import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
 import { CreateCharacterRequest, Character } from '../models/Character';
+import { ClaimAutocompleteItem, ClaimRecord } from '../models/CharacterClaim';
 import { Topic, TopicType, TopicStatus } from '../models/Topic';
 import { Faction } from '../models/Faction';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { PreviewService } from '../services/preview.service';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-character-create',
-  imports: [FieldInputComponent, FactionPathsComponent, CommonModule],
+  imports: [FieldInputComponent, FactionPathsComponent, CommonModule, FormsModule],
   templateUrl: './character-create.component.html',
   standalone: true,
 })
-export class CharacterCreateComponent implements OnInit {
+export class CharacterCreateComponent implements OnInit, OnDestroy {
   characterService = inject(CharacterService);
   topicService = inject(TopicService);
+  authService = inject(AuthService);
   previewService = inject(PreviewService);
   router = inject(Router);
   route = inject(ActivatedRoute);
@@ -38,7 +44,90 @@ export class CharacterCreateComponent implements OnInit {
   isPending = false;
   showConfirmModal = signal(false);
 
+  claimType = signal<'no' | 'wanted' | 'direct'>('no');
+  claimQuery = signal('');
+  claimSuggestions = this.characterService.claimAutocomplete;
+  selectedClaimItem = signal<ClaimAutocompleteItem | null>(null);
+  showClaimBlockedModal = signal(false);
+  claimBlockLocked = signal(false);
+  showClaimUnlockModal = signal(false);
+
+  /** True when editing an existing (non-pending) character */
+  isEditMode = signal(false);
+  /** True when the initial data already has a claim attached */
+  hasExistingClaim = signal(false);
+
+  isOwnClaim = computed(() => {
+    const item = this.selectedClaimItem();
+    const userId = this.authService.currentUser()?.id;
+    return !!(item?.is_claimed && item.user_id !== null && item.user_id === userId);
+  });
+
+  isClaimBlocked = computed(() => {
+    const item = this.selectedClaimItem();
+    const userId = this.authService.currentUser()?.id;
+    return !!(item?.is_claimed && item.user_id !== null && item.user_id !== userId);
+  });
+
+  private claimSearchTerms = new Subject<string>();
+  private claimSubscription?: Subscription;
+
+  requestUnlockClaimBlock() {
+    this.showClaimUnlockModal.set(true);
+  }
+
+  confirmUnlockClaimBlock() {
+    this.claimBlockLocked.set(false);
+    this.showClaimUnlockModal.set(false);
+  }
+
+  cancelUnlockClaimBlock() {
+    this.showClaimUnlockModal.set(false);
+  }
+
+  onClaimTypeChange(type: 'no' | 'wanted' | 'direct') {
+    this.claimType.set(type);
+    this.claimQuery.set('');
+    this.selectedClaimItem.set(null);
+    this.characterService.clearClaimAutocomplete();
+  }
+
+  onClaimQueryChange(value: string) {
+    this.claimQuery.set(value);
+    this.selectedClaimItem.set(null);
+    this.claimSearchTerms.next(value);
+  }
+
+  selectClaimItem(item: ClaimAutocompleteItem) {
+    this.selectedClaimItem.set(item);
+    this.claimQuery.set(item.name);
+    this.characterService.clearClaimAutocomplete();
+    const userId = this.authService.currentUser()?.id;
+    if (item.is_claimed && item.user_id !== null && item.user_id !== userId) {
+      this.showClaimBlockedModal.set(true);
+    }
+  }
+
+  dismissClaimBlockedModal() {
+    this.showClaimBlockedModal.set(false);
+  }
+
+  ngOnDestroy() {
+    this.claimSubscription?.unsubscribe();
+  }
+
   ngOnInit() {
+    this.claimSubscription = this.claimSearchTerms.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    ).subscribe(term => {
+      if (this.claimType() === 'wanted') {
+        this.characterService.loadWantedCharacterAutocomplete(term);
+      } else if (this.claimType() === 'direct') {
+        this.characterService.loadClaimAutocomplete(term);
+      }
+    });
+
     const previewState = this.previewService.state();
     if (previewState?.formType === 'character') {
       const p = previewState.formPayload;
@@ -62,6 +151,9 @@ export class CharacterCreateComponent implements OnInit {
       this.populateForm(this.initialData);
       this.statusActive.set(this.initialData.character_status === 0);
       this.isPending = this.initialData.character_status === 2;
+      this.isEditMode.set(true);
+      this.hasExistingClaim.set(!!this.initialData.claim_record);
+      this.claimBlockLocked.set(true);
     }
   }
 
@@ -117,6 +209,10 @@ export class CharacterCreateComponent implements OnInit {
 
   onSubmit(event: Event) {
     event.preventDefault();
+    if (this.isClaimBlocked()) {
+      this.showClaimBlockedModal.set(true);
+      return;
+    }
     const form = event.target as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -159,6 +255,14 @@ export class CharacterCreateComponent implements OnInit {
       custom_fields: customFields,
       factions: factions
     };
+
+    const claimItem = this.selectedClaimItem();
+    if (claimItem && this.claimType() !== 'no') {
+      request.claim_id = claimItem.id;
+      request.claim_type = this.claimType() === 'wanted' ? 'wanted_character' : 'claim';
+    } else if (this.isEditMode() && this.hasExistingClaim() && this.claimType() === 'no') {
+      request.claim_id = -1;
+    }
 
     const isPreview = ((event as SubmitEvent).submitter as HTMLInputElement | null)?.name === 'preview';
 
