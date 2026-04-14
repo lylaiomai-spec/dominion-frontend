@@ -17,6 +17,14 @@
       }
     </div>
 
+    @if (character.claim_record) {
+      <div class="character-claim-info">
+        <span class="claim-badge" i18n="@@character.claimedUntil">
+          Claimed until {{ character.claim_record.claim_expiration_date | date:'mediumDate' }}
+        </span>
+      </div>
+    }
+
     @if (character.factions && character.factions.length > 0) {
       <div class="character-sheet-factions">
         <h3>Factions</h3>

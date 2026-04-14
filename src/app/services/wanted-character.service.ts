@@ -64,4 +64,8 @@ export class WantedCharacterService {
   deactivate(id: number): Observable<{ wanted_character_status: number, topic_status: number }> {
     return this.apiService.post<{ wanted_character_status: number, topic_status: number }>(`wanted-character/deactivate/${id}`, null);
   }
+
+  createClaimRecord(claimId: number): Observable<void> {
+    return this.apiService.post<void>('claim-record/create', { claim_type: 'wanted_character', claim_id: claimId });
+  }
 }
