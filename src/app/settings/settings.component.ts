@@ -88,7 +88,6 @@ export class SettingsComponent implements OnInit {
   designVariations = signal<DesignVariation[]>([]);
   fontSize: number = 1.0;
   avatarUrl = '';
-  disableSound: boolean = false;
   saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   notificationSettings = signal<UserNotificationSetting[]>([]);
@@ -115,7 +114,6 @@ export class SettingsComponent implements OnInit {
       this.language = currentUser.interface_language || 'en-US';
       this.timezone = currentUser.interface_timezone || 'UTC';
       this.fontSize = currentUser.interface_font_size || 1.0;
-      this.disableSound = currentUser.disable_sound ?? false;
       this.interfaceDesign = currentUser.interface_design ?? null;
     }
     this.notificationSettings.set(currentUser?.notification_settings ?? []);
@@ -163,7 +161,6 @@ export class SettingsComponent implements OnInit {
       interface_timezone: this.timezone,
       interface_language: this.language,
       interface_font_size: this.fontSize,
-      disable_sound: this.disableSound,
       interface_design: this.interfaceDesign
     };
 
