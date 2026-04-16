@@ -37,7 +37,7 @@ export class ToastComponent implements OnInit {
     this.notificationService.notification$.subscribe((event: NotificationData) => {
       const setting = this.authService.currentUser()?.notification_settings
         ?.find(s => s.notification_type === event.type);
-      if (!setting?.disable_sound && !this.authService.currentUser()?.disable_sound) {
+      if (!setting?.disable_sound) {
         this.audio.currentTime = 0;
         this.audio.play().catch(err => console.warn('Audio play failed:', err));
       }
