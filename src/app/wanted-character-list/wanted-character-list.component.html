@@ -45,7 +45,7 @@
               }
               @if (getFields(wc).length > 0) {
                 <ul class="card-fields">
-                  @for (field of getFields(wc); track field.fieldName) {
+                  @for (field of getFields(wc); track (field.fieldName || $index)) {
                     @if (field.fieldValue) {
                       <li>
                         <app-field-display [type]="field.type" [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-field-display>

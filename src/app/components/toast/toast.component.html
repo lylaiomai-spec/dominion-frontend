@@ -10,6 +10,8 @@
             <span class="toast-label" i18n="@@toast.title.game">Post</span>
           } @else if (notification.type === 'direct_message') {
             <span class="toast-label" i18n="@@toast.title.dm">DM</span>
+          } @else if (notification.type === 'reaction') {
+            <span class="toast-label" i18n="@@toast.title.reaction">Reaction</span>
           } @else if (notification.type === 'account_update') {
             <span class="toast-label">{{ currencyService.settings().currency_name }}</span>
           } @else {
@@ -38,6 +40,20 @@
             <span class="toast-text">
               <strong>{{ dm.sender_username }}</strong>
               <ng-container i18n="@@toast.directMessage.sentYouA"> sent you a </ng-container><a [routerLink]="['/direct-chat']" (click)="remove(notification.id)" i18n="@@toast.directMessage.message">message</a>
+            </span>
+          } @else if (notification.type === 'reaction' && notification.data) {
+            @let reaction = $any(notification.data);
+            <span class="toast-text">
+              <strong>{{ reaction.user_name }}</strong>
+              <ng-container i18n="@@toast.reaction.reactedToYour"> reacted to your </ng-container>
+              <a [routerLink]="['/viewtopic', reaction.topic_id]"
+                 [queryParams]="{ post_id: reaction.post_id }"
+                 (click)="remove(notification.id)"
+                 i18n="@@toast.reaction.post">post</a>
+              <ng-container i18n="@@toast.reaction.in"> in </ng-container>{{ reaction.topic_name }}
+              @if (reaction.url) {
+                <img [src]="'/reactions/' + reaction.url" class="currency-icon" alt="" />
+              }
             </span>
           } @else if (notification.type === 'account_update' && notification.data) {
             @let accountUpdate = $any(notification.data);

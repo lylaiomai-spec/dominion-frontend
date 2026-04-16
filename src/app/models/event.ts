@@ -58,10 +58,20 @@ export interface NotificationAccountUpdate {
   topic_id: number;
 }
 
+export interface NotificationReaction {
+  post_id: number;
+  topic_id: number;
+  topic_name: string;
+  reaction_id: number;
+  url: string;
+  user_id: number;
+  user_name: string;
+}
+
 export interface NotificationData {
   id: number;
   user_id: number;
-  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update';
+  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update' | 'reaction';
   title: string;
   message: string;
   date_created: string;
@@ -69,7 +79,7 @@ export interface NotificationData {
   mention: NotificationMention | null;
   game: NotificationGame | null;
   direct_message: NotificationDirectMessage | null;
-  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | null;
+  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | NotificationReaction | null;
 }
 
 export interface NotificationEvent {
@@ -83,6 +93,7 @@ export interface UnreadNotificationsResponse {
   game: NotificationData[];
   mention: NotificationData[];
   direct_message: NotificationData[];
+  reaction: NotificationData[];
 }
 
 export interface TopicViewersUpdateEvent {

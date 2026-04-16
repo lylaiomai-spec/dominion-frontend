@@ -27,6 +27,13 @@
     </div>
   }
 
+  @if (reactionNotifications().length > 0) {
+    <div class="notification-block reactions" (click)="openModal('reaction')">
+      <span class="count">{{ reactionNotifications().length }}</span>
+      <span class="label" i18n="@@notifications.reactions">Reactions</span>
+    </div>
+  }
+
   @if (dmNotifications().length > 0) {
     <div class="notification-block direct-messages" (click)="openModal('dm')">
       <span class="count">{{ dmNotifications().length }}</span>
@@ -101,6 +108,34 @@
                        (click)="onNotificationClick(item)">{{ mention.topic_name || item.title }}</a>
                   } @else {
                     {{ item.title }}
+                  }
+                </span>
+              </div>
+              <button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button>
+            </div>
+          }
+        </div>
+      }
+
+      @if (activeModal === 'reaction') {
+        <h2 i18n="@@notifications.reactions">Reactions</h2>
+        <div class="feed-list">
+          @for (item of reactionNotifications(); track item.id) {
+            @let reaction = $any(item.data);
+            <div class="feed-item">
+              <div class="feed-item-content">
+                <span class="date">{{ item.date_created | date:'short' }}</span>
+                <span>
+                  <strong>{{ reaction?.user_name }}</strong>
+                  <ng-container i18n="@@notifications.reaction.reactedTo"> reacted to your </ng-container>
+                  @if (reaction?.topic_id) {
+                    <a [routerLink]="['/viewtopic', reaction.topic_id]"
+                       [queryParams]="{ post_id: reaction.post_id }"
+                       (click)="onNotificationClick(item)" i18n="@@notifications.reaction.post">post</a>
+                    <ng-container i18n="@@notifications.reaction.in"> in </ng-container>{{ reaction.topic_name }}
+                  }
+                  @if (reaction?.url) {
+                    <img [src]="'/reactions/' + reaction.url" class="currency-icon" alt="" />
                   }
                 </span>
               </div>

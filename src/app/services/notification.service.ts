@@ -53,6 +53,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
   public mentionNotifications = this.mentionNotificationsSignal.asReadonly();
   private directMessageNotificationsSignal = signal<NotificationData[]>([]);
   public directMessageNotifications = this.directMessageNotificationsSignal.asReadonly();
+  private reactionNotificationsSignal = signal<NotificationData[]>([]);
+  public reactionNotifications = this.reactionNotificationsSignal.asReadonly();
 
   // Subject for real-time toast notifications
   private notificationSubject = new Subject<NotificationData>();
@@ -80,6 +82,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         this.gameNotificationsSignal.set(response.game || []);
         this.mentionNotificationsSignal.set(response.mention || []);
         this.directMessageNotificationsSignal.set(response.direct_message || []);
+        this.reactionNotificationsSignal.set(response.reaction || []);
         this.rebuildTriggers(response);
       },
       error: (err) => console.error('Failed to load unread notifications', err)
@@ -154,6 +157,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
           this.mentionNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
         } else if (notification.type === 'direct_message') {
           this.directMessageNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
+        } else if (notification.type === 'reaction') {
+          this.reactionNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
         }
       },
       error: (err) => console.error('Failed to dismiss notification', err)
@@ -311,6 +316,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
           this.mentionNotificationsSignal.update(current => [notificationData, ...current]);
         } else if (notificationData.type === 'direct_message') {
           this.directMessageNotificationsSignal.update(current => [notificationData, ...current]);
+        } else if (notificationData.type === 'reaction') {
+          this.reactionNotificationsSignal.update(current => [notificationData, ...current]);
         }
         break;
       case 'topic_viewers_update':

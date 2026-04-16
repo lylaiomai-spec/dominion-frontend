@@ -20,6 +20,7 @@ export class NotificationsComponent implements OnInit {
   gameNotifications = this.notificationService.gameNotifications;
   mentionNotifications = this.notificationService.mentionNotifications;
   directMessageNotifications = this.notificationService.directMessageNotifications;
+  reactionNotifications = this.notificationService.reactionNotifications;
   dmNotifications = computed(() => this.directChatService.chatList().filter(c => c.unread_count > 0));
 
   activeModal: string | null = null;
