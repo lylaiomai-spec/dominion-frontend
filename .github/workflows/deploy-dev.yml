@@ -31,12 +31,17 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Remove everything except the protected files
+            # Remove everything except the protected files and folders
             find /var/www/frontend -mindepth 1 \
               ! -name 'favicon*' \
               ! -name 'main_style*' \
               ! -name 'custom_style*' \
+              ! -path '/var/www/frontend/reactions' \
+              ! -path '/var/www/frontend/reactions/*' \
               -delete
+
+            # Create reactions folder if it does not exist yet
+            mkdir -p /var/www/frontend/reactions
 
       - name: Deploy to Temporary Staging
         uses: appleboy/scp-action@v0.1.7
