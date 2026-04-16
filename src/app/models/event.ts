@@ -109,4 +109,17 @@ export interface PanelReloadEvent {
   panel_name: string;
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | PanelReloadEvent;
+export interface ReactionCreatedEvent {
+  type: 'reaction_created';
+  msg_id?: number;
+  data: {
+    topic_id: number;
+    post_id: number;
+    reaction_id: number;
+    url: string;
+    user_id: number;
+    user_name: string;
+  };
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | PanelReloadEvent | ReactionCreatedEvent;

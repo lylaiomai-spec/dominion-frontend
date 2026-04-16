@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, PanelReloadEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, PanelReloadEvent, ReactionCreatedEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -41,6 +41,9 @@ export class NotificationService {
 
   private panelReloadSubject = new Subject<PanelReloadEvent>();
   public panelReload$ = this.panelReloadSubject.asObservable();
+
+  private reactionCreatedSubject = new Subject<ReactionCreatedEvent>();
+  public reactionCreated$ = this.reactionCreatedSubject.asObservable();
 
 private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
@@ -321,6 +324,9 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         break;
       case 'panel_reload':
         this.panelReloadSubject.next(notification as PanelReloadEvent);
+        break;
+      case 'reaction_created':
+        this.reactionCreatedSubject.next(notification as ReactionCreatedEvent);
         break;
       default:
         console.warn('Unknown notification type:', notification);

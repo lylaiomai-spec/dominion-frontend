@@ -122,6 +122,7 @@
               }
             }
             <div class="reaction-add-wrapper">
+              @if (authService.isAuthenticated() && authService.currentUser()?.id !== post.author_user_id) {
               <button
                 type="button"
                 class="reaction-add-btn"
@@ -129,6 +130,7 @@
                 title="Add reaction"
                 i18n-title="@@viewtopic.addReaction"
               >+</button>
+              }
               @if (reactionPickerPostId() === post.id) {
                 <div class="reaction-picker">
                   @for (r of activeReactions(); track r.id) {

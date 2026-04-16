@@ -64,6 +64,40 @@ export class TopicService {
         this.updateLocalPost(event.data);
       }
     });
+
+    this.notificationService.reactionCreated$.subscribe(event => {
+      const currentTopicId = this.topic().id;
+      if (event.data.topic_id !== currentTopicId) return;
+
+      const post = this.postsSignal().find(p => p.id === event.data.post_id);
+      if (!post) return;
+
+      const { reaction_id, url, user_id, user_name } = event.data;
+      const reactions = [...(post.reactions ?? [])];
+      const existing = reactions.find(r => r.reaction_id === reaction_id);
+
+      if (existing) {
+        this.postsSignal.update(posts => posts.map(p => {
+          if (p.id !== event.data.post_id) return p;
+          return {
+            ...p,
+            reactions: p.reactions!.map(r =>
+              r.reaction_id === reaction_id
+                ? { ...r, number: r.number + 1, users: [...r.users, { id: user_id, name: user_name }] }
+                : r
+            )
+          };
+        }));
+      } else {
+        this.postsSignal.update(posts => posts.map(p => {
+          if (p.id !== event.data.post_id) return p;
+          return {
+            ...p,
+            reactions: [...(p.reactions ?? []), { reaction_id, url, number: 1, users: [{ id: user_id, name: user_name }] }]
+          };
+        }));
+      }
+    });
   }
 
   loadPost(id: number) {
