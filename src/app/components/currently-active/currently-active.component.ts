@@ -21,22 +21,33 @@ export class CurrentlyActiveComponent implements OnInit, OnDestroy {
 
   users = signal<UserShort[]>([]);
 
-  ngOnInit() {
-    if (!this.authService.isAuthenticated()) {
-      this.apiService.get<UserShort[]>('active-users').subscribe(users => {
-        this.users.set(users);
-      });
+  private visibilityHandler = () => {
+    if (document.visibilityState === 'visible') {
+      this.fetchActiveUsers();
     }
+  };
+
+  ngOnInit() {
+    this.fetchActiveUsers();
 
     this.notificationService.activeUsersUpdate$
       .pipe(takeUntil(this.destroy$))
       .subscribe(event => {
         this.users.set(event.data);
       });
+
+    document.addEventListener('visibilitychange', this.visibilityHandler);
   }
 
   ngOnDestroy() {
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private fetchActiveUsers() {
+    this.apiService.get<UserShort[]>('active-users').subscribe(users => {
+      this.users.set(users);
+    });
   }
 }

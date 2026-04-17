@@ -90,6 +90,13 @@ export class AppComponent implements OnInit {
         this.loadHeaderPanel();
       }
     });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && this.authService.isAuthenticated()) {
+        this.notificationService.loadUnreadNotifications();
+        this.loadHeaderPanel();
+      }
+    });
   }
 
   private loadHeaderPanel() {
