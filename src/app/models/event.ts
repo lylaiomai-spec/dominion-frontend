@@ -108,6 +108,15 @@ export interface DirectMessageCreatedEvent {
   data: DirectMessageRaw;
 }
 
+export interface ActiveUserInfo {
+  user_id: number;
+  username: string;
+  current_page_type: string;
+  current_page_id: string | null;
+  current_page_name: string | null;
+  last_active: string;
+}
+
 export interface ActiveUsersUpdateEvent {
   type: 'active_users_update';
   msg_id?: number;
