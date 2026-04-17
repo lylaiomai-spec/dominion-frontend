@@ -1082,6 +1082,45 @@ app-root.dark .pm-contact.active {
   background-color: #f2f2f2;
 }
 
+/* Active Users page */
+.active-users-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.active-user {
+  padding: 6px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95em;
+}
+
+.active-user:last-child {
+  border-bottom: none;
+}
+
+.active-user:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.active-user .timestamp {
+  color: #888;
+  font-size: 0.9em;
+  margin-right: 6px;
+}
+
+app-root.dark .active-user {
+  border-bottom-color: #3a3a5c;
+}
+
+app-root.dark .active-user:nth-child(even) {
+  background-color: #1e1e2e;
+}
+
+app-root.dark .active-user .timestamp {
+  color: #888;
+}
+
 .dm-entry {
   display: flex;
   justify-content: space-between;

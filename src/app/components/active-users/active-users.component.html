@@ -8,7 +8,7 @@
         <ul class="active-users-list">
           @for (user of users(); track user.user_id) {
             <li class="active-user">
-              {{ user.last_active | date:'dd.MM.yy HH:mm:ss' }}
+              <span class="timestamp">{{ user.last_active | date:'dd.MM.yy HH:mm:ss' }}</span>
               <ng-container i18n="@@activeUsers.entry">User</ng-container>
               <a [routerLink]="['/profile', user.user_id]">{{ user.username }}</a>
               <ng-container i18n="@@activeUsers.isOnPage">is on the page</ng-container>
