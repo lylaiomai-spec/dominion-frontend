@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { NotificationService } from '../../services/notification.service';
-import { AuthService } from '../../services/auth.service';
 import { CurrencyService } from '../../services/currency.service';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NotificationData } from '../../models/event';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { trigger, transition, style, animate } from '@angular/animations';
 
 @Component({
@@ -26,26 +27,32 @@ import { trigger, transition, style, animate } from '@angular/animations';
     ])
   ]
 })
-export class ToastComponent implements OnInit {
+export class ToastComponent implements OnInit, OnDestroy {
   private notificationService = inject(NotificationService);
-  private authService = inject(AuthService);
   protected currencyService = inject(CurrencyService);
   private audio = new Audio('/notification.mp3');
+  private destroy$ = new Subject<void>();
   notifications: NotificationData[] = [];
 
   ngOnInit() {
-    this.notificationService.notification$.subscribe((event: NotificationData) => {
-      const setting = this.authService.currentUser()?.notification_settings
-        ?.find(s => s.notification_type === event.type);
-      if (!setting?.disable_sound) {
+    this.notificationService.sound$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.audio.currentTime = 0;
         this.audio.play().catch(err => console.warn('Audio play failed:', err));
-      }
+      });
 
-      setTimeout(() => { this.notifications = [...this.notifications, event]; });
+    this.notificationService.notification$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((event: NotificationData) => {
+        setTimeout(() => { this.notifications = [...this.notifications, event]; });
+        setTimeout(() => this.remove(event.id), 10000);
+      });
+  }
 
-      setTimeout(() => this.remove(event.id), 10000);
-    });
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   remove(toastId: number) {

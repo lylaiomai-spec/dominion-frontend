@@ -63,6 +63,10 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
   private notificationSubject = new Subject<NotificationData>();
   public notification$ = this.notificationSubject.asObservable();
 
+  // Subject for notification sounds (independent of toast visibility)
+  private soundSubject = new Subject<void>();
+  public sound$ = this.soundSubject.asObservable();
+
   private messageQueue: string[] = [];
   private explicitlyClosed = false;
   private lastMsgId: number | null = null;
@@ -322,6 +326,10 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
           this.directMessageNotificationsSignal.update(current => [notificationData, ...current]);
         } else if (notificationData.type === 'reaction') {
           this.reactionNotificationsSignal.update(current => [notificationData, ...current]);
+        }
+
+        if (!notifSetting?.disable_sound) {
+          this.soundSubject.next();
         }
 
         if (!notifSetting?.disable_toast) {
