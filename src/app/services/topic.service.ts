@@ -133,6 +133,15 @@ export class TopicService {
             });
             this.notificationService.checkPostIds(postIds);
             this.notificationService.checkTopicId(topicId);
+          } else {
+            const topicType = this.topicSignal()?.type;
+            if (topicType === TopicType.character || topicType === TopicType.episode || topicType === TopicType.wanted_character) {
+              this.notificationService.sendMessage({
+                type: 'topic_view',
+                topic_id: topicId,
+                post_id: 0
+              });
+            }
           }
         } else {
           console.warn('Invalid posts response format', data);
@@ -168,7 +177,7 @@ export class TopicService {
   }
 
   updateLocalPost(updatedPost: Post) {
-    this.postsSignal.update(posts => posts.map(p => p.id === updatedPost.id ? this.normalizePost(updatedPost) : p));
+    this.postsSignal.update(posts => posts.map(p => p.id === updatedPost.id ? this.normalizePost({ can_edit: p.can_edit, ...updatedPost }) : p));
   }
 
   updatePostReactions(postId: number, reactions: Post['reactions']) {
