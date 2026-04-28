@@ -54,7 +54,10 @@ import { AdminWidgetEditComponent } from './admin/admin-widget-edit/admin-widget
 import { ActiveUsersComponent } from './active-users/active-users.component';
 import { AdminDesignComponent } from './admin/admin-design/admin-design.component';
 import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions.component';
+import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
 import { PostPageComponent } from './post-page/post-page.component';
+import { LorePageComponent } from './lore-page/lore-page.component';
+import { LoreNavigationEditComponent } from './lore-navigation-edit/lore-navigation-edit.component';
 import { NotFoundComponent } from './error-pages/not-found/not-found.component';
 import { ForbiddenComponent } from './error-pages/forbidden/forbidden.component';
 import { ServerErrorComponent } from './error-pages/server-error/server-error.component';
@@ -124,6 +127,12 @@ export const routes: Routes = [
     component: TopicCreateComponent,
     title: 'Create Topic',
     data: { pageId: 'pun-create-topic' }
+  },
+  {
+    path: 'lore-topic-create',
+    component: TopicCreateComponent,
+    title: 'Create Lore Topic',
+    data: { pageId: 'pun-create-topic', createEndpoint: 'lore-topic/create' }
   },
   {
     path: 'episode-create',
@@ -358,6 +367,11 @@ export const routes: Routes = [
         path: 'reactions',
         component: AdminReactionsComponent,
         title: 'Admin - Reactions'
+      },
+      {
+        path: 'smiles',
+        component: AdminSmilesComponent,
+        title: 'Admin - Smiles'
       }
     ]
   },
@@ -365,6 +379,16 @@ export const routes: Routes = [
     path: 'post-page/:id',
     component: PostPageComponent,
     data: { pageId: 'pun-post-page' }
+  },
+  {
+    path: 'lore/:topicId/page/:postId',
+    component: LorePageComponent,
+    data: { pageId: 'pun-lore-page' }
+  },
+  {
+    path: 'lore/:id/navigation-edit',
+    component: LoreNavigationEditComponent,
+    data: { pageId: 'pun-lore-navigation-edit' }
   },
   {
     path: '403',
