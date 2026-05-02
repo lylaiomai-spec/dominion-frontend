@@ -3,6 +3,7 @@ import {Field} from './Field';
 import {FieldTemplate} from './FieldTemplate';
 import {Faction} from './Faction';
 import {ClaimRecord} from './CharacterClaim';
+import {UserInfo} from './User';
 
 export interface Character {
   id: number;
@@ -16,6 +17,7 @@ export interface Character {
   factions: Faction[] | null;
   episodes: CharacterEpisode[];
   claim_record: ClaimRecord | null;
+  user_info?: UserInfo | null;
 }
 
 export interface CharacterListItem {
