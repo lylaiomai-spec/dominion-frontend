@@ -426,6 +426,10 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       character_profile_id: characterProfileId
     };
 
+    if (!this.authService.isAuthenticated()) {
+      payload.guest_name = this.guestName;
+    }
+
     this.topicService.previewTopic(payload).subscribe({
       next: (previewPost: any) => {
         this.previewService.set({
@@ -475,6 +479,26 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
         this.cancelEditTopic();
       },
       error: (err: any) => console.error('Failed to update topic', err)
+    });
+  }
+
+  onUpdateLoreTopic(event: Event) {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    const title = (form.querySelector('input[name="title"]') as HTMLInputElement)?.value;
+
+    if (!title || !this.id()) return;
+
+    this.apiService.post(`lore-topic/update/${this.id()}`, { name: title }).subscribe({
+      next: (updatedTopic: any) => {
+        if (updatedTopic && updatedTopic.id) {
+          this.topicService.updateLocalTopic(updatedTopic);
+        } else {
+          if (this.id()) this.topicService.loadTopic(this.id()!).subscribe({ next: (data) => this.topicService.setTopic(data) });
+        }
+        this.cancelEditTopic();
+      },
+      error: (err: any) => console.error('Failed to update lore topic', err)
     });
   }
 
