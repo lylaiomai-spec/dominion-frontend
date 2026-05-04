@@ -36,6 +36,10 @@ export class AdminUsersComponent implements OnInit {
   banModalUser = signal<AdminUserListItem | null>(null);
   banReason = signal<string>('');
 
+  editModalUser = signal<AdminUserListItem | null>(null);
+  editUsername = signal<string>('');
+  editAvatar = signal<string>('');
+
   ngOnInit() {
     this.apiService.get<AdminUserListItem[]>('admin/user-list').subscribe({
       next: (data) => this.users.set(data),
@@ -72,6 +76,35 @@ export class AdminUsersComponent implements OnInit {
 
   isRoleSelected(roleId: number): boolean {
     return this.selectedRoleIds().has(roleId);
+  }
+
+  openEditModal(user: AdminUserListItem) {
+    this.editUsername.set(user.username);
+    this.editAvatar.set('');
+    this.editModalUser.set(user);
+  }
+
+  closeEditModal() {
+    this.editModalUser.set(null);
+  }
+
+  submitEdit() {
+    const user = this.editModalUser();
+    if (!user) return;
+    const body: { username?: string; avatar?: string } = {};
+    const username = this.editUsername().trim();
+    const avatar = this.editAvatar().trim();
+    if (username && username !== user.username) body.username = username;
+    if (avatar) body.avatar = avatar;
+    this.apiService.post(`admin/user/update/${user.id}`, body).subscribe({
+      next: () => {
+        if (body.username) {
+          this.users.update(list => list.map(u => u.id === user.id ? { ...u, username: body.username! } : u));
+        }
+        this.closeEditModal();
+      },
+      error: (err) => console.error('Failed to update user', err)
+    });
   }
 
   openBanModal(user: AdminUserListItem) {

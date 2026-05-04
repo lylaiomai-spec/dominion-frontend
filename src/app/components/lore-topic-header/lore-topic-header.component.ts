@@ -9,4 +9,5 @@ import { RouterLink } from '@angular/router';
 })
 export class LoreTopicHeaderComponent {
   @Input() topicId!: number;
+  @Input() canEdit: boolean = false;
 }
