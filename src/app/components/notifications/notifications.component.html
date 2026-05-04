@@ -42,12 +42,15 @@
   }
 </div>
 
-@if (activeModal) {
+@if (activeModal()) {
   <div class="modal-overlay" (click)="closeModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <span class="close-button" (click)="closeModal()">&times;</span>
+      @if (activeModal() !== 'dm') {
+        <a class="dismiss-all-link" (click)="dismissAll($event)" i18n="@@notifications.dismissAll">Dismiss all</a>
+      }
 
-      @if (activeModal === 'system') {
+      @if (activeModal() === 'system') {
         <h2 i18n="@@notifications.systemMessages">System messages</h2>
         <div class="feed-list">
           @for (item of systemNotifications(); track item.id) {
@@ -62,7 +65,7 @@
         </div>
       }
 
-      @if (activeModal === 'game') {
+      @if (activeModal() === 'game') {
         <h2 i18n="@@notifications.myGamePosts">Posts in my games</h2>
         <table class="data-table">
           <thead>
@@ -92,7 +95,7 @@
         </table>
       }
 
-      @if (activeModal === 'mention') {
+      @if (activeModal() === 'mention') {
         <h2 i18n="@@notifications.mentions">Mentions</h2>
         <div class="feed-list">
           @for (item of mentionNotifications(); track item.id) {
@@ -117,7 +120,7 @@
         </div>
       }
 
-      @if (activeModal === 'reaction') {
+      @if (activeModal() === 'reaction') {
         <h2 i18n="@@notifications.reactions">Reactions</h2>
         <div class="feed-list">
           @for (item of reactionNotifications(); track item.id) {
@@ -145,7 +148,7 @@
         </div>
       }
 
-      @if (activeModal === 'direct_message') {
+      @if (activeModal() === 'direct_message') {
         <h2 i18n="@@notifications.directMessages">Direct messages</h2>
         <div class="feed-list">
           @for (item of directMessageNotifications(); track item.id) {
@@ -160,7 +163,7 @@
         </div>
       }
 
-      @if (activeModal === 'dm') {
+      @if (activeModal() === 'dm') {
         <h2 i18n="@@notifications.directMessages">Direct messages</h2>
         <div class="feed-list">
           @for (item of dmNotifications(); track item.chat_id) {
