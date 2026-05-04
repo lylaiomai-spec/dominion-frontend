@@ -124,6 +124,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   editingPostId = signal<number | null>(null);
   editingTopic = signal(false);
   showDeactivateModal = signal(false);
+  postToDelete = signal<Post | null>(null);
 
   reactionPickerPostId = signal<number | null>(null);
   activeReactions = signal<Reaction[]>([]);
@@ -311,6 +312,21 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
   cancelEdit() {
     this.editingPostId.set(null);
+  }
+
+  deletePost(post: Post, event: Event) {
+    event.preventDefault();
+    this.postToDelete.set(post);
+  }
+
+  confirmDeletePost() {
+    const post = this.postToDelete();
+    if (!post) return;
+    this.postToDelete.set(null);
+    this.topicService.deletePost(post.id).subscribe({
+      next: () => this.topicService.removeLocalPost(post.id),
+      error: (err: any) => console.error('Failed to delete post', err)
+    });
   }
 
   quotePost(post: Post, event: Event) {

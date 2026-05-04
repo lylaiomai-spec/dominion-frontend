@@ -201,6 +201,9 @@
             @if(post.can_edit) {
               <span><a href="#" (click)="editPost(post, $event)" i18n="@@viewtopic.edit">Edit</a></span>
             }
+            @if(post.can_delete) {
+              <span><a href="#" (click)="deletePost(post, $event)" i18n="@@viewtopic.delete">Delete</a></span>
+            }
           </p>
         </div>
         <div class="clearer"></div>
@@ -285,6 +288,19 @@
 
 @if (reactionPickerPostId() !== null) {
   <div class="reaction-picker-backdrop" (click)="closeReactionPicker()"></div>
+}
+
+@if (postToDelete() !== null) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h2 i18n="@@viewtopic.deletePostConfirmTitle">Delete post?</h2>
+      <p i18n="@@viewtopic.deletePostConfirmText">This will permanently delete the post. This action cannot be undone. Are you sure?</p>
+      <div class="buttons">
+        <button type="button" class="button btn-deactivate" (click)="confirmDeletePost()" i18n="@@common.delete">Delete</button>
+        <button type="button" class="button" (click)="postToDelete.set(null)" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
 }
 
 @if (showDeactivateModal()) {
