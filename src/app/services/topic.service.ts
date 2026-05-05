@@ -6,7 +6,7 @@ import {NotificationService} from './notification.service';
 import {AuthService} from './auth.service';
 import {Router} from '@angular/router';
 import {BoardService} from './board.service';
-import { Subject } from 'rxjs';
+import { Subject, switchMap, map } from 'rxjs';
 
 interface PostsResponse {
   page: number;
@@ -48,10 +48,46 @@ export class TopicService {
   private pageLoadedSubject = new Subject<{page: number, topicId: number}>();
   public pageLoaded$ = this.pageLoadedSubject.asObservable();
 
+  private loadPostsSubject = new Subject<{topicId: number, page: number, postId?: number}>();
+
   readonly singlePostSignal = signal<Post | null>(null);
   readonly singlePost = this.singlePostSignal.asReadonly();
 
   constructor() {
+    this.loadPostsSubject.pipe(
+      switchMap(({ topicId, page, postId }) => {
+        let url = `topic-posts/${topicId}?page=${page}`;
+        if (postId) {
+          url = `topic-posts/${topicId}?post_id=${postId}`;
+        }
+        return this.apiService.get<PostsResponse>(url).pipe(
+          map(data => ({ data, topicId }))
+        );
+      })
+    ).subscribe({
+      next: ({ data, topicId }) => {
+        if (data && data.posts) {
+          this.postsSignal.set(data.posts);
+          this.pageLoadedSubject.next({ page: data.page, topicId });
+          if (data.posts.length > 0) {
+            const postIds = data.posts.map((p: Post) => p.id);
+            const maxPostId = Math.max(...postIds);
+            this.notificationService.sendMessage({ type: 'topic_view', topic_id: topicId, post_id: maxPostId });
+            this.notificationService.checkPostIds(postIds);
+            this.notificationService.checkTopicId(topicId);
+          } else {
+            const topicType = this.topicSignal()?.type;
+            if (topicType === TopicType.character || topicType === TopicType.episode || topicType === TopicType.wanted_character) {
+              this.notificationService.sendMessage({ type: 'topic_view', topic_id: topicId, post_id: 0 });
+            }
+          }
+        } else {
+          this.postsSignal.set([]);
+        }
+      },
+      error: (err) => console.error('Failed to load posts', err)
+    });
+
     this.notificationService.postCreated$.subscribe(event => {
       const currentTopicId = this.topic().id;
       if (event.data.topic_id == currentTopicId) {
@@ -111,45 +147,7 @@ export class TopicService {
   }
 
   loadPosts(topicId: number, page: number, postId?: number) {
-    let url = `topic-posts/${topicId}?page=${page}`;
-    if (postId) {
-      url = `topic-posts/${topicId}?post_id=${postId}`;
-    }
-
-    this.apiService.get<PostsResponse>(url).subscribe({
-      next: (data) => {
-        if (data && data.posts) {
-          this.postsSignal.set(data.posts);
-
-          this.pageLoadedSubject.next({ page: data.page, topicId: topicId });
-
-          if (data.posts.length > 0) {
-            const postIds = data.posts.map(p => p.id);
-            const maxPostId = Math.max(...postIds);
-            this.notificationService.sendMessage({
-              type: 'topic_view',
-              topic_id: topicId,
-              post_id: maxPostId
-            });
-            this.notificationService.checkPostIds(postIds);
-            this.notificationService.checkTopicId(topicId);
-          } else {
-            const topicType = this.topicSignal()?.type;
-            if (topicType === TopicType.character || topicType === TopicType.episode || topicType === TopicType.wanted_character) {
-              this.notificationService.sendMessage({
-                type: 'topic_view',
-                topic_id: topicId,
-                post_id: 0
-              });
-            }
-          }
-        } else {
-          console.warn('Invalid posts response format', data);
-          this.postsSignal.set([]);
-        }
-      },
-      error: (err) => console.error('Failed to load posts', err)
-    });
+    this.loadPostsSubject.next({ topicId, page, postId });
   }
 
   createPost(data: any) {

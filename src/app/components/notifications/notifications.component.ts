@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
 import { NotificationData } from '../../models/event';
@@ -25,7 +25,29 @@ export class NotificationsComponent implements OnInit {
   reactionNotifications = this.notificationService.reactionNotifications;
   dmNotifications = computed(() => this.directChatService.chatList().filter(c => c.unread_count > 0));
 
-  activeModal: string | null = null;
+  activeModal = signal<string | null>(null);
+
+  constructor() {
+    effect(() => {
+      const modal = this.activeModal();
+      if (!modal) return;
+      if (this.getNotificationsForType(modal)().length === 0) {
+        this.activeModal.set(null);
+      }
+    }, { allowSignalWrites: true });
+  }
+
+  private getNotificationsForType(type: string): () => unknown[] {
+    switch (type) {
+      case 'system': return this.systemNotifications;
+      case 'game': return this.gameNotifications;
+      case 'mention': return this.mentionNotifications;
+      case 'direct_message': return this.directMessageNotifications;
+      case 'reaction': return this.reactionNotifications;
+      case 'dm': return this.dmNotifications;
+      default: return () => [];
+    }
+  }
 
   ngOnInit() {
     this.notificationService.loadUnreadNotifications();
@@ -33,16 +55,24 @@ export class NotificationsComponent implements OnInit {
   }
 
   openModal(type: string) {
-    this.activeModal = type;
+    this.activeModal.set(type);
   }
 
   closeModal() {
-    this.activeModal = null;
+    this.activeModal.set(null);
   }
 
   dismissNotification(notification: NotificationData, event: MouseEvent) {
     event.stopPropagation();
     this.notificationService.dismissNotification(notification);
+  }
+
+  dismissAll(event: MouseEvent) {
+    event.stopPropagation();
+    const modal = this.activeModal();
+    if (!modal) return;
+    const list = this.getNotificationsForType(modal)() as NotificationData[];
+    list.forEach(n => this.notificationService.dismissNotification(n));
   }
 
   onNotificationClick(item: NotificationData) {

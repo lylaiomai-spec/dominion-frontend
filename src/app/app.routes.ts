@@ -55,6 +55,8 @@ import { ActiveUsersComponent } from './active-users/active-users.component';
 import { AdminDesignComponent } from './admin/admin-design/admin-design.component';
 import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions.component';
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
+import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
+import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
 import { LoreNavigationEditComponent } from './lore-navigation-edit/lore-navigation-edit.component';
@@ -372,8 +374,18 @@ export const routes: Routes = [
         path: 'smiles',
         component: AdminSmilesComponent,
         title: 'Admin - Smiles'
+      },
+      {
+        path: 'search',
+        component: AdminSearchComponent,
+        title: 'Admin - Search'
       }
     ]
+  },
+  {
+    path: 'search',
+    component: SearchComponent,
+    title: 'Search'
   },
   {
     path: 'post-page/:id',
