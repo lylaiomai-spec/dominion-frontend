@@ -226,6 +226,11 @@ export class TopicService {
     if (this.postsSignal().some(p => p.id === post.id)) return;
     this.postsSignal.update(posts => [...posts, this.normalizePost(post)]);
 
+    const postsPerPage = this.boardService.board().posts_per_page || 15;
+    const prevTotal = this.topic().post_number;
+    const prevLastPage = Math.ceil(prevTotal / postsPerPage) || 1;
+    const newLastPage = Math.ceil((prevTotal + 1) / postsPerPage);
+
     // Increment the post count in the topic
     this.topicSignal.update(topic => {
       if (topic) {
@@ -241,15 +246,12 @@ export class TopicService {
       post_id: post.id
     });
 
-    // Check if the current user is the author and redirect if so
+    // Navigate to the new page only if the post spills onto a new page
     const currentUser = this.authService.currentUser();
     if (currentUser && post.user_profile && currentUser.id === post.user_profile.user_id) {
-      const totalPosts = this.topic().post_number;
-      const postsPerPage = this.boardService.board().posts_per_page || 15;
-      const lastPage = Math.ceil(totalPosts / postsPerPage);
-
-      // Simply navigate to the last page. If we are already there, router should handle it gracefully or reload.
-      this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: lastPage } });
+      if (newLastPage > prevLastPage) {
+        this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: newLastPage } });
+      }
     }
   }
 
