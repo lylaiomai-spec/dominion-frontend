@@ -1,5 +1,17 @@
 import { Component, inject, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Chart } from 'chart.js/auto';
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  LineController,
+  LineElement,
+  PointElement,
+  Filler,
+  Legend,
+  Tooltip,
+} from 'chart.js';
+
+Chart.register(CategoryScale, LinearScale, LineController, LineElement, PointElement, Filler, Legend, Tooltip);
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
