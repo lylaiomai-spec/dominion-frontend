@@ -37,6 +37,7 @@
                   id="password"
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="password"
+                  autocomplete="new-password"
                   size="25"
                 />
                 <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
@@ -59,6 +60,7 @@
                   id="confirmPassword"
                   [type]="showPassword() ? 'text' : 'password'"
                   formControlName="confirmPassword"
+                  autocomplete="new-password"
                   [class.input-error]="isInvalid('confirmPassword')"
                   size="25"
                 />
