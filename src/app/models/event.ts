@@ -150,4 +150,13 @@ export interface ReactionCreatedEvent {
   };
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent;
+export interface HealthUpdateEvent {
+  type: 'health_update';
+  msg_id?: number;
+  data: {
+    ram: Record<string, { total: number; used: number; available: number }>;
+    cpu: Record<string, { pct: number }>;
+  };
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent;
