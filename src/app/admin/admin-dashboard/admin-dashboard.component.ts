@@ -126,7 +126,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         plugins: { legend: { position: 'top' } },
         scales: {
           x: {
-            ticks: { maxRotation: 45, callback: function(value, i) { return i % 10 === 0 ? this.getLabelForValue(value as number) : ''; } },
+            ticks: { maxRotation: 45, autoSkip: false, callback: function(value, i) { return i % 10 === 0 ? this.getLabelForValue(value as number) : ''; } },
             grid: { color: (ctx) => ctx.index % 10 === 0 ? 'rgba(0,0,0,0.1)' : 'transparent' },
           },
           y: { title: { display: true, text: 'GB' } },
@@ -158,7 +158,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit, OnDestroy
         plugins: { legend: { position: 'top' } },
         scales: {
           x: {
-            ticks: { maxRotation: 45, callback: function(value, i) { return i % 10 === 0 ? this.getLabelForValue(value as number) : ''; } },
+            ticks: { maxRotation: 45, autoSkip: false, callback: function(value, i) { return i % 10 === 0 ? this.getLabelForValue(value as number) : ''; } },
             grid: { color: (ctx) => ctx.index % 10 === 0 ? 'rgba(0,0,0,0.1)' : 'transparent' },
           },
           y: { min: 0, max: 100, title: { display: true, text: '%' } },
