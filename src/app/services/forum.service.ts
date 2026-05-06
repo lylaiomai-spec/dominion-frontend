@@ -54,13 +54,17 @@ export class ForumService {
     });
   }
 
-  loadSubforum(subforumId: number) {
+  loadSubforum(subforumId: number, onNotFound?: () => void) {
     this.apiService.get<Subforum>('subforum/get/' + subforumId).subscribe({
       next: (data) => {
         this.subforumSignal.set(data);
       },
       error: (err) => {
-        console.error('Failed to load categories', err);
+        if (err.status === 404 && onNotFound) {
+          onNotFound();
+        } else {
+          console.error('Failed to load subforum', err);
+        }
       }
     })
   }
