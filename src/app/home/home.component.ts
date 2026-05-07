@@ -4,6 +4,7 @@ import {Title} from '@angular/platform-browser';
 import {BoardService} from '../services/board.service';
 import {CategoryService} from '../services/category.service';
 import {CurrentlyActiveComponent} from '../components/currently-active/currently-active.component';
+import {RecentlyActiveComponent} from '../components/recently-active/recently-active.component';
 import { RouterLinksDirective } from '../directives/router-links.directive';
 
 @Component({
@@ -13,6 +14,7 @@ import { RouterLinksDirective } from '../directives/router-links.directive';
   imports: [
     RouterLink,
     CurrentlyActiveComponent,
+    RecentlyActiveComponent,
     RouterLinksDirective
   ]
 })
