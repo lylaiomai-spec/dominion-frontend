@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, inject, Input, OnInit, OnChanges, SimpleChanges, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Character, CustomFieldsData, CustomFieldValue } from '../../models/Character';
 import { FieldDisplayComponent } from '../field-display/field-display.component';
@@ -18,7 +18,7 @@ export class CharacterSheetHeaderComponent implements OnInit, OnChanges {
   private authService = inject(AuthService);
   private characterService = inject(CharacterService);
 
-  isAdmin = this.authService.isAdmin;
+  canSeeAdminBlock = computed(() => this.authService.hasPermission('show_character_sheet_admin_block'));
   customFields: any[] = [];
 
   ngOnInit() {

@@ -12,6 +12,8 @@ import {LoginComponent} from './login/login.component';
 import {RegisterComponent} from './register/register.component';
 import {AdminWrapperComponent} from './admin/admin-wrapper/admin-wrapper.component';
 import {AdminDashboardComponent} from './admin/admin-dashboard/admin-dashboard.component';
+import { AbsenceListComponent } from './absence-list/absence-list.component';
+import { AutoArchiveComponent } from './auto-archive/auto-archive.component';
 import {CharacterTemplateEditComponent} from './admin/character-template-edit/character-template-edit.component';
 import {TopicCreateComponent} from './topic-create/topic-create.component';
 import {EpisodeCreateComponent} from './episode-create/episode-create.component';
@@ -231,6 +233,18 @@ export const routes: Routes = [
     component: ActiveUsersComponent,
     title: 'Active Users',
     data: { pageId: 'pun-active-users' }
+  },
+  {
+    path: 'absence-list',
+    component: AbsenceListComponent,
+    title: 'Absences',
+    data: { pageId: 'pun-absence-list' }
+  },
+  {
+    path: 'auto-archive',
+    component: AutoArchiveComponent,
+    title: 'Auto Archive',
+    data: { pageId: 'pun-auto-archive' }
   },
   {
     path: 'character-profile-update/:id',
