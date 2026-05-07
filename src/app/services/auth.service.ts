@@ -205,4 +205,12 @@ export class AuthService {
     const role = user.roles?.find(role => role.name === name);
     return !!role;
   }
+
+  public hasPermission(permission: string): boolean {
+    const user = this.currentUser();
+    if (user == null || user.id === 0) {
+      return false;
+    }
+    return user.roles?.some(role => role.permissions?.includes(permission)) ?? false;
+  }
 }

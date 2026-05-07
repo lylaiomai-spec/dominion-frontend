@@ -70,10 +70,16 @@ export interface NotificationReaction {
   user_name: string;
 }
 
+export interface NotificationAutoArchiving {
+  character_id: number;
+  character_name: string;
+  days_left?: number;
+}
+
 export interface NotificationData {
   id: number;
   user_id: number;
-  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update' | 'reaction';
+  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update' | 'reaction' | 'auto_archiving';
   title: string;
   message: string;
   date_created: string;
@@ -81,7 +87,7 @@ export interface NotificationData {
   mention: NotificationMention | null;
   game: NotificationGame | null;
   direct_message: NotificationDirectMessage | null;
-  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | NotificationReaction | null;
+  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | NotificationReaction | NotificationAutoArchiving | null;
 }
 
 export interface NotificationEvent {
@@ -96,6 +102,7 @@ export interface UnreadNotificationsResponse {
   mention: NotificationData[];
   direct_message: NotificationData[];
   reaction: NotificationData[];
+  auto_archiving: NotificationData[];
 }
 
 export interface TopicViewersUpdateEvent {
@@ -161,4 +168,9 @@ export interface HealthUpdateEvent {
   };
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent;
+export interface UserRefreshRequiredEvent {
+  type: 'user_refresh_required';
+  msg_id?: number;
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent | UserRefreshRequiredEvent;

@@ -1,0 +1,77 @@
+<div id="pun-main" class="main">
+  <div class="main-header">
+    <h1 i18n="@@autoArchive.title">Auto Archive</h1>
+  </div>
+  <div class="main-content">
+
+    @if (archivingEnabled()) {
+      <p i18n="@@autoArchive.enabledMessage">The auto archiving of characters is on. Each character without a game post in the last {{ archivingDays() }} days will be automatically deactivated.</p>
+    } @else {
+      <p i18n="@@autoArchive.disabledMessage">The auto archiving of characters is off. This list is for administration information only. Each character is expected to have at least one game post every {{ archivingDays() }} days.</p>
+    }
+
+    <table cellspacing="0">
+      <thead>
+        <tr>
+          <th scope="col" i18n="@@autoArchive.colCharacter">Character</th>
+          <th scope="col" i18n="@@autoArchive.colUser">User</th>
+          <th scope="col" i18n="@@autoArchive.colLastPost">Last Post</th>
+          <th scope="col" i18n="@@autoArchive.colDaysLeft">Days Left</th>
+          @if (canAddImmunity()) {
+            <th scope="col"></th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (character of characters(); track character.id; let isEven = $even) {
+          <tr [class.altstyle]="isEven">
+            <td><a [routerLink]="['/character', character.id]">{{ character.name }}</a></td>
+            <td><a [routerLink]="['/profile', character.user_id]">{{ character.username }}</a></td>
+            <td>{{ character.date_last_post ? (character.date_last_post | date:'yyyy-MM-dd') : '—' }}</td>
+            <td>{{ character.days_left }}</td>
+            @if (canAddImmunity()) {
+              <td><button class="button" (click)="openImmunityModal(character)" i18n="@@autoArchive.addImmunity">Add Immunity</button></td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="canAddImmunity() ? 5 : 4" i18n="@@autoArchive.empty">No characters at risk of archiving.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+@if (immunityModalCharacter(); as character) {
+  <div class="modal-overlay" (click)="closeImmunityModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-button" (click)="closeImmunityModal()">&times;</span>
+
+      <h2 i18n="@@autoArchive.modalTitle">Add Immunity — {{ character.name }}</h2>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.startDate">Start date</label>
+        <input type="date" [(ngModel)]="immunityStartDate" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.endDate">End date</label>
+        <input type="date" [(ngModel)]="immunityEndDate" [min]="today" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.reason">Reason</label>
+        <input type="text" [(ngModel)]="immunityReason" style="width: 100%;" />
+      </div>
+
+      <app-error-banner [message]="immunityError()"></app-error-banner>
+
+      <div class="spoiler-modal-actions">
+        <button type="button" class="button btn-primary" (click)="submitImmunity()" [disabled]="!immunityStartDate || !immunityEndDate" i18n="@@autoArchive.submit">Submit</button>
+        <button type="button" class="button" (click)="closeImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

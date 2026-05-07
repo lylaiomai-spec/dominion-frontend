@@ -83,6 +83,6 @@ export class AbsenceListComponent implements OnInit {
   }
 
   private loadList() {
-    this.apiService.get<AbsentUserItem[]>('absence').subscribe(data => this.users.set(data));
+    this.apiService.get<AbsentUserItem[]>('absent-users').subscribe(data => this.users.set(data));
   }
 }
