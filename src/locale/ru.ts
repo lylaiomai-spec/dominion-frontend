@@ -209,6 +209,8 @@ export const TRANSLATIONS_RU = {
   "admin.health.title": "Здоровье сервера",
   "admin.health.ram": "RAM",
   "admin.health.cpu": "CPU",
+  "admin.health.http": "HTTP запросы",
+  "admin.health.ws": "WebSocket соединения",
   "admin.settings": "Настройки",
   "adminSettings.allow_add_faction": "Разрешить добавление фракций при создании персонажа",
   "adminSettings.allow_guests_create_claims": "Разрешить гостям создавать заявки",

@@ -156,6 +156,8 @@ export interface HealthUpdateEvent {
   data: {
     ram: Record<string, { total: number; used: number; available: number }>;
     cpu: Record<string, { pct: number }>;
+    http: Record<string, { requests: number; latency_buckets: Record<string, number> }>;
+    ws: Record<string, { active: number }>;
   };
 }
 
