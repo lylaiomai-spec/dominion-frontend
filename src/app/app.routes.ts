@@ -34,6 +34,7 @@ import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.comp
 import {AdminSubforumsComponent} from './admin/admin-subforums/admin-subforums.component';
 import {TopicCommanderComponent} from './admin/topic-commander/topic-commander.component';
 import {AdminUsersComponent} from './admin/admin-users/admin-users.component';
+import {AdminCharactersComponent} from './admin/admin-characters/admin-characters.component';
 import {AdminCreateUserComponent} from './admin/admin-create-user/admin-create-user.component';
 import {AdminAdditionalNavlinksComponent} from './admin/admin-additional-navlinks/admin-additional-navlinks.component';
 import {PreviewComponent} from './preview/preview.component';
@@ -328,6 +329,11 @@ export const routes: Routes = [
         path: 'users',
         component: AdminUsersComponent,
         title: 'Admin - Users'
+      },
+      {
+        path: 'characters',
+        component: AdminCharactersComponent,
+        title: 'Admin - Characters'
       },
       {
         path: 'create-user',

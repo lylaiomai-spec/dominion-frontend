@@ -1,0 +1,146 @@
+<h2 i18n="@@adminCharacters.title">Characters</h2>
+
+<div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 12px; flex-wrap: wrap;">
+  <label>
+    <span i18n="@@adminCharacters.filterUserId">User ID</span>
+    <input type="number" [(ngModel)]="filterUserId" style="display: block; margin-top: 4px;" />
+  </label>
+  <label>
+    <span i18n="@@adminCharacters.filterStatus">Status</span>
+    <select [(ngModel)]="filterStatus" style="display: block; margin-top: 4px;">
+      <option value="" i18n="@@adminCharacters.filterStatusAll">All</option>
+      <option value="0" i18n="@@adminCharacters.statusActive">Active</option>
+      <option value="1" i18n="@@adminCharacters.statusInactive">Inactive</option>
+      <option value="2" i18n="@@adminCharacters.statusPending">Pending</option>
+      <option value="3" i18n="@@adminCharacters.statusDeclined">Declined</option>
+    </select>
+  </label>
+  <button class="button" (click)="load()" i18n="@@adminCharacters.apply">Apply</button>
+  <button class="button" (click)="resetFilters()" i18n="@@adminCharacters.reset">Reset</button>
+</div>
+
+<table class="users-table">
+  <thead>
+    <tr>
+      <th i18n="@@adminCharacters.colId">ID</th>
+      <th i18n="@@adminCharacters.colName">Name</th>
+      <th i18n="@@adminCharacters.colStatus">Status</th>
+      <th i18n="@@adminCharacters.colUser">User</th>
+      <th i18n="@@adminCharacters.colLastPost">Last Post</th>
+      <th i18n="@@adminCharacters.colCreated">Created</th>
+      <th i18n="@@adminCharacters.colActions">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (character of characters(); track character.id) {
+      <tr>
+        <td>{{ character.id }}</td>
+        <td><a [routerLink]="['/character', character.id]">{{ character.name }}</a></td>
+        <td>{{ statusLabel(character.character_status) }}</td>
+        <td><a [routerLink]="['/profile', character.user_id]">{{ character.username }}</a></td>
+        <td>{{ character.date_last_post ? (character.date_last_post | date:'dd.MM.yyyy') : '—' }}</td>
+        <td>{{ character.date_created ? (character.date_created | date:'dd.MM.yyyy') : '—' }}</td>
+        <td style="white-space: nowrap;">
+          @if (character.character_status === 0) {
+            <button class="button" (click)="toggleStatus(character)" i18n="@@adminCharacters.deactivate">Deactivate</button>
+          } @else if (character.character_status === 1) {
+            <button class="button" (click)="toggleStatus(character)" i18n="@@adminCharacters.activate">Activate</button>
+          }
+          @if (canAddImmunity()) {
+            <button class="button" (click)="openImmunityModal(character)" style="margin-left: 4px;" i18n="@@autoArchive.addImmunity">Add Immunity</button>
+          }
+          <button class="button" (click)="openHistoryModal(character)" style="margin-left: 4px;" i18n="@@adminCharacters.history">History</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="7" i18n="@@adminCharacters.empty">No characters found.</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@if (totalPages() > 1) {
+  <div class="pagination" style="margin-top: 10px;">
+    <button class="button" [disabled]="page() === 1" (click)="load(page() - 1)" i18n="@@common.prev">Previous</button>
+    <span style="margin: 0 10px;" i18n="@@common.pageOf">{{ page() }} / {{ totalPages() }}</span>
+    <button class="button" [disabled]="page() === totalPages()" (click)="load(page() + 1)" i18n="@@common.next">Next</button>
+  </div>
+}
+
+@if (historyModalCharacter(); as character) {
+  <div class="modal-overlay" (click)="closeHistoryModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-button" (click)="closeHistoryModal()">&times;</span>
+
+      <h2 i18n="@@adminCharacters.historyModalTitle">Protection History — {{ character.name }}</h2>
+
+      <table cellspacing="0">
+        <thead>
+          <tr>
+            <th i18n="@@adminCharacters.historyType">Type</th>
+            <th i18n="@@adminCharacters.historyStart">Start</th>
+            <th i18n="@@adminCharacters.historyEnd">End</th>
+            <th i18n="@@adminCharacters.historyReason">Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (record of historyRecords(); track $index) {
+            <tr>
+              <td>
+                @if (record.type === 'immunity') {
+                  <span i18n="@@adminCharacters.historyTypeImmunity">Immunity</span>
+                } @else {
+                  <span i18n="@@adminCharacters.historyTypeAbsence">Absence</span>
+                }
+              </td>
+              <td>{{ record.start_date | date:'yyyy-MM-dd' }}</td>
+              <td>{{ record.end_date | date:'yyyy-MM-dd' }}</td>
+              <td>{{ record.reason ?? '—' }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" i18n="@@adminCharacters.historyEmpty">No records found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="spoiler-modal-actions">
+        <button type="button" class="button" (click)="closeHistoryModal()" i18n="@@autoArchive.cancel">Close</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (immunityModalCharacter(); as character) {
+  <div class="modal-overlay" (click)="closeImmunityModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-button" (click)="closeImmunityModal()">&times;</span>
+
+      <h2 i18n="@@autoArchive.modalTitle">Add Immunity — {{ character.name }}</h2>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.startDate">Start date</label>
+        <input type="date" [(ngModel)]="immunityStartDate" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.endDate">End date</label>
+        <input type="date" [(ngModel)]="immunityEndDate" [min]="today" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.reason">Reason</label>
+        <input type="text" [(ngModel)]="immunityReason" style="width: 100%;" />
+      </div>
+
+      <app-error-banner [message]="immunityError()"></app-error-banner>
+
+      <div class="spoiler-modal-actions">
+        <button type="button" class="button btn-primary" (click)="submitImmunity()" [disabled]="!immunityStartDate || !immunityEndDate" i18n="@@autoArchive.submit">Submit</button>
+        <button type="button" class="button" (click)="closeImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
