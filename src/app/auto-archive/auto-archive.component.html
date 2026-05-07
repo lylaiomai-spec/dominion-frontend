@@ -5,9 +5,9 @@
   <div class="main-content">
 
     @if (archivingEnabled()) {
-      <p i18n="@@autoArchive.enabledMessage">The auto archiving of characters is on. Each character without a game post in the last {{ archivingDays() }} days will be automatically deactivated.</p>
+      <div class="alert alert-warning" i18n="@@autoArchive.enabledMessage">The auto archiving of characters is on. Each character without a game post in the last {{ archivingDays() }} days will be automatically deactivated.</div>
     } @else {
-      <p i18n="@@autoArchive.disabledMessage">The auto archiving of characters is off. This list is for administration information only. Each character is expected to have at least one game post every {{ archivingDays() }} days.</p>
+      <div class="alert alert-info" i18n="@@autoArchive.disabledMessage">The auto archiving of characters is off. This list is for administration information only. Each character is expected to have at least one game post every {{ archivingDays() }} days.</div>
     }
 
     <table cellspacing="0">

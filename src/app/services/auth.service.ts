@@ -192,7 +192,8 @@ export class AuthService {
       interface_font_size: 1,
       roles: [{
         id: 1,
-        name: 'guest'
+        name: 'guest',
+        permissions: []
       }]
     });
   }

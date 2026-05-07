@@ -34,7 +34,7 @@ export class NotificationsComponent implements OnInit {
       if (this.getNotificationsForType(modal)().length === 0) {
         this.activeModal.set(null);
       }
-    }, { allowSignalWrites: true });
+    });
   }
 
   private getNotificationsForType(type: string): () => unknown[] {

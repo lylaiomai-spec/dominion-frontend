@@ -1,10 +1,11 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
-import { GlobalSettingsService } from '../services/global-settings.service';
+import { BoardService } from '../services/board.service';
 import { ErrorBannerComponent } from '../components/error-banner/error-banner.component';
 
 interface ArchivingWarningItem {
@@ -25,12 +26,13 @@ interface ArchivingWarningItem {
 export class AutoArchiveComponent implements OnInit {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
-  private globalSettings = inject(GlobalSettingsService);
+  private boardService = inject(BoardService);
+  private router = inject(Router);
 
   characters = signal<ArchivingWarningItem[]>([]);
 
-  archivingEnabled = computed(() => this.globalSettings.isEnabled('auto_archiving_enabled'));
-  archivingDays = computed(() => this.globalSettings.getSetting('auto_archiving_days') ?? '?');
+  archivingEnabled = computed(() => this.boardService.board().auto_archiving_enabled === 'y');
+  archivingDays = computed(() => this.boardService.board().auto_archiving_days || '?');
 
   canAddImmunity = computed(() => this.authService.hasPermission('show_add_immunity_button'));
 
@@ -43,13 +45,18 @@ export class AutoArchiveComponent implements OnInit {
 
   ngOnInit() {
     this.loadList();
-    this.globalSettings.loadSettings();
   }
 
   private loadList() {
     this.apiService.get<ArchivingWarningItem[]>('characters/archiving-warnings').subscribe({
       next: (data) => this.characters.set(data),
-      error: (err) => console.error('Failed to load archiving warnings', err),
+      error: (err) => {
+        if (err.status === 403) {
+          this.router.navigateByUrl('/403');
+        } else {
+          console.error('Failed to load archiving warnings', err);
+        }
+      },
     });
   }
 
