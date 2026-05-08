@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { ApiService } from '../services/api.service';
 import { UserService } from '../services/user.service';
 import { CategoryService } from '../services/category.service';
+import { BoardService } from '../services/board.service';
 import { UserShort } from '../models/UserShort';
 import { Subforum } from '../models/Subforum';
 
@@ -198,6 +199,26 @@ export class SearchComponent implements OnInit {
   getFragment(bucket: string, result: SearchResult): string | undefined {
     if (bucket.endsWith('_posts')) return result.id;
     return undefined;
+  }
+
+  getAbsolutePostLink(result: SearchResult): string {
+    return `${window.location.origin}/viewtopic/${result.topic_id}?post_id=${result.id}#${result.id}`;
+  }
+
+  navigateToPost(event: MouseEvent, result: SearchResult) {
+    event.preventDefault();
+    this.router.navigate(['/viewtopic', result.topic_id], {
+      queryParams: { post_id: result.id },
+      fragment: result.id
+    });
+  }
+
+  copyPostLink(result: SearchResult) {
+    const url = new URL(window.location.origin);
+    url.pathname = `/viewtopic/${result.topic_id}`;
+    url.searchParams.set('post_id', result.id);
+    url.hash = result.id;
+    navigator.clipboard.writeText(url.toString());
   }
 
   private buildQueryString(includePage = true): string {
