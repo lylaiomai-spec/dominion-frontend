@@ -1,0 +1,61 @@
+<div id="pun-main" class="main">
+  <div class="main-header">
+    <h1><span i18n="@@nav.shop">Shop</span></h1>
+  </div>
+
+  @if (incomeTypes().length > 0) {
+    <div class="category">
+      <div class="cat-head">
+        <h2 i18n="@@shop.availableIncome">Available Income</h2>
+      </div>
+      <div class="main-content">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th i18n="@@shop.incomeName">Name</th>
+              <th i18n="@@shop.incomeDescription">Description</th>
+              <th i18n="@@shop.incomeAmount">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of incomeTypes(); track item.key) {
+              <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.amount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+
+  @if (spendTypes().length > 0) {
+    <div class="category">
+      <div class="cat-head">
+        <h2 i18n="@@shop.spendTypes">Spend Types</h2>
+      </div>
+      <div class="main-content">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th i18n="@@shop.incomeName">Name</th>
+              <th i18n="@@shop.incomeDescription">Description</th>
+              <th i18n="@@shop.incomeAmount">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of spendTypes(); track item.key) {
+              <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.amount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

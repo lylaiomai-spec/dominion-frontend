@@ -47,3 +47,11 @@ export interface CurrencyIncomeType {
   is_active: boolean;
   amount: number;
 }
+
+export interface CurrencySpendType {
+  key: string;
+  name: string;
+  description: string;
+  amount: number;
+  is_active: boolean;
+}
