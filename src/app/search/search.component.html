@@ -25,7 +25,7 @@
                 [checked]="isBucketSelected(bucket)"
                 (change)="toggleBucket(bucket)"
               >
-              {{ bucket }}
+              {{ getBucketName(bucket) }}
             </label>
           }
         </div>
@@ -89,7 +89,7 @@
 
       @for (bucket of resultBuckets(); track bucket) {
         <div class="search-bucket-results">
-          <h3 class="search-bucket-title">{{ bucket }}</h3>
+          <h3 class="search-bucket-title">{{ getBucketName(bucket) }}</h3>
           <ul class="search-result-list">
             @for (result of results()[bucket]; track result.id) {
               <li class="search-result-item">

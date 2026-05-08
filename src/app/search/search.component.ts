@@ -169,9 +169,25 @@ export class SearchComponent implements OnInit {
     this.performSearch();
   }
 
+  bucketNames: Record<string, string> = {
+    characters: $localize`:@@search.bucket.characters:Characters`,
+    episodes: $localize`:@@search.bucket.episodes:Episodes`,
+    game_posts: $localize`:@@search.bucket.game_posts:Game posts`,
+    general_posts: $localize`:@@search.bucket.general_posts:General posts`,
+    lore_posts: $localize`:@@search.bucket.lore_posts:Lore posts`,
+    wanted_posts: $localize`:@@search.bucket.wanted_posts:Wanted posts`,
+  };
+
+  getBucketName(bucket: string): string {
+    return this.bucketNames[bucket] ?? bucket;
+  }
+
   getLink(bucket: string, result: SearchResult): string[] {
-    if (bucket === 'game_posts' && result.topic_id != null) {
+    if (bucket.endsWith('_posts') && result.topic_id != null) {
       return ['/viewtopic', result.topic_id.toString()];
+    }
+    if (bucket === 'episodes') {
+      return ['/viewtopic', result.id];
     }
     if (bucket === 'characters') {
       return ['/character', result.id];
@@ -180,7 +196,7 @@ export class SearchComponent implements OnInit {
   }
 
   getFragment(bucket: string, result: SearchResult): string | undefined {
-    if (bucket === 'game_posts') return result.id;
+    if (bucket.endsWith('_posts')) return result.id;
     return undefined;
   }
 
