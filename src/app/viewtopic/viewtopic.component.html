@@ -148,6 +148,11 @@
               <div class="post-content" appRouterLinks [innerHTML]="post.content_html | safeHtml"></div>
             }
           </div>
+          @if (post.use_character_profile && post.character_profile?.signature_html) {
+            <div class="post-signature" [innerHTML]="post.character_profile!.signature_html! | safeHtml"></div>
+          } @else if (!post.use_character_profile && post.user_profile?.signature_html) {
+            <div class="post-signature" [innerHTML]="post.user_profile!.signature_html! | safeHtml"></div>
+          }
           <div class="post-reactions">
             @if (post.reactions) {
               @for (reaction of post.reactions; track reaction.reaction_id) {
