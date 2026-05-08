@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { ApiService } from './api.service';
 import { HttpParams } from '@angular/common/http';
-import { CurrencySettings, CurrencySettingsUpdateRequest, CurrencyIncomeType, CurrencyTransactionsResponse, AddTransactionRequest, CurrencyTransaction } from '../models/Currency';
+import { CurrencySettings, CurrencySettingsUpdateRequest, CurrencyIncomeType, CurrencySpendType, CurrencyTransactionsResponse, AddTransactionRequest, CurrencyTransaction } from '../models/Currency';
 
 @Injectable({ providedIn: 'root' })
 export class CurrencyService {
@@ -49,5 +49,21 @@ export class CurrencyService {
   updateIncomeTypes(types: CurrencyIncomeType[]) {
     const payload = types.map(t => ({ key: t.key, amount: t.amount, is_active: t.is_active }));
     return this.apiService.post<CurrencyIncomeType[]>('currency/income-types/update', payload);
+  }
+
+  loadActiveIncomeTypes() {
+    return this.apiService.get<CurrencyIncomeType[]>('currency/active-income-types');
+  }
+
+  loadSpendTypes() {
+    return this.apiService.get<CurrencySpendType[]>('currency/spend-types');
+  }
+
+  loadActiveSpendTypes() {
+    return this.apiService.get<CurrencySpendType[]>('currency/active-spend-types');
+  }
+
+  updateSpendType(types: CurrencySpendType[]) {
+    return this.apiService.post<CurrencySpendType[]>('currency/spend-types/update', types);
   }
 }

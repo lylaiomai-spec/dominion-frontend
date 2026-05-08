@@ -26,6 +26,7 @@ export class NavlinksComponent {
   public additionalNavlinks = this.additionalNavlinkService.navlinks;
   public canSeeAdminPage = computed(() => this.authService.hasPermission('show_admin_page'));
   public showAutoArchiveLink = computed(() => this.boardService.board().auto_archiving_show_page_link === 'y');
+  public showShopLink = computed(() => this.boardService.board().features?.['currency'] === 1);
 
   logout(event: Event) {
     event.preventDefault();

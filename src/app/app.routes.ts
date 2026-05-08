@@ -14,6 +14,7 @@ import {AdminWrapperComponent} from './admin/admin-wrapper/admin-wrapper.compone
 import {AdminDashboardComponent} from './admin/admin-dashboard/admin-dashboard.component';
 import { AbsenceListComponent } from './absence-list/absence-list.component';
 import { AutoArchiveComponent } from './auto-archive/auto-archive.component';
+import { ShopComponent } from './shop/shop.component';
 import {CharacterTemplateEditComponent} from './admin/character-template-edit/character-template-edit.component';
 import {TopicCreateComponent} from './topic-create/topic-create.component';
 import {EpisodeCreateComponent} from './episode-create/episode-create.component';
@@ -246,6 +247,12 @@ export const routes: Routes = [
     component: AutoArchiveComponent,
     title: 'Auto Archive',
     data: { pageId: 'pun-auto-archive' }
+  },
+  {
+    path: 'shop',
+    component: ShopComponent,
+    title: 'Shop',
+    data: { pageId: 'pun-shop' }
   },
   {
     path: 'character-profile-update/:id',
