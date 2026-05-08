@@ -33,6 +33,7 @@ export interface UserProfile {
   total_posts: number;
   total_general_posts: number;
   currency_amount?: number;
+  signature_html?: string | null;
 }
 
 export interface UserProfileResponse {
@@ -66,6 +67,7 @@ export interface UpdateSettingsRequest {
   interface_font_size?: number;
   interface_design?: string | null;
   password?: string;
+  signature?: string;
 }
 
 export interface UpdateSettingsResponse {

@@ -1537,6 +1537,34 @@ tr.altstyle td {
   border: 1px solid #ffeeba;
 }
 
+/* Post signature */
+.post-signature {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #bbb;
+  font-size: 0.85em;
+  color: #666;
+}
+
+/* Faction badges below avatar */
+.pa-factions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+  justify-content: center;
+}
+
+.faction-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background-color: #e0e0d0;
+  color: #444;
+  font-size: 0.75em;
+  white-space: nowrap;
+}
+
 .toggle-password {
   background: none;
   border: none;

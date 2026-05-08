@@ -18,6 +18,14 @@
       </fieldset>
 
       <fieldset>
+        <legend i18n="@@settings.signature">Signature</legend>
+        <div class="fs-box">
+          <app-bb-toolbar [textarea]="signatureField" [showSpoiler]="false" [showImageUpload]="false"></app-bb-toolbar>
+          <textarea #signatureField rows="5" style="width: 100%; box-sizing: border-box;" [value]="signature"></textarea>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend i18n="@@settings.localization">Localization</legend>
         <div class="fs-box">
           <p class="inputfield">
