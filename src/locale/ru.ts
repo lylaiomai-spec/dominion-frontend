@@ -788,5 +788,12 @@ export const TRANSLATIONS_RU = {
   "search.loading": "Загрузка…",
   "search.noResults": "Ничего не найдено.",
   "search.totalCount": "Результатов: {$INTERPOLATION}",
-  "search.pages": "Страницы"
+  "search.pages": "Страницы",
+  "search.bucket.characters": "Персонажи",
+  "search.bucket.episodes": "Эпизоды",
+  "search.bucket.game_posts": "Игровые посты",
+  "search.bucket.general_posts": "Общие посты",
+  "search.bucket.lore_posts": "Посты лора",
+  "search.bucket.wanted_posts": "Посты разыскиваемых",
+  "search.filterAuthorPlaceholder": "Поиск пользователя…"
 };

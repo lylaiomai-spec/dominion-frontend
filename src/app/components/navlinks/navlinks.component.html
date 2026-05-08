@@ -38,7 +38,7 @@
     @if (showAutoArchiveLink()) {
       <li id="h-auto-archive"><a i18n="@@nav.autoArchive" routerLink="/auto-archive">Auto Archive</a></li>
     }
-    @if (showShopLink()) {
+    @if (showShopLink() && isAuthenticated()) {
       <li id="h-shop"><a i18n="@@nav.shop" routerLink="/shop">Shop</a></li>
     }
   </ul>
