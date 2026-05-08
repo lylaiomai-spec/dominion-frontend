@@ -3,8 +3,8 @@
 } @else {
   <h1><span i18n="@@characterprofileedit.titleEdit">Edit Character Profile</span></h1>
 }
-<div id="post-form" class="formal">
-  <form id="post" class="container" (submit)="onSubmit($event)">
+<div class="formal">
+  <form class="container" (submit)="onSubmit($event)">
     <fieldset>
       <legend><ng-container i18n="@@characterprofileedit.characterDetails">Character Details</ng-container></legend>
       <div class="fs-box hashelp">
@@ -37,6 +37,13 @@
           </p>
         </div>
       }
+    </fieldset>
+    <fieldset>
+      <legend i18n="@@characterprofileedit.signature">Signature</legend>
+      <div class="fs-box">
+        <app-bb-toolbar [textarea]="signatureField" [showSpoiler]="false" [showImageUpload]="false"></app-bb-toolbar>
+        <textarea #signatureField rows="5" style="width: 100%; box-sizing: border-box;" [value]="characterSignature"></textarea>
+      </div>
     </fieldset>
     <p class="formsubmit">
       <button type="submit" [class]="'btn-save btn-save--' + saveState()" [disabled]="saveState() === 'loading'" accesskey="s">

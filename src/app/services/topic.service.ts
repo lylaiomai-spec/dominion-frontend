@@ -256,16 +256,6 @@ export class TopicService {
   }
 
 private enrichTopicWithPermissions(topic: Topic): Topic {
-    const currentUser = this.authService.currentUser();
-    let canEdit = false;
-
-    if (currentUser && currentUser.id === topic.author_user_id) {
-      canEdit = true;
-    }
-    if (this.authService.isAdmin()) {
-      canEdit = true;
-    }
-
-    return { ...topic, can_edit: canEdit };
+    return topic;
   }
 }

@@ -12,6 +12,8 @@ import {LoginComponent} from './login/login.component';
 import {RegisterComponent} from './register/register.component';
 import {AdminWrapperComponent} from './admin/admin-wrapper/admin-wrapper.component';
 import {AdminDashboardComponent} from './admin/admin-dashboard/admin-dashboard.component';
+import { AbsenceListComponent } from './absence-list/absence-list.component';
+import { AutoArchiveComponent } from './auto-archive/auto-archive.component';
 import {CharacterTemplateEditComponent} from './admin/character-template-edit/character-template-edit.component';
 import {TopicCreateComponent} from './topic-create/topic-create.component';
 import {EpisodeCreateComponent} from './episode-create/episode-create.component';
@@ -32,6 +34,7 @@ import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.comp
 import {AdminSubforumsComponent} from './admin/admin-subforums/admin-subforums.component';
 import {TopicCommanderComponent} from './admin/topic-commander/topic-commander.component';
 import {AdminUsersComponent} from './admin/admin-users/admin-users.component';
+import {AdminCharactersComponent} from './admin/admin-characters/admin-characters.component';
 import {AdminCreateUserComponent} from './admin/admin-create-user/admin-create-user.component';
 import {AdminAdditionalNavlinksComponent} from './admin/admin-additional-navlinks/admin-additional-navlinks.component';
 import {PreviewComponent} from './preview/preview.component';
@@ -233,6 +236,18 @@ export const routes: Routes = [
     data: { pageId: 'pun-active-users' }
   },
   {
+    path: 'absence-list',
+    component: AbsenceListComponent,
+    title: 'Absences',
+    data: { pageId: 'pun-absence-list' }
+  },
+  {
+    path: 'auto-archive',
+    component: AutoArchiveComponent,
+    title: 'Auto Archive',
+    data: { pageId: 'pun-auto-archive' }
+  },
+  {
     path: 'character-profile-update/:id',
     component: CharacterProfileEditComponent,
     title: 'Update Character Profile',
@@ -314,6 +329,11 @@ export const routes: Routes = [
         path: 'users',
         component: AdminUsersComponent,
         title: 'Admin - Users'
+      },
+      {
+        path: 'characters',
+        component: AdminCharactersComponent,
+        title: 'Admin - Characters'
       },
       {
         path: 'create-user',

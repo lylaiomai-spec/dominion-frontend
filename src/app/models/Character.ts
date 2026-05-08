@@ -65,6 +65,9 @@ export interface CharacterProfile {
   custom_fields: CustomFieldsData;
   is_mask: boolean | null;
   mask_name: string | null;
+  signature?: string | null;
+  signature_html?: string | null;
+  factions?: Faction[];
 }
 
 export interface CreateCharacterRequest {

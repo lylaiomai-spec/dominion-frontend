@@ -52,7 +52,7 @@
   </div>
 </div>
 
-@if (isAdmin() && character.character_status === 2) {
+@if (canSeeAdminBlock() && character.character_status === 2) {
   <div class="admin-actions">
     <button class="button" [disabled]="hasPendingFactions" (click)="acceptCharacter()" i18n="@@character.accept">Accept</button>
     <button class="button btn-deactivate" (click)="declineCharacter()" i18n="@@character.decline">Decline</button>
@@ -64,20 +64,20 @@
   </div>
 }
 
-@if (isAdmin() && character.character_status === 0) {
+@if (canSeeAdminBlock() && character.character_status === 0) {
   <div class="admin-actions">
     <button class="button" (click)="deactivateCharacter()" i18n="@@character.deactivate">Deactivate the character</button>
   </div>
 }
 
-@if (isAdmin() && character.character_status === 1) {
+@if (canSeeAdminBlock() && character.character_status === 1) {
   <div class="admin-actions">
     <button class="button" (click)="activateCharacter()" i18n="@@character.activate">Activate character</button>
     <button class="button" (click)="moveToPending()" i18n="@@character.moveToPending">Move to pending</button>
   </div>
 }
 
-@if (isAdmin() && character.character_status === 3) {
+@if (canSeeAdminBlock() && character.character_status === 3) {
   <div class="admin-actions">
     <button class="button" (click)="moveToPending()" i18n="@@character.moveToPending">Move to pending</button>
   </div>

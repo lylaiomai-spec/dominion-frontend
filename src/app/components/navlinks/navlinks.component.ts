@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
 import { AdditionalNavlinkService } from '../../services/additional-navlink.service';
+import { BoardService } from '../../services/board.service';
 import { AdditionalNavlink, AdditionalNavlinkType } from '../../models/AdditionalNavlink';
 
 @Component({
@@ -16,12 +17,15 @@ export class NavlinksComponent {
   protected authService = inject(AuthService);
   private userService = inject(UserService);
   private additionalNavlinkService = inject(AdditionalNavlinkService);
+  private boardService = inject(BoardService);
   private router = inject(Router);
 
   public isAuthenticated = this.authService.isAuthenticated;
   public currentUser = this.authService.currentUser;
   public hasPrivateKey = this.userService.privateKey;
   public additionalNavlinks = this.additionalNavlinkService.navlinks;
+  public canSeeAdminPage = computed(() => this.authService.hasPermission('show_admin_page'));
+  public showAutoArchiveLink = computed(() => this.boardService.board().auto_archiving_show_page_link === 'y');
 
   logout(event: Event) {
     event.preventDefault();
