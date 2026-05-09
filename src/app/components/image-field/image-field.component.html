@@ -2,40 +2,48 @@
   <label [attr.for]="fieldName">{{ fieldName }}</label>
 }
 
-<div class="mode-toggle">
-  <button type="button" [class.active]="mode === 'upload'" (click)="mode = 'upload'" i18n="@@imageField.uploadImage">Upload image</button>
-  <button type="button" [class.active]="mode === 'url'" (click)="mode = 'url'" i18n="@@imageField.useUrl">Use URL</button>
-</div>
+<div style="display: flex; gap: 12px; align-items: flex-start;">
+  @if (value) {
+    <img [src]="value" alt="" style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0;" />
+  }
 
-@if (mode === 'upload') {
-  <div class="upload-section">
-    <input type="file" accept="image/*" (change)="onFileChange($event)" />
+  <div style="flex: 1;">
+    <div class="mode-toggle">
+      <button type="button" [class.active]="mode === 'upload'" (click)="mode = 'upload'" i18n="@@imageField.uploadImage">Upload image</button>
+      <button type="button" [class.active]="mode === 'url'" (click)="mode = 'url'" i18n="@@imageField.useUrl">Use URL</button>
+    </div>
 
-    @if (uploadState === 'idle' && selectedFile) {
-      <button type="button" class="btn-upload" (click)="upload()" i18n="@@imageField.upload">Upload</button>
-    }
-    @if (uploadState === 'uploading') {
-      <div class="upload-status">
-        <span class="spinner"></span>
-        <span i18n="@@imageField.uploading">Uploading…</span>
+    @if (mode === 'upload') {
+      <div class="upload-section">
+        <input type="file" accept="image/*" (change)="onFileChange($event)" />
+
+        @if (uploadState === 'idle' && selectedFile) {
+          <button type="button" class="btn-upload" (click)="upload()" i18n="@@imageField.upload">Upload</button>
+        }
+        @if (uploadState === 'uploading') {
+          <div class="upload-status">
+            <span class="spinner"></span>
+            <span i18n="@@imageField.uploading">Uploading…</span>
+          </div>
+        }
+        @if (uploadState === 'done') {
+          <div class="upload-status">
+            <img class="preview" [src]="value" alt="" />
+          </div>
+        }
+        @if (uploadState === 'error') {
+          <div class="upload-status error-row">
+            <span class="error-text">{{ errorMessage }}</span>
+            <button type="button" (click)="upload()" i18n="@@imageField.retry">Retry</button>
+          </div>
+        }
       </div>
     }
-    @if (uploadState === 'done') {
-      <div class="upload-status">
-        <img class="preview" [src]="value" alt="" />
-      </div>
-    }
-    @if (uploadState === 'error') {
-      <div class="upload-status error-row">
-        <span class="error-text">{{ errorMessage }}</span>
-        <button type="button" (click)="upload()" i18n="@@imageField.retry">Retry</button>
-      </div>
+
+    @if (mode === 'url') {
+      <input type="text" [attr.id]="fieldName" [(ngModel)]="value" style="width: 100%;" />
     }
   </div>
-}
-
-@if (mode === 'url') {
-  <input type="text" [attr.id]="fieldName" [(ngModel)]="value" />
-}
+</div>
 
 <input type="hidden" [attr.name]="name" [value]="value" />
