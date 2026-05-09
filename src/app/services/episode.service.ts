@@ -15,7 +15,9 @@ export class EpisodeService {
     subforum_id: 0,
     subforum_name: '',
     topic_status: TopicStatus.active,
-    last_post_date: ''
+    last_post_date: '',
+    custom_fields: {},
+    characters: []
   });
   readonly topic = this.topicSignal.asReadonly();
   private topicListSignal = signal<EpisodeListItem[]>([]);
