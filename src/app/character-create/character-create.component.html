@@ -19,10 +19,10 @@
           <span class="input"><input id="fld3" type="text" name="req_name" [value]="characterName" size="80" maxlength="70" /></span>
         </p>
 
-        <p class="inputfield required longinput">
-          <label for="fld4">Avatar URL</label><br />
-          <span class="input"><input id="fld4" type="text" name="req_avatar" [value]="characterAvatar" size="80" maxlength="255" /></span>
-        </p>
+        <div class="inputfield required longinput">
+          <label i18n="@@characterprofileedit.avatarUrl">Avatar URL</label>
+          <app-image-field [name]="'req_avatar'" [fieldValue]="characterAvatar" [showFieldName]="false"></app-image-field>
+        </div>
 
         <app-faction-paths
           [initialFactions]="initialData?.factions ?? []"
