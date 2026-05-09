@@ -64,47 +64,82 @@
     </aside>
 
     <section class="table-area">
-      <!-- <div class="search-bar">
-        <input type="text" placeholder="Search by topic title..." i18n-placeholder="@@episodelist.searchByTopicTitle" [(ngModel)]="searchQuery">
-      </div> -->
+      <div class="column-selector">
+        <strong i18n="@@episodelist.columns">Columns:</strong>
+        @for (col of allColumns(); track col.key) {
+          <label>
+            <input type="checkbox" [checked]="isColumnVisible(col.key)" (change)="toggleColumn(col.key)">
+            {{ col.label }}
+          </label>
+        }
+      </div>
 
       <table class="episode-table" cellspacing="0">
         <thead>
-        <tr>
-          <th class="tcl" i18n="@@episodelist.topicTitle">Topic Title</th>
-          <th class="tc2" i18n="@@episodelist.subforum">Subforum</th>
-          <th class="tc3" i18n="@@episodelist.status">Status</th>
-          <th class="tc4" i18n="@@episodelist.dateLastPost">Last Post Date</th>
-        </tr>
+          <tr>
+            @for (col of allColumns(); track col.key) {
+              @if (isColumnVisible(col.key)) {
+                <th>
+                  @if (col.key !== 'characters') {
+                    <button type="button" class="sort-btn" (click)="setOrder(col.key)">
+                      {{ col.label }} {{ orderIcon(col.key) }}
+                    </button>
+                  } @else {
+                    {{ col.label }}
+                  }
+                </th>
+              }
+            }
+          </tr>
         </thead>
         <tbody>
           @for (topic of topics(); track topic.id) {
             <tr>
-              <td class="tcl">
-                <a [routerLink]="['/viewtopic', topic.topic_id]" class="topic-link">{{ topic.name }}</a>
-              </td>
-              <td class="tc2"><a [routerLink]="['/subforum', topic.subforum_id]">{{ topic.subforum_name }}</a></td>
-              <td class="tc3">
-                  @if (topic.topic_status === TopicStatus.active) {
-                    <ng-container i18n="@@episodelist.inProgress">In Progress</ng-container>
-                  } @else {
-                    <ng-container i18n="@@episodelist.completed">Completed</ng-container>
-                  }
-              </td>
-              <td class="tc4">
-                {{ topic.last_post_date }}
-              </td>
+              @for (col of allColumns(); track col.key) {
+                @if (isColumnVisible(col.key)) {
+                  <td>
+                    @switch (col.key) {
+                      @case ('name') {
+                        <a [routerLink]="['/viewtopic', topic.topic_id]" class="topic-link">{{ topic.name }}</a>
+                      }
+                      @case ('subforum_name') {
+                        <a [routerLink]="['/subforum', topic.subforum_id]">{{ topic.subforum_name }}</a>
+                      }
+                      @case ('topic_status') {
+                        @if (topic.topic_status === TopicStatus.active) {
+                          <ng-container i18n="@@episodelist.inProgress">In Progress</ng-container>
+                        } @else {
+                          <ng-container i18n="@@episodelist.completed">Completed</ng-container>
+                        }
+                      }
+                      @case ('last_post_date') {
+                        {{ topic.last_post_date }}
+                      }
+                      @case ('characters') {
+                        <span class="character-list">
+                          @for (char of topic.characters; track char.id) {
+                            <span class="character-tag">{{ char.name }}</span>
+                          }
+                        </span>
+                      }
+                      @default {
+                        {{ topic.custom_fields?.[col.key] }}
+                      }
+                    }
+                  </td>
+                }
+              }
             </tr>
           }
         </tbody>
       </table>
 
       <div class="pagination">
-        <button [disabled]="currentPage === 1" i18n="@@episodelist.previous">Previous</button>
+        <button [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1; applyFilters()" i18n="@@episodelist.previous">Previous</button>
         <span>
           <ng-container i18n="@@episodelist.page">Page</ng-container> {{ currentPage }} <ng-container i18n="@@episodelist.of">of</ng-container> {{ totalPages }}
         </span>
-        <button [disabled]="currentPage === totalPages" i18n="@@episodelist.next">Next</button>
+        <button [disabled]="currentPage === totalPages" (click)="currentPage = currentPage + 1; applyFilters()" i18n="@@episodelist.next">Next</button>
       </div>
     </section>
   </div>

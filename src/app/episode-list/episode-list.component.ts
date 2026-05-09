@@ -1,4 +1,4 @@
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, computed, inject, OnInit, signal} from '@angular/core';
 import {ActivatedRoute, Router, RouterLink} from '@angular/router';
 import {EpisodeFilterRequest} from '../models/Episode';
 import {CharacterShort} from '../models/Character';
@@ -11,14 +11,17 @@ import {CommonModule} from '@angular/common';
 import {debounceTime, distinctUntilChanged, forkJoin, Subject} from 'rxjs';
 import {Faction} from '../models/Faction';
 
+const FIXED_COLUMNS = [
+  { key: 'name', label: $localize`:@@episodelist.topicTitle:Topic Title` },
+  { key: 'subforum_name', label: $localize`:@@episodelist.subforum:Subforum` },
+  { key: 'topic_status', label: $localize`:@@episodelist.status:Status` },
+  { key: 'last_post_date', label: $localize`:@@episodelist.dateLastPost:Last Post Date` },
+  { key: 'characters', label: $localize`:@@episodelist.characters:Characters` },
+];
 
 @Component({
   selector: 'app-episode-list',
-  imports: [
-    RouterLink,
-    FormsModule,
-    CommonModule
-  ],
+  imports: [RouterLink, FormsModule, CommonModule],
   templateUrl: './episode-list.component.html',
   standalone: true,
 })
@@ -32,6 +35,7 @@ export class EpisodeListComponent implements OnInit {
   protected currentPage: number = 1;
   protected totalPages: number = 1;
   protected topics = this.episodeService.episodeListPage;
+  protected episodeTemplate = this.episodeService.episodeTemplate;
   protected selectedCharacters: CharacterShort[] = [];
   protected selectedSubforums: number[] = [];
   protected selectedFactions: number[] = [];
@@ -40,11 +44,22 @@ export class EpisodeListComponent implements OnInit {
   protected subforums = this.episodeService.subforumList;
   protected characterSuggestions = this.characterService.shortCharacterList;
   protected factions = this.factionService.factions;
+  protected order = signal<string[]>(['name']);
+
+  protected visibleColumns = signal<string[]>(['name', 'subforum_name', 'topic_status', 'last_post_date', 'characters']);
+
+  protected allColumns = computed(() => [
+    ...FIXED_COLUMNS,
+    ...this.episodeTemplate()
+      .filter(f => f.content_field_type !== 'long_text' && f.content_field_type !== 'image')
+      .map(f => ({ key: f.machine_field_name, label: f.human_field_name }))
+  ]);
 
   private characterSearchTerms = new Subject<string>();
 
   constructor() {
     this.episodeService.loadSubforumList();
+    this.episodeService.loadEpisodeTemplate();
     this.factionService.loadFactions();
   }
 
@@ -73,6 +88,11 @@ export class EpisodeListComponent implements OnInit {
       this.currentPage = parseInt(page, 10) || 1;
     }
 
+    const orderParam = params.get('order');
+    if (orderParam) {
+      this.order.set(orderParam.split(','));
+    }
+
     const characterIds = params.get('characters');
     if (characterIds) {
       const ids = characterIds.split(',').map(Number).filter(n => !isNaN(n));
@@ -94,6 +114,16 @@ export class EpisodeListComponent implements OnInit {
 
   protected isFactionSelected(id: number): boolean {
     return this.selectedFactions.includes(id);
+  }
+
+  protected isColumnVisible(key: string): boolean {
+    return this.visibleColumns().includes(key);
+  }
+
+  protected toggleColumn(key: string): void {
+    this.visibleColumns.update(cols =>
+      cols.includes(key) ? cols.filter(c => c !== key) : [...cols, key]
+    );
   }
 
   protected toggleForum(id: number): void {
@@ -133,12 +163,35 @@ export class EpisodeListComponent implements OnInit {
     }
   }
 
+  protected setOrder(col: string): void {
+    this.order.update(current => {
+      const withoutCol = current.filter(o => o !== col && o !== '-' + col);
+      if (current.includes(col)) {
+        return [...withoutCol, '-' + col];
+      } else if (current.includes('-' + col)) {
+        return withoutCol;
+      } else {
+        return [...withoutCol, col];
+      }
+    });
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  protected orderIcon(col: string): string {
+    const current = this.order();
+    if (current.includes(col)) return '▲';
+    if (current.includes('-' + col)) return '▼';
+    return '⇅';
+  }
+
   protected applyFilters() {
     const request: EpisodeFilterRequest = {
       subforum_ids: this.selectedSubforums,
       character_ids: this.selectedCharacters.map(c => c.id),
       faction_ids: this.selectedFactions,
-      page: this.currentPage
+      page: this.currentPage,
+      order: this.order()
     };
 
     this.updateUrlParams();
@@ -159,6 +212,9 @@ export class EpisodeListComponent implements OnInit {
     }
     if (this.currentPage > 1) {
       queryParams['page'] = this.currentPage;
+    }
+    if (this.order().length > 0) {
+      queryParams['order'] = this.order().join(',');
     }
 
     this.router.navigate([], {
