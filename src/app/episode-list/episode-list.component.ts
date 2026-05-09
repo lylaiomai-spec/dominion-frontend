@@ -51,7 +51,7 @@ export class EpisodeListComponent implements OnInit {
   protected allColumns = computed(() => [
     ...FIXED_COLUMNS,
     ...this.episodeTemplate()
-      .filter(f => f.content_field_type !== 'long_text' && f.content_field_type !== 'image')
+      .filter(f => !['long_text', 'image', 'cropped_image'].includes(f.content_field_type))
       .map(f => ({ key: f.machine_field_name, label: f.human_field_name }))
   ]);
 
