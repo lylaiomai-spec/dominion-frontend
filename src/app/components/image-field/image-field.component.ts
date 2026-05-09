@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ImageService } from '../../services/image.service';
 
@@ -8,7 +8,7 @@ import { ImageService } from '../../services/image.service';
   templateUrl: './image-field.component.html',
   standalone: true,
 })
-export class ImageFieldComponent implements OnInit {
+export class ImageFieldComponent implements OnInit, OnChanges {
   @Input() fieldName: string | undefined;
   @Input() fieldValue: string = '';
   @Input() showFieldName: boolean = true;
@@ -26,6 +26,18 @@ export class ImageFieldComponent implements OnInit {
     this.value = this.fieldValue;
     if (this.fieldValue) {
       this.mode = 'url';
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['fieldValue']) {
+      const prev = changes['fieldValue'].previousValue ?? '';
+      const next = changes['fieldValue'].currentValue ?? '';
+      // Only sync if the user hasn't manually changed the value
+      if (this.value === prev) {
+        this.value = next;
+        if (next) this.mode = 'url';
+      }
     }
   }
 

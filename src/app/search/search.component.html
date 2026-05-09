@@ -25,7 +25,7 @@
                 [checked]="isBucketSelected(bucket)"
                 (change)="toggleBucket(bucket)"
               >
-              {{ bucket }}
+              {{ getBucketName(bucket) }}
             </label>
           }
         </div>
@@ -89,16 +89,15 @@
 
       @for (bucket of resultBuckets(); track bucket) {
         <div class="search-bucket-results">
-          <h3 class="search-bucket-title">{{ bucket }}</h3>
+          <h3 class="search-bucket-title">{{ getBucketName(bucket) }}</h3>
           <ul class="search-result-list">
             @for (result of results()[bucket]; track result.id) {
               <li class="search-result-item">
-                <a [routerLink]="getLink(bucket, result)" [fragment]="getFragment(bucket, result)">
-                  #{{ result.id }}
-                  @if (result.topic_id) {
-                    (topic {{ result.topic_id }})
-                  }
-                </a>
+                @if (bucket.endsWith('_posts')) {
+                  <a [href]="getAbsolutePostLink(result)" (click)="navigateToPost($event, result)">#{{ result.id }} (topic {{ result.topic_id }})</a>
+                } @else {
+                  <a [routerLink]="getLink(bucket, result)">{{ result.id }}</a>
+                }
                 <blockquote class="search-snippet" [innerHTML]="result.snippet"></blockquote>
               </li>
             }

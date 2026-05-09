@@ -5,6 +5,7 @@ import { TopicService } from '../services/topic.service';
 import { AuthService } from '../services/auth.service';
 import { FieldInputComponent } from '../components/field-input/field-input.component';
 import { FactionPathsComponent } from '../components/faction-paths/faction-paths.component';
+import { ImageFieldComponent } from '../components/image-field/image-field.component';
 import { CreateCharacterRequest, Character } from '../models/Character';
 import { ClaimAutocompleteItem, ClaimRecord } from '../models/CharacterClaim';
 import { Topic, TopicType, TopicStatus } from '../models/Topic';
@@ -17,7 +18,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-character-create',
-  imports: [FieldInputComponent, FactionPathsComponent, CommonModule, FormsModule],
+  imports: [FieldInputComponent, FactionPathsComponent, CommonModule, FormsModule, ImageFieldComponent],
   templateUrl: './character-create.component.html',
   standalone: true,
 })

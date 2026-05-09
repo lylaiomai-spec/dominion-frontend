@@ -14,4 +14,5 @@ export interface Board {
   auto_archiving_show_page_link: string;
   auto_archiving_enabled: string;
   auto_archiving_days: string;
+  features?: { [key: string]: number };
 }
