@@ -136,6 +136,22 @@ export class AdminDesignComponent implements OnInit {
     });
   }
 
+  revertingFile = signal<string | null>(null);
+
+  revert(file: StaticFile, key: FileKey) {
+    this.revertingFile.set(file.file_name);
+    this.apiService.post('static-file/revert', { file_name: file.file_name }).subscribe({
+      next: () => {
+        this.revertingFile.set(null);
+        this.loadFileVersions(key);
+      },
+      error: (err) => {
+        console.error('Failed to revert file', err);
+        this.revertingFile.set(null);
+      }
+    });
+  }
+
   stateFor(key: FileKey): UploadState {
     return this.uploadStates()[key];
   }
