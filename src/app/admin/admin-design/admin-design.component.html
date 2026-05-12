@@ -86,6 +86,9 @@
             <span class="version-filename">{{ v.file_name }}</span>
             <span class="version-date">{{ v.file_created_date | date:'yyyy-MM-dd HH:mm' }}</span>
             <a class="version-link" [href]="'/' + v.file_name" target="_blank" i18n="@@admin.design.view">View</a>
+            @if (i !== 0) {
+              <button class="button" (click)="revert(v, 'favicon')" [disabled]="revertingFile() === v.file_name" i18n="@@admin.design.revert">Revert</button>
+            }
           </li>
         }
       </ul>
@@ -122,6 +125,9 @@
             <span class="version-filename">{{ v.file_name }}</span>
             <span class="version-date">{{ v.file_created_date | date:'yyyy-MM-dd HH:mm' }}</span>
             <a class="version-link" [href]="'/' + v.file_name" target="_blank" i18n="@@admin.design.view">View</a>
+            @if (i !== 0) {
+              <button class="button" (click)="revert(v, 'custom_style')" [disabled]="revertingFile() === v.file_name" i18n="@@admin.design.revert">Revert</button>
+            }
           </li>
         }
       </ul>
@@ -158,6 +164,9 @@
             <span class="version-filename">{{ v.file_name }}</span>
             <span class="version-date">{{ v.file_created_date | date:'yyyy-MM-dd HH:mm' }}</span>
             <a class="version-link" [href]="'/' + v.file_name" target="_blank" i18n="@@admin.design.view">View</a>
+            @if (i !== 0) {
+              <button class="button" (click)="revert(v, 'main_style')" [disabled]="revertingFile() === v.file_name" i18n="@@admin.design.revert">Revert</button>
+            }
           </li>
         }
       </ul>

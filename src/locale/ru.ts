@@ -617,6 +617,7 @@ export const TRANSLATIONS_RU = {
   "admin.design.uploadMainStyle": "Загрузить main_style.css",
   "admin.design.previousVersions": "Предыдущие версии",
   "admin.design.view": "Открыть",
+  "admin.design.revert": "Откатить",
   "admin.features": "Дополнительные функции",
   "adminFeatures.title": "Дополнительные функции",
   "adminFeatures.settings": "Настройки",
