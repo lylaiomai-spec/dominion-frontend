@@ -61,7 +61,6 @@ import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
 import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
 import { AdminDesignDraftsComponent } from './admin/admin-design-drafts/admin-design-drafts.component';
-import { AdminDesignDraftEditComponent } from './admin/admin-design-draft-edit/admin-design-draft-edit.component';
 import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
@@ -421,7 +420,7 @@ export const routes: Routes = [
       },
       {
         path: 'design-drafts/:id',
-        component: AdminDesignDraftEditComponent,
+        loadComponent: () => import('./admin/admin-design-draft-edit/admin-design-draft-edit.component').then(m => m.AdminDesignDraftEditComponent),
         title: 'Admin - Edit Design Draft'
       }
     ]
