@@ -17,6 +17,7 @@ export class AdminDesignDraftsComponent implements OnInit {
 
   drafts = signal<DesignDraftListItem[]>([]);
   showCreateModal = signal(false);
+  publishingDraft = signal<DesignDraftListItem | null>(null);
   newDraftName = '';
 
   ngOnInit() {
@@ -41,6 +42,23 @@ export class AdminDesignDraftsComponent implements OnInit {
 
   closeCreateModal() {
     this.showCreateModal.set(false);
+  }
+
+  confirmPublish(draft: DesignDraftListItem) {
+    this.publishingDraft.set(draft);
+  }
+
+  cancelPublish() {
+    this.publishingDraft.set(null);
+  }
+
+  publish() {
+    const draft = this.publishingDraft();
+    if (!draft) return;
+    this.draftService.publish(draft.id).subscribe({
+      next: () => this.publishingDraft.set(null),
+      error: (err) => console.error('Failed to publish design draft', err),
+    });
   }
 
   createDraft() {

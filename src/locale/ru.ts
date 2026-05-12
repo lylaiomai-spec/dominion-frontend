@@ -822,6 +822,11 @@ export const TRANSLATIONS_RU = {
   "adminDesignDrafts.dateLastChanged": "Изменён",
   "adminDesignDrafts.openPreview": "Открыть превью",
   "adminDesignDrafts.empty": "Черновики оформления не найдены.",
+  "adminDesignDrafts.publish": "Опубликовать",
+  "adminDesignDrafts.publishTitle": "Опубликовать «{{ draft.name }}»?",
+  "adminDesignDrafts.publishWarning1": "Это действие перезапишет файлы стилей для всех пользователей.",
+  "adminDesignDrafts.publishWarning2": "Пользователи могут не увидеть изменения до перезагрузки страницы.",
+  "adminDesignDrafts.publishWarning3": "Действие можно отменить через страницу статических файлов.",
 
   "adminDesignDraftEdit.title": "Редактировать черновик оформления",
   "adminDesignDraftEdit.openPreview": "Открыть превью",

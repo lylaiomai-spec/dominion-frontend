@@ -22,4 +22,8 @@ export class DesignDraftService {
   update(id: number, payload: UpdateDesignDraftRequest): Observable<DesignDraft> {
     return this.apiService.post<DesignDraft>(`admin/design-draft/update/${id}`, payload);
   }
+
+  publish(id: number): Observable<void> {
+    return this.apiService.post<void>(`admin/design-draft/publish/${id}`, {});
+  }
 }
