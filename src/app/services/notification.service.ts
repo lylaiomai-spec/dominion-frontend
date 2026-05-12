@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -51,6 +51,9 @@ export class NotificationService {
   private healthUpdateSubject = new Subject<HealthUpdateEvent>();
   public healthUpdate$ = this.healthUpdateSubject.asObservable();
 
+  private draftUpdatedSubject = new Subject<DraftUpdatedEvent>();
+  public draftUpdated$ = this.draftUpdatedSubject.asObservable();
+
 private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
   private gameNotificationsSignal = signal<NotificationData[]>([]);
@@ -74,6 +77,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
   private messageQueue: string[] = [];
   private explicitlyClosed = false;
+  private draftId: string | null = null;
+  private draftInterval: number | null = null;
   private lastMsgId: number | null = null;
   private seenMsgIds = new Set<number>();
 
@@ -225,6 +230,17 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     }
   }
 
+  public startDraftMode(draftId: string): void {
+    this.draftId = draftId;
+    this.sendDraftConfirmation();
+    this.draftInterval = window.setInterval(() => this.sendDraftConfirmation(), 30000);
+  }
+
+  private sendDraftConfirmation(): void {
+    if (!this.draftId) return;
+    this.sendMessage({ type: 'draft_mode', draft_id: this.draftId });
+  }
+
   public sendPageChange(pageType: string, pageId: number): void {
     this.sendMessage({
       type: 'page_change',
@@ -249,6 +265,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
       this.reconnectAttempts = 0;
       this.processMessageQueue();
+      this.sendDraftConfirmation();
     };
 
     this.ws.onmessage = (event) => {
@@ -377,6 +394,9 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         break;
       case 'health_update':
         this.healthUpdateSubject.next(notification as HealthUpdateEvent);
+        break;
+      case 'draft_updated':
+        this.draftUpdatedSubject.next(notification as DraftUpdatedEvent);
         break;
       case 'user_refresh_required':
         this.authService.refreshToken().subscribe({

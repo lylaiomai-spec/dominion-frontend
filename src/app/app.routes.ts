@@ -60,6 +60,7 @@ import { AdminDesignComponent } from './admin/admin-design/admin-design.componen
 import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions.component';
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
 import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
+import { AdminDesignDraftsComponent } from './admin/admin-design-drafts/admin-design-drafts.component';
 import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
@@ -411,6 +412,16 @@ export const routes: Routes = [
         path: 'search',
         component: AdminSearchComponent,
         title: 'Admin - Search'
+      },
+      {
+        path: 'design-drafts',
+        component: AdminDesignDraftsComponent,
+        title: 'Admin - Design Drafts'
+      },
+      {
+        path: 'design-drafts/:id',
+        loadComponent: () => import('./admin/admin-design-draft-edit/admin-design-draft-edit.component').then(m => m.AdminDesignDraftEditComponent),
+        title: 'Admin - Edit Design Draft'
       }
     ]
   },

@@ -1,5 +1,6 @@
 import {afterNextRender, Component, effect, inject, Injector, OnInit, computed, signal, HostBinding} from '@angular/core';
-import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {DOCUMENT} from '@angular/common';
+import {ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterOutlet} from '@angular/router';
 import {FooterComponent} from './components/footer/footer.component';
 import {NavlinksComponent} from './components/navlinks/navlinks.component';
 import {filter, map, mergeMap} from 'rxjs';
@@ -15,6 +16,7 @@ import {NotificationService} from './services/notification.service';
 import {ApiService} from './services/api.service';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { RouterLinksDirective } from './directives/router-links.directive';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -54,7 +56,10 @@ export class AppComponent implements OnInit {
   private currencyService = inject(CurrencyService);
   private injector = inject(Injector);
 
+  private document = inject<Document>(DOCUMENT);
+
   constructor() {
+    this.applyDraftStyles();
     this.listenForAuthChanges();
     this.setupRouteListener();
 
@@ -179,6 +184,37 @@ export class AppComponent implements OnInit {
       this.currentPageNumId = pageId;
       this.notificationService.sendPageChange(pageType, pageId);
     });
+  }
+
+  private draftBase: string | null = null;
+
+  private applyDraftStyles(): void {
+    const draft = new URLSearchParams(this.document.defaultView?.location.search).get('draft');
+    if (!draft) return;
+    this.draftBase = `${environment.apiUrl}/draft/${draft}`;
+    this.setDraftLinkHrefs();
+    this.notificationService.startDraftMode(draft);
+    this.notificationService.draftUpdated$.subscribe(() => this.setDraftLinkHrefs());
+    this.preserveDraftParam(draft);
+  }
+
+  private preserveDraftParam(draft: string): void {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationStart)
+    ).subscribe((e) => {
+      const tree = this.router.parseUrl((e as NavigationStart).url);
+      if (tree.queryParams['draft']) return;
+      tree.queryParams['draft'] = draft;
+      this.router.navigateByUrl(tree, { replaceUrl: true });
+    });
+  }
+
+  private setDraftLinkHrefs(): void {
+    const bust = `?t=${Date.now()}`;
+    for (const file of ['main_style.css', 'custom_style.css']) {
+      const link = this.document.querySelector<HTMLLinkElement>(`link[href^="${this.draftBase}/${file}"], link[href="/${file}"]`);
+      if (link) link.href = `${this.draftBase}/${file}${bust}`;
+    }
   }
 
   private listenForAuthChanges(): void {
