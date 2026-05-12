@@ -811,5 +811,20 @@ export const TRANSLATIONS_RU = {
   "search.bucket.general_posts": "Общие посты",
   "search.bucket.lore_posts": "Посты лора",
   "search.bucket.wanted_posts": "Посты разыскиваемых",
-  "search.filterAuthorPlaceholder": "Поиск пользователя…"
+  "search.filterAuthorPlaceholder": "Поиск пользователя…",
+
+  "admin.designDrafts": "Черновики оформления",
+  "adminDesignDrafts.title": "Черновики оформления",
+  "adminDesignDrafts.create": "Создать черновик",
+  "adminDesignDrafts.createTitle": "Новый черновик оформления",
+  "adminDesignDrafts.name": "Название",
+  "adminDesignDrafts.dateCreated": "Создан",
+  "adminDesignDrafts.dateLastChanged": "Изменён",
+  "adminDesignDrafts.openPreview": "Открыть превью",
+  "adminDesignDrafts.empty": "Черновики оформления не найдены.",
+
+  "adminDesignDraftEdit.title": "Редактировать черновик оформления",
+  "adminDesignDraftEdit.openPreview": "Открыть превью",
+  "adminDesignDraftEdit.name": "Название",
+  "adminDesignDraftEdit.autoSave": "Автосохранение"
 };

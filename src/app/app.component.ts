@@ -1,6 +1,6 @@
 import {afterNextRender, Component, effect, inject, Injector, OnInit, computed, signal, HostBinding} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {ActivatedRoute, NavigationEnd, Router, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterOutlet} from '@angular/router';
 import {FooterComponent} from './components/footer/footer.component';
 import {NavlinksComponent} from './components/navlinks/navlinks.component';
 import {filter, map, mergeMap} from 'rxjs';
@@ -195,6 +195,18 @@ export class AppComponent implements OnInit {
     this.setDraftLinkHrefs();
     this.notificationService.startDraftMode(draft);
     this.notificationService.draftUpdated$.subscribe(() => this.setDraftLinkHrefs());
+    this.preserveDraftParam(draft);
+  }
+
+  private preserveDraftParam(draft: string): void {
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationStart)
+    ).subscribe((e) => {
+      const tree = this.router.parseUrl((e as NavigationStart).url);
+      if (tree.queryParams['draft']) return;
+      tree.queryParams['draft'] = draft;
+      this.router.navigateByUrl(tree, { replaceUrl: true });
+    });
   }
 
   private setDraftLinkHrefs(): void {
