@@ -1,23 +1,30 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { DesignDraftService } from '../../services/design-draft.service';
 import { DesignDraft } from '../../models/DesignDraft';
+import { CssEditorComponent } from '../../components/css-editor/css-editor.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 @Component({
   selector: 'app-admin-design-draft-edit',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CssEditorComponent],
   templateUrl: './admin-design-draft-edit.component.html',
 })
-export class AdminDesignDraftEditComponent implements OnInit {
+export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {
   private draftService = inject(DesignDraftService);
   private route = inject(ActivatedRoute);
 
   draft = signal<DesignDraft | null>(null);
   saveState = signal<SaveState>('idle');
+  autoSave = signal(false);
+
+  private changeSubject = new Subject<void>();
+  private autoSaveSubscription: Subscription | null = null;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -26,6 +33,14 @@ export class AdminDesignDraftEditComponent implements OnInit {
       next: (data) => this.draft.set(data),
       error: (err) => console.error('Failed to load design draft', err),
     });
+
+    this.autoSaveSubscription = this.changeSubject.pipe(debounceTime(3000)).subscribe(() => {
+      if (this.autoSave()) this.save();
+    });
+  }
+
+  ngOnDestroy() {
+    this.autoSaveSubscription?.unsubscribe();
   }
 
   save() {
@@ -48,6 +63,16 @@ export class AdminDesignDraftEditComponent implements OnInit {
   openPreview() {
     const draft = this.draft();
     if (draft) window.open(`/?draft=${draft.session_key}`, '_blank');
+  }
+
+  updateMainCss(value: string) {
+    this.draft.update(d => d ? { ...d, main_css: value } : d);
+    this.changeSubject.next();
+  }
+
+  updateCustomStyleCss(value: string) {
+    this.draft.update(d => d ? { ...d, custom_style_css: value } : d);
+    this.changeSubject.next();
   }
 
   private flashState(state: 'success' | 'error') {

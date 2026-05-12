@@ -1,7 +1,13 @@
 @if (draft(); as draft) {
   <h2 i18n="@@adminDesignDraftEdit.title">Edit Design Draft</h2>
 
-  <a (click)="openPreview()" style="cursor: pointer;" i18n="@@adminDesignDraftEdit.openPreview">Open Preview</a>
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <a (click)="openPreview()" style="cursor: pointer;" i18n="@@adminDesignDraftEdit.openPreview">Open Preview</a>
+    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+      <input type="checkbox" [ngModel]="autoSave()" (ngModelChange)="autoSave.set($event)" name="autoSave" />
+      <span i18n="@@adminDesignDraftEdit.autoSave">Auto-save</span>
+    </label>
+  </div>
 
   <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
     <label>
@@ -9,15 +15,15 @@
       <input type="text" [(ngModel)]="draft.name" name="name" style="display: block; width: 100%; margin-top: 4px;" />
     </label>
 
-    <label>
+    <div>
       <span>main_style.css</span>
-      <textarea [(ngModel)]="draft.main_css" name="main_css" rows="20" style="display: block; width: 100%; margin-top: 4px; font-family: monospace;"></textarea>
-    </label>
+      <app-css-editor [value]="draft.main_css" (valueChange)="updateMainCss($event)" style="display: block; margin-top: 4px;"></app-css-editor>
+    </div>
 
-    <label>
+    <div>
       <span>custom_style.css</span>
-      <textarea [(ngModel)]="draft.custom_style_css" name="custom_style_css" rows="20" style="display: block; width: 100%; margin-top: 4px; font-family: monospace;"></textarea>
-    </label>
+      <app-css-editor [value]="draft.custom_style_css" (valueChange)="updateCustomStyleCss($event)" style="display: block; margin-top: 4px;"></app-css-editor>
+    </div>
 
     <div>
       <button class="button" (click)="save()" [disabled]="saveState() === 'loading'">
