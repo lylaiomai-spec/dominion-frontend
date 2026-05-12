@@ -1,0 +1,33 @@
+@if (draft(); as draft) {
+  <h2 i18n="@@adminDesignDraftEdit.title">Edit Design Draft</h2>
+
+  <a (click)="openPreview()" style="cursor: pointer;" i18n="@@adminDesignDraftEdit.openPreview">Open Preview</a>
+
+  <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+    <label>
+      <span i18n="@@adminDesignDraftEdit.name">Name</span>
+      <input type="text" [(ngModel)]="draft.name" name="name" style="display: block; width: 100%; margin-top: 4px;" />
+    </label>
+
+    <label>
+      <span>main_style.css</span>
+      <textarea [(ngModel)]="draft.main_css" name="main_css" rows="20" style="display: block; width: 100%; margin-top: 4px; font-family: monospace;"></textarea>
+    </label>
+
+    <label>
+      <span>custom_style.css</span>
+      <textarea [(ngModel)]="draft.custom_style_css" name="custom_style_css" rows="20" style="display: block; width: 100%; margin-top: 4px; font-family: monospace;"></textarea>
+    </label>
+
+    <div>
+      <button class="button" (click)="save()" [disabled]="saveState() === 'loading'">
+        @switch (saveState()) {
+          @case ('loading') { <span i18n="@@common.saving">Saving…</span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.save">Save</span> }
+        }
+      </button>
+    </div>
+  </div>
+}
