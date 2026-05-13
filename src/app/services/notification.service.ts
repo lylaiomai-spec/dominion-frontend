@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -48,6 +48,12 @@ export class NotificationService {
   private reactionCreatedSubject = new Subject<ReactionCreatedEvent>();
   public reactionCreated$ = this.reactionCreatedSubject.asObservable();
 
+  private healthUpdateSubject = new Subject<HealthUpdateEvent>();
+  public healthUpdate$ = this.healthUpdateSubject.asObservable();
+
+  private draftUpdatedSubject = new Subject<DraftUpdatedEvent>();
+  public draftUpdated$ = this.draftUpdatedSubject.asObservable();
+
 private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
   private gameNotificationsSignal = signal<NotificationData[]>([]);
@@ -58,6 +64,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
   public directMessageNotifications = this.directMessageNotificationsSignal.asReadonly();
   private reactionNotificationsSignal = signal<NotificationData[]>([]);
   public reactionNotifications = this.reactionNotificationsSignal.asReadonly();
+  private autoArchivingNotificationsSignal = signal<NotificationData[]>([]);
+  public autoArchivingNotifications = this.autoArchivingNotificationsSignal.asReadonly();
 
   // Subject for real-time toast notifications
   private notificationSubject = new Subject<NotificationData>();
@@ -69,8 +77,10 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
   private messageQueue: string[] = [];
   private explicitlyClosed = false;
+  private draftId: string | null = null;
+  private draftInterval: number | null = null;
   private lastMsgId: number | null = null;
-  private seenPostMsgIds = new Set<number>();
+  private seenMsgIds = new Set<number>();
 
   // Toast notifications queued while the tab is hidden
   private pendingToasts: NotificationData[] = [];
@@ -100,6 +110,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         this.mentionNotificationsSignal.set(response.mention || []);
         this.directMessageNotificationsSignal.set(response.direct_message || []);
         this.reactionNotificationsSignal.set(response.reaction || []);
+        this.autoArchivingNotificationsSignal.set(response.auto_archiving || []);
         this.rebuildTriggers(response);
       },
       error: (err) => console.error('Failed to load unread notifications', err)
@@ -176,6 +187,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
           this.directMessageNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
         } else if (notification.type === 'reaction') {
           this.reactionNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
+        } else if (notification.type === 'auto_archiving') {
+          this.autoArchivingNotificationsSignal.update(current => current.filter(n => n.id !== notification.id));
         }
       },
       error: (err) => console.error('Failed to dismiss notification', err)
@@ -217,6 +230,17 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     }
   }
 
+  public startDraftMode(draftId: string): void {
+    this.draftId = draftId;
+    this.sendDraftConfirmation();
+    this.draftInterval = window.setInterval(() => this.sendDraftConfirmation(), 30000);
+  }
+
+  private sendDraftConfirmation(): void {
+    if (!this.draftId) return;
+    this.sendMessage({ type: 'draft_mode', draft_id: this.draftId });
+  }
+
   public sendPageChange(pageType: string, pageId: number): void {
     this.sendMessage({
       type: 'page_change',
@@ -241,6 +265,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
       this.reconnectAttempts = 0;
       this.processMessageQueue();
+      this.sendDraftConfirmation();
     };
 
     this.ws.onmessage = (event) => {
@@ -300,15 +325,12 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
   private handleNotification(notification: WebSocketEvent): void {
     if (notification.msg_id !== undefined) {
       this.lastMsgId = notification.msg_id;
+      if (this.seenMsgIds.has(notification.msg_id)) return;
+      this.seenMsgIds.add(notification.msg_id);
     }
     switch (notification.type) {
       case 'post_created':
-        const postEvent = notification as PostCreatedEvent;
-        if (postEvent.msg_id !== undefined) {
-          if (this.seenPostMsgIds.has(postEvent.msg_id)) break;
-          this.seenPostMsgIds.add(postEvent.msg_id);
-        }
-        this.postCreatedSubject.next(postEvent);
+        this.postCreatedSubject.next(notification as PostCreatedEvent);
         break;
       case 'post_updated':
         this.postUpdatedSubject.next(notification as PostUpdatedEvent);
@@ -336,6 +358,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
           this.directMessageNotificationsSignal.update(current => [notificationData, ...current]);
         } else if (notificationData.type === 'reaction') {
           this.reactionNotificationsSignal.update(current => [notificationData, ...current]);
+        } else if (notificationData.type === 'auto_archiving') {
+          this.autoArchivingNotificationsSignal.update(current => [notificationData, ...current]);
         }
 
         if (!notifSetting?.disable_sound) {
@@ -367,6 +391,19 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         break;
       case 'reaction_created':
         this.reactionCreatedSubject.next(notification as ReactionCreatedEvent);
+        break;
+      case 'health_update':
+        this.healthUpdateSubject.next(notification as HealthUpdateEvent);
+        break;
+      case 'draft_updated':
+        this.draftUpdatedSubject.next(notification as DraftUpdatedEvent);
+        break;
+      case 'user_refresh_required':
+        this.authService.refreshToken().subscribe({
+          error: (err) => {
+            if (err.status === 403) this.authService.logout();
+          }
+        });
         break;
       default:
         console.warn('Unknown notification type:', notification);

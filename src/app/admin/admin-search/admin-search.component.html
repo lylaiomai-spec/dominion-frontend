@@ -1,0 +1,32 @@
+<h2 i18n="@@admin.search">Search</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th i18n="@@adminSearch.colBucket">Bucket</th>
+      <th i18n="@@adminSearch.colLastId">Last ID</th>
+      <th i18n="@@adminSearch.colCurrentMaxId">Current Max ID</th>
+      <th i18n="@@adminSearch.colDateIngested">Date Ingested</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of cursors(); track item.bucket) {
+      <tr>
+        <td>{{ item.bucket }}</td>
+        <td>{{ item.last_id ?? '—' }}</td>
+        <td>{{ item.current_max_id }}</td>
+        <td>{{ item.date_ingested ? (item.date_ingested | date:'dd.MM.yyyy HH:mm') : '—' }}</td>
+        <td>
+          @if (isOutOfSync(item)) {
+            <button (click)="sync(item)" [disabled]="isSyncing(item.bucket)" i18n="@@adminSearch.sync">Sync</button>
+          }
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="5" i18n="@@adminSearch.empty">No data found.</td>
+      </tr>
+    }
+  </tbody>
+</table>

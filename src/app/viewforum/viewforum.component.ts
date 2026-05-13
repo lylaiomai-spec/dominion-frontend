@@ -1,5 +1,5 @@
 import {Component, effect, inject, Input, OnInit, OnDestroy, computed, numberAttribute} from '@angular/core';
-import {RouterLink, ActivatedRoute} from '@angular/router';
+import {Router, RouterLink, ActivatedRoute} from '@angular/router';
 import {ForumService} from '../services/forum.service';
 import {BreadcrumbItem, BreadcrumbsComponent} from '../components/breadcrumbs/breadcrumbs.component';
 import { Subject, takeUntil, combineLatest } from 'rxjs';
@@ -21,6 +21,7 @@ function coerceToPage(value: unknown): number {
 export class ViewforumComponent implements OnInit, OnDestroy {
   forumService = inject(ForumService);
   route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   @Input({ transform: numberAttribute }) id?: number;
   @Input({ transform: coerceToPage, alias: 'page' }) pageNumber: number = 1;
@@ -59,7 +60,7 @@ export class ViewforumComponent implements OnInit, OnDestroy {
 
         if (forumId) {
           if (this.subforum().id !== forumId) {
-            this.forumService.loadSubforum(forumId);
+            this.forumService.loadSubforum(forumId, () => this.router.navigate(['/404']));
           }
           this.forumService.loadSubforumPage(forumId, page);
         }

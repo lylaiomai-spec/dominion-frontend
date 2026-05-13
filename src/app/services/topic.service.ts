@@ -6,7 +6,7 @@ import {NotificationService} from './notification.service';
 import {AuthService} from './auth.service';
 import {Router} from '@angular/router';
 import {BoardService} from './board.service';
-import { Subject } from 'rxjs';
+import { Subject, switchMap, map } from 'rxjs';
 
 interface PostsResponse {
   page: number;
@@ -48,10 +48,46 @@ export class TopicService {
   private pageLoadedSubject = new Subject<{page: number, topicId: number}>();
   public pageLoaded$ = this.pageLoadedSubject.asObservable();
 
+  private loadPostsSubject = new Subject<{topicId: number, page: number, postId?: number}>();
+
   readonly singlePostSignal = signal<Post | null>(null);
   readonly singlePost = this.singlePostSignal.asReadonly();
 
   constructor() {
+    this.loadPostsSubject.pipe(
+      switchMap(({ topicId, page, postId }) => {
+        let url = `topic-posts/${topicId}?page=${page}`;
+        if (postId) {
+          url = `topic-posts/${topicId}?post_id=${postId}`;
+        }
+        return this.apiService.get<PostsResponse>(url).pipe(
+          map(data => ({ data, topicId }))
+        );
+      })
+    ).subscribe({
+      next: ({ data, topicId }) => {
+        if (data && data.posts) {
+          this.postsSignal.set(data.posts);
+          this.pageLoadedSubject.next({ page: data.page, topicId });
+          if (data.posts.length > 0) {
+            const postIds = data.posts.map((p: Post) => p.id);
+            const maxPostId = Math.max(...postIds);
+            this.notificationService.sendMessage({ type: 'topic_view', topic_id: topicId, post_id: maxPostId });
+            this.notificationService.checkPostIds(postIds);
+            this.notificationService.checkTopicId(topicId);
+          } else {
+            const topicType = this.topicSignal()?.type;
+            if (topicType === TopicType.character || topicType === TopicType.episode || topicType === TopicType.wanted_character) {
+              this.notificationService.sendMessage({ type: 'topic_view', topic_id: topicId, post_id: 0 });
+            }
+          }
+        } else {
+          this.postsSignal.set([]);
+        }
+      },
+      error: (err) => console.error('Failed to load posts', err)
+    });
+
     this.notificationService.postCreated$.subscribe(event => {
       const currentTopicId = this.topic().id;
       if (event.data.topic_id == currentTopicId) {
@@ -111,45 +147,7 @@ export class TopicService {
   }
 
   loadPosts(topicId: number, page: number, postId?: number) {
-    let url = `topic-posts/${topicId}?page=${page}`;
-    if (postId) {
-      url = `topic-posts/${topicId}?post_id=${postId}`;
-    }
-
-    this.apiService.get<PostsResponse>(url).subscribe({
-      next: (data) => {
-        if (data && data.posts) {
-          this.postsSignal.set(data.posts);
-
-          this.pageLoadedSubject.next({ page: data.page, topicId: topicId });
-
-          if (data.posts.length > 0) {
-            const postIds = data.posts.map(p => p.id);
-            const maxPostId = Math.max(...postIds);
-            this.notificationService.sendMessage({
-              type: 'topic_view',
-              topic_id: topicId,
-              post_id: maxPostId
-            });
-            this.notificationService.checkPostIds(postIds);
-            this.notificationService.checkTopicId(topicId);
-          } else {
-            const topicType = this.topicSignal()?.type;
-            if (topicType === TopicType.character || topicType === TopicType.episode || topicType === TopicType.wanted_character) {
-              this.notificationService.sendMessage({
-                type: 'topic_view',
-                topic_id: topicId,
-                post_id: 0
-              });
-            }
-          }
-        } else {
-          console.warn('Invalid posts response format', data);
-          this.postsSignal.set([]);
-        }
-      },
-      error: (err) => console.error('Failed to load posts', err)
-    });
+    this.loadPostsSubject.next({ topicId, page, postId });
   }
 
   createPost(data: any) {
@@ -158,6 +156,14 @@ export class TopicService {
 
   updatePost(id: number, data: any) {
     return this.apiService.post(`post/update/${id}`, data);
+  }
+
+  deletePost(id: number) {
+    return this.apiService.post(`post/delete/${id}`, {});
+  }
+
+  removeLocalPost(postId: number) {
+    this.postsSignal.update(posts => posts.filter(p => p.id !== postId));
   }
 
   createTopic(data: CreateTopicRequest, endpoint = 'topic/create') {
@@ -220,6 +226,11 @@ export class TopicService {
     if (this.postsSignal().some(p => p.id === post.id)) return;
     this.postsSignal.update(posts => [...posts, this.normalizePost(post)]);
 
+    const postsPerPage = this.boardService.board().posts_per_page || 15;
+    const prevTotal = this.topic().post_number;
+    const prevLastPage = Math.ceil(prevTotal / postsPerPage) || 1;
+    const newLastPage = Math.ceil((prevTotal + 1) / postsPerPage);
+
     // Increment the post count in the topic
     this.topicSignal.update(topic => {
       if (topic) {
@@ -235,29 +246,16 @@ export class TopicService {
       post_id: post.id
     });
 
-    // Check if the current user is the author and redirect if so
+    // Navigate to the new page only if the post spills onto a new page
     const currentUser = this.authService.currentUser();
     if (currentUser && post.user_profile && currentUser.id === post.user_profile.user_id) {
-      const totalPosts = this.topic().post_number;
-      const postsPerPage = this.boardService.board().posts_per_page || 15;
-      const lastPage = Math.ceil(totalPosts / postsPerPage);
-
-      // Simply navigate to the last page. If we are already there, router should handle it gracefully or reload.
-      this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: lastPage } });
+      if (newLastPage > prevLastPage) {
+        this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: newLastPage } });
+      }
     }
   }
 
 private enrichTopicWithPermissions(topic: Topic): Topic {
-    const currentUser = this.authService.currentUser();
-    let canEdit = false;
-
-    if (currentUser && currentUser.id === topic.author_user_id) {
-      canEdit = true;
-    }
-    if (this.authService.isAdmin()) {
-      canEdit = true;
-    }
-
-    return { ...topic, can_edit: canEdit };
+    return topic;
   }
 }

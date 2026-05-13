@@ -1,0 +1,82 @@
+<div id="pun-main" class="main">
+  <div class="main-header">
+    <h1 i18n="@@absenceList.title">Absences</h1>
+  </div>
+  <div class="main-content">
+
+    @if (authService.isAuthenticated()) {
+      <div style="margin-bottom: 10px">
+        <button type="button" class="button" (click)="openModal()" i18n="@@absenceList.addButton">Add Absence</button>
+      </div>
+    }
+
+    <table cellspacing="0">
+      <thead>
+        <tr>
+          <th scope="col" i18n="@@absenceList.username">User</th>
+          <th scope="col" i18n="@@absenceList.characters">Characters</th>
+          <th scope="col" i18n="@@absenceList.from">From</th>
+          <th scope="col" i18n="@@absenceList.to">To</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.user_id; let isEven = $even) {
+          <tr [class.altstyle]="isEven">
+            <td><a [routerLink]="['/profile', user.user_id]">{{ user.username }}</a></td>
+            <td>
+              @for (char of user.characters; track char.id; let last = $last) {
+                <a [routerLink]="['/character', char.id]">{{ char.name }}</a>@if (!last) {, }
+              }
+            </td>
+            <td>{{ user.absence_start_date | date:'yyyy-MM-dd' }}</td>
+            <td>{{ user.absence_end_date | date:'yyyy-MM-dd' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" i18n="@@absenceList.empty">No absences at the moment.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+@if (showModal()) {
+  <div class="modal-overlay" (click)="showModal.set(false)">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-button" (click)="showModal.set(false)">&times;</span>
+
+      <h2 i18n="@@absenceList.modalTitle">Add Absence</h2>
+
+      @if (maxDays()) {
+        <p class="info-message">
+          <ng-container i18n="@@absenceList.maxDaysWarning">Absence period cannot exceed</ng-container>
+          {{ maxDays() }}
+          <ng-container i18n="@@absenceList.days">days</ng-container>
+        </p>
+      }
+
+      <div class="inputfield">
+        <label i18n="@@absenceList.startDate">Start date</label>
+        <input type="date" [(ngModel)]="startDate" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@absenceList.endDate">End date</label>
+        <input type="date" [(ngModel)]="endDate" [min]="today" />
+      </div>
+
+      @if (durationError() !== null) {
+        <p class="error-msg" i18n="@@absenceList.durationError">Absence period cannot exceed {{ durationError() }} days</p>
+      }
+
+      <app-error-banner [message]="serverError()"></app-error-banner>
+
+      <div class="spoiler-modal-actions">
+        <button type="button" class="button btn-primary" (click)="submit()" [disabled]="!startDate || !endDate || durationError() !== null" i18n="@@absenceList.submit">Submit</button>
+        <button type="button" class="button" (click)="showModal.set(false)" i18n="@@absenceList.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

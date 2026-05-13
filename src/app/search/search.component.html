@@ -1,0 +1,124 @@
+<div class="container">
+  <h2 i18n="@@search.title">Search</h2>
+
+  <form (submit)="search($event)" class="search-form">
+    <div class="search-input-row">
+      <input
+        type="text"
+        [value]="searchTerm()"
+        (input)="onSearchTermInput($event)"
+        i18n-placeholder="@@search.placeholder"
+        placeholder="Search…"
+        required
+      >
+      <button type="submit" class="button" i18n="@@search.button">Search</button>
+    </div>
+
+    @if (buckets().length > 0) {
+      <div class="search-filter-section">
+        <span class="search-filter-label" i18n="@@search.filterType">Type</span>
+        <div class="search-buckets">
+          @for (bucket of buckets(); track bucket) {
+            <label class="search-bucket-item">
+              <input
+                type="checkbox"
+                [checked]="isBucketSelected(bucket)"
+                (change)="toggleBucket(bucket)"
+              >
+              {{ getBucketName(bucket) }}
+            </label>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="search-filters-row">
+      <div class="search-filter-section">
+        <label>
+          <span class="search-filter-label" i18n="@@search.filterSubforum">Subforum</span>
+          <select [value]="selectedSubforumId() ?? ''" (change)="onSubforumChange($event)">
+            <option value="" i18n="@@search.filterSubforumAll">— All —</option>
+            @for (category of categories(); track category.id) {
+              <optgroup [label]="category.name">
+                @for (subforum of category.subforums; track subforum.id) {
+                  <option [value]="subforum.id">{{ subforum.name }}</option>
+                }
+              </optgroup>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="search-filter-section">
+        <span class="search-filter-label" i18n="@@search.filterAuthor">Author</span>
+        <div class="new-chat-autocomplete">
+          <input
+            type="text"
+            [(ngModel)]="authorTerm"
+            [ngModelOptions]="{standalone: true}"
+            (input)="onAuthorInput()"
+            (blur)="authorResults = []"
+            i18n-placeholder="@@search.filterAuthorPlaceholder"
+            placeholder="Search user…"
+            autocomplete="off"
+          />
+          @if (authorTerm && selectedUserId()) {
+            <span class="author-clear" (click)="clearAuthor()">&times;</span>
+          }
+          @if (authorResults.length > 0) {
+            <ul class="autocomplete-dropdown">
+              @for (user of authorResults; track user.id) {
+                <li (mousedown)="selectAuthor(user)">{{ user.username }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </div>
+  </form>
+
+  @if (loading()) {
+    <p i18n="@@search.loading">Loading…</p>
+  } @else if (searched()) {
+    @if (resultBuckets().length === 0) {
+      <p i18n="@@search.noResults">No results found.</p>
+    } @else {
+      <p class="search-count">
+        <ng-container i18n="@@search.totalCount">Results: {{ totalCount() }}</ng-container>
+      </p>
+
+      @for (bucket of resultBuckets(); track bucket) {
+        <div class="search-bucket-results">
+          <h3 class="search-bucket-title">{{ getBucketName(bucket) }}</h3>
+          <ul class="search-result-list">
+            @for (result of results()[bucket]; track result.id) {
+              <li class="search-result-item">
+                @if (bucket.endsWith('_posts')) {
+                  <a [href]="getAbsolutePostLink(result)" (click)="navigateToPost($event, result)">#{{ result.id }} (topic {{ result.topic_id }})</a>
+                } @else {
+                  <a [routerLink]="getLink(bucket, result)">{{ result.id }}</a>
+                }
+                <blockquote class="search-snippet" [innerHTML]="result.snippet"></blockquote>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (visiblePages().length > 0) {
+        <div class="search-pagination">
+          <span i18n="@@search.pages">Pages</span>:
+          @for (item of visiblePages(); track $index) {
+            @if (item.type === 'ellipsis') {
+              <span class="page-ellipsis">…</span>
+            } @else if (item.number === currentPage()) {
+              <strong>{{ item.number }}</strong>
+            } @else {
+              <a href="#" (click)="goToPage(item.number!); $event.preventDefault()">{{ item.number }}</a>
+            }
+          }
+        </div>
+      }
+    }
+  }
+</div>

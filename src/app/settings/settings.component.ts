@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -7,6 +7,7 @@ import { UserService } from '../services/user.service';
 import { ApiService } from '../services/api.service';
 import { UpdateSettingsRequest } from '../models/User';
 import { ImageFieldComponent } from '../components/image-field/image-field.component';
+import { BbToolbarComponent } from '../components/bb-toolbar/bb-toolbar.component';
 
 interface UserNotificationSetting {
   notification_type: string;
@@ -75,10 +76,11 @@ const IANA_TIMEZONES = [
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ImageFieldComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ImageFieldComponent, BbToolbarComponent],
   templateUrl: './settings.component.html',
 })
 export class SettingsComponent implements OnInit {
+  @ViewChild('signatureField') signatureField!: ElementRef<HTMLTextAreaElement>;
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private apiService = inject(ApiService);
@@ -87,6 +89,7 @@ export class SettingsComponent implements OnInit {
   language: string = 'en-US';
   timezone: string = 'UTC+00:00';
   interfaceDesign: string | null = null;
+  signature: string = '';
   designVariations = signal<DesignVariation[]>([]);
   fontSize: number = 1.0;
   avatarUrl = '';
@@ -136,6 +139,10 @@ export class SettingsComponent implements OnInit {
     this.apiService.get<UserNotificationSetting[]>('notifications/settings').subscribe({
       next: (list) => this.notificationSettings.set(list),
       error: (err) => console.error('Failed to load notification settings', err)
+    });
+    this.apiService.get<{ signature: string }>('user/settings').subscribe({
+      next: (data) => this.signature = data.signature || '',
+      error: () => {}
     });
   }
 
@@ -198,7 +205,8 @@ export class SettingsComponent implements OnInit {
       interface_timezone: this.timezone,
       interface_language: this.language,
       interface_font_size: this.fontSize,
-      interface_design: this.interfaceDesign
+      interface_design: this.interfaceDesign,
+      signature: this.signatureField.nativeElement.value
     };
 
     if (this.newPassword && this.newPassword === this.confirmPassword) {

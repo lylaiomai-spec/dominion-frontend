@@ -1,20 +1,22 @@
-import { Component, inject, OnInit, effect, Input, booleanAttribute, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, effect, Input, booleanAttribute, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CharacterService } from '../services/character.service';
 import { MaskService } from '../services/mask.service';
 import { AuthService } from '../services/auth.service';
 import { FieldInputComponent } from '../components/field-input/field-input.component';
 import { ImageFieldComponent } from '../components/image-field/image-field.component';
+import { BbToolbarComponent } from '../components/bb-toolbar/bb-toolbar.component';
 import { FormsModule } from '@angular/forms';
 import { CharacterProfile } from '../models/Character';
 
 @Component({
   selector: 'app-character-profile-edit',
-  imports: [FieldInputComponent, ImageFieldComponent, FormsModule],
+  imports: [FieldInputComponent, ImageFieldComponent, FormsModule, BbToolbarComponent],
   templateUrl: './character-profile-edit.component.html',
   standalone: true
 })
 export class CharacterProfileEditComponent implements OnInit {
+  @ViewChild('signatureField') signatureField!: ElementRef<HTMLTextAreaElement>;
   private characterService = inject(CharacterService);
   private maskService = inject(MaskService);
   private authService = inject(AuthService);
@@ -31,6 +33,7 @@ export class CharacterProfileEditComponent implements OnInit {
   characterId: number = 0;
   characterName: string = '';
   characterAvatar: string = '';
+  characterSignature: string = '';
   isNewMask: boolean = false;
   saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
 
@@ -50,6 +53,7 @@ export class CharacterProfileEditComponent implements OnInit {
           // If it's a mask, it might have mask_name. If it's a character, character_name.
           this.characterName = p.character_name || (p as any).mask_name || '';
           this.characterAvatar = p.avatar;
+          this.characterSignature = p.signature || '';
         }
       }
     });
@@ -107,7 +111,8 @@ export class CharacterProfileEditComponent implements OnInit {
       const payload: any = {
         mask_name: this.characterName,
         avatar,
-        custom_fields: customFields
+        custom_fields: customFields,
+        signature: this.signatureField.nativeElement.value
       };
 
       this.saveState.set('loading');
@@ -133,7 +138,8 @@ export class CharacterProfileEditComponent implements OnInit {
       // Logic for Character Profiles (only update)
       const updatePayload = {
         avatar,
-        custom_fields: customFields
+        custom_fields: customFields,
+        signature: this.signatureField.nativeElement.value
       };
 
       this.saveState.set('loading');

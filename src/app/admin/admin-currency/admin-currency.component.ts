@@ -1,7 +1,7 @@
 import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyService } from '../../services/currency.service';
-import { CurrencyIncomeType } from '../../models/Currency';
+import { CurrencyIncomeType, CurrencySpendType } from '../../models/Currency';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -18,8 +18,10 @@ export class AdminCurrencyComponent implements OnInit {
   currencyName = '';
   iconUrl = '';
   incomeTypes = this.currencyService.incomeTypes;
+  spendTypes = signal<CurrencySpendType[]>([]);
   settingsState = signal<SaveState>('idle');
   incomeTypesState = signal<SaveState>('idle');
+  spendTypesState = signal<SaveState>('idle');
 
   constructor() {
     effect(() => {
@@ -32,6 +34,10 @@ export class AdminCurrencyComponent implements OnInit {
   ngOnInit(): void {
     this.currencyService.loadSettings();
     this.currencyService.loadIncomeTypes();
+    this.currencyService.loadSpendTypes().subscribe({
+      next: (data) => this.spendTypes.set(data),
+      error: (err) => console.error('Failed to load spend types', err)
+    });
   }
 
   saveSettings(): void {
@@ -58,6 +64,21 @@ export class AdminCurrencyComponent implements OnInit {
 
   updateIncomeType(type: CurrencyIncomeType, patch: Partial<CurrencyIncomeType>): void {
     this.currencyService.patchIncomeType(type.key, patch);
+  }
+
+  updateSpendType(key: string, patch: Partial<CurrencySpendType>): void {
+    this.spendTypes.update(list => list.map(t => t.key === key ? { ...t, ...patch } : t));
+  }
+
+  saveSpendTypes(): void {
+    this.spendTypesState.set('loading');
+    this.currencyService.updateSpendType(this.spendTypes()).subscribe({
+      next: () => this.flash(this.spendTypesState, 'success'),
+      error: (err) => {
+        console.error('Failed to save spend types', err);
+        this.flash(this.spendTypesState, 'error');
+      }
+    });
   }
 
   private flash(state: ReturnType<typeof signal<SaveState>>, value: 'success' | 'error'): void {

@@ -1,0 +1,55 @@
+@if (draft(); as draft) {
+  <h2 i18n="@@adminDesignDraftEdit.title">Edit Design Draft</h2>
+
+  <div style="display: flex; align-items: center; gap: 16px;">
+    <a (click)="openPreview()" style="cursor: pointer;" i18n="@@adminDesignDraftEdit.openPreview">Open Preview</a>
+    <button class="button" (click)="showPublishModal.set(true)" i18n="@@adminDesignDrafts.publish">Publish</button>
+    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+      <input type="checkbox" [ngModel]="autoSave()" (ngModelChange)="autoSave.set($event)" name="autoSave" />
+      <span i18n="@@adminDesignDraftEdit.autoSave">Auto-save</span>
+    </label>
+  </div>
+
+  @if (showPublishModal()) {
+    <div class="modal-overlay" (click)="showPublishModal.set(false)">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <h2 i18n="@@adminDesignDrafts.publishTitle">Publish «{{ draft.name }}»?</h2>
+        <p i18n="@@adminDesignDrafts.publishWarning1">This action will overwrite the style files for all users.</p>
+        <p i18n="@@adminDesignDrafts.publishWarning2">Users may not see the changes until they reload the page.</p>
+        <p i18n="@@adminDesignDrafts.publishWarning3">The action can be reverted via the static files page.</p>
+        <div style="margin-top: 15px; text-align: right;">
+          <button class="button" (click)="publish()" i18n="@@adminDesignDrafts.publish">Publish</button>
+          <button class="button" (click)="showPublishModal.set(false)" i18n="@@common.cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+    <label>
+      <span i18n="@@adminDesignDraftEdit.name">Name</span>
+      <input type="text" [(ngModel)]="draft.name" name="name" style="display: block; width: 100%; margin-top: 4px;" />
+    </label>
+
+    <div>
+      <span>main_style.css</span>
+      <app-css-editor [value]="draft.main_css" (valueChange)="updateMainCss($event)" style="display: block; margin-top: 4px;"></app-css-editor>
+    </div>
+
+    <div>
+      <span>custom_style.css</span>
+      <app-css-editor [value]="draft.custom_style_css" (valueChange)="updateCustomStyleCss($event)" style="display: block; margin-top: 4px;"></app-css-editor>
+    </div>
+
+    <div>
+      <button class="button" (click)="save()" [disabled]="saveState() === 'loading'">
+        @switch (saveState()) {
+          @case ('loading') { <span i18n="@@common.saving">Saving…</span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.save">Save</span> }
+        }
+      </button>
+    </div>
+  </div>
+}

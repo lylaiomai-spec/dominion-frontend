@@ -1,0 +1,62 @@
+<h2 i18n="@@adminDesignDrafts.title">Design Drafts</h2>
+
+<button class="button" (click)="openCreateModal()" i18n="@@adminDesignDrafts.create">Create Draft</button>
+
+<table>
+  <thead>
+    <tr>
+      <th i18n="@@adminDesignDrafts.name">Name</th>
+      <th i18n="@@adminDesignDrafts.dateCreated">Created</th>
+      <th i18n="@@adminDesignDrafts.dateLastChanged">Last Changed</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (draft of drafts(); track draft.id) {
+      <tr>
+        <td><a [routerLink]="['/admin/design-drafts', draft.id]">{{ draft.name }}</a></td>
+        <td>{{ draft.date_created | date:'medium' }}</td>
+        <td>{{ draft.date_last_changed | date:'medium' }}</td>
+        <td style="display: flex; gap: 8px;">
+          <button class="button" (click)="openPreview(draft)" i18n="@@adminDesignDrafts.openPreview">Open Draft Preview</button>
+          <button class="button" (click)="confirmPublish(draft)" i18n="@@adminDesignDrafts.publish">Publish</button>
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="4" i18n="@@adminDesignDrafts.empty">No design drafts found.</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+@if (publishingDraft(); as draft) {
+  <div class="modal-overlay" (click)="cancelPublish()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2 i18n="@@adminDesignDrafts.publishTitle">Publish «{{ draft.name }}»?</h2>
+      <p i18n="@@adminDesignDrafts.publishWarning1">This action will overwrite the style files for all users.</p>
+      <p i18n="@@adminDesignDrafts.publishWarning2">Users may not see the changes until they reload the page.</p>
+      <p i18n="@@adminDesignDrafts.publishWarning3">The action can be reverted via the static files page.</p>
+      <div style="margin-top: 15px; text-align: right;">
+        <button class="button" (click)="publish()" i18n="@@adminDesignDrafts.publish">Publish</button>
+        <button class="button" (click)="cancelPublish()" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showCreateModal()) {
+  <div class="modal-overlay" (click)="closeCreateModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <h2 i18n="@@adminDesignDrafts.createTitle">New Design Draft</h2>
+      <label>
+        <span i18n="@@adminDesignDrafts.name">Name</span>
+        <input type="text" [(ngModel)]="newDraftName" name="newDraftName" style="display: block; width: 100%; margin-top: 4px;" />
+      </label>
+      <div style="margin-top: 15px; text-align: right;">
+        <button class="button" (click)="createDraft()" [disabled]="!newDraftName.trim()" i18n="@@common.create">Create</button>
+        <button class="button" (click)="closeCreateModal()" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

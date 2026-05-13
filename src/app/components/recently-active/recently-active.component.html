@@ -1,0 +1,25 @@
+<div id="pun-recently-active" class="modmenu">
+  <div class="container" style="display:flex; justify-content:space-between; align-items:baseline; text-align:left">
+    <p style="margin:0">
+      @if (mode() === 'users') {
+        <span style="font-weight:bold" i18n="@@recentlyActive.activeUsers">Active in 24 hours users</span>
+      } @else {
+        <span style="font-weight:bold" i18n="@@recentlyActive.activeCharacters">Active in 24 hours characters</span>
+      }
+      ({{ mode() === 'users' ? users().length : characters().length }}):
+      @if (mode() === 'users') {
+        @for (user of users(); track user.id; let last = $last) {
+          <a class="group4" [routerLink]="['/profile', user.id]">{{ user.username }}</a>@if (!last) {, }
+        }
+      } @else {
+        @for (character of characters(); track character.id; let last = $last) {
+          <a class="group4" [routerLink]="['/character', character.id]">{{ character.name }}</a>@if (!last) {, }
+        }
+      }
+    </p>
+    <span class="mode-toggle" style="flex-shrink:0; margin-left:12px">
+      <button type="button" [class.active]="mode() === 'users'" (click)="setMode('users')" i18n="@@recentlyActive.users">Users</button>
+      <button type="button" [class.active]="mode() === 'characters'" (click)="setMode('characters')" i18n="@@recentlyActive.characters">Characters</button>
+    </span>
+  </div>
+</div>

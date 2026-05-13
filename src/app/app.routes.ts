@@ -12,7 +12,10 @@ import {EpisodeListComponent} from './episode-list/episode-list.component';
 import {LoginComponent} from './login/login.component';
 import {RegisterComponent} from './register/register.component';
 import {AdminWrapperComponent} from './admin/admin-wrapper/admin-wrapper.component';
-import {AdminNotificationsComponent} from './admin/admin-notifications/admin-notifications.component';
+import {AdminDashboardComponent} from './admin/admin-dashboard/admin-dashboard.component';
+import { AbsenceListComponent } from './absence-list/absence-list.component';
+import { AutoArchiveComponent } from './auto-archive/auto-archive.component';
+import { ShopComponent } from './shop/shop.component';
 import {CharacterTemplateEditComponent} from './admin/character-template-edit/character-template-edit.component';
 import {TopicCreateComponent} from './topic-create/topic-create.component';
 import {EpisodeCreateComponent} from './episode-create/episode-create.component';
@@ -33,6 +36,7 @@ import {AdminSettingsComponent} from './admin/admin-settings/admin-settings.comp
 import {AdminSubforumsComponent} from './admin/admin-subforums/admin-subforums.component';
 import {TopicCommanderComponent} from './admin/topic-commander/topic-commander.component';
 import {AdminUsersComponent} from './admin/admin-users/admin-users.component';
+import {AdminCharactersComponent} from './admin/admin-characters/admin-characters.component';
 import {AdminCreateUserComponent} from './admin/admin-create-user/admin-create-user.component';
 import {AdminAdditionalNavlinksComponent} from './admin/admin-additional-navlinks/admin-additional-navlinks.component';
 import {PreviewComponent} from './preview/preview.component';
@@ -56,6 +60,9 @@ import { ActiveUsersComponent } from './active-users/active-users.component';
 import { AdminDesignComponent } from './admin/admin-design/admin-design.component';
 import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions.component';
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
+import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
+import { AdminDesignDraftsComponent } from './admin/admin-design-drafts/admin-design-drafts.component';
+import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
 import { LoreNavigationEditComponent } from './lore-navigation-edit/lore-navigation-edit.component';
@@ -238,6 +245,24 @@ export const routes: Routes = [
     data: { pageId: 'pun-active-users' }
   },
   {
+    path: 'absence-list',
+    component: AbsenceListComponent,
+    title: 'Absences',
+    data: { pageId: 'pun-absence-list' }
+  },
+  {
+    path: 'auto-archive',
+    component: AutoArchiveComponent,
+    title: 'Auto Archive',
+    data: { pageId: 'pun-auto-archive' }
+  },
+  {
+    path: 'shop',
+    component: ShopComponent,
+    title: 'Shop',
+    data: { pageId: 'pun-shop' }
+  },
+  {
     path: 'character-profile-update/:id',
     component: CharacterProfileEditComponent,
     title: 'Update Character Profile',
@@ -256,9 +281,14 @@ export const routes: Routes = [
     data: { pageId: 'pun-admin' },
     children: [
       {
-        path: 'notifications',
-        component: AdminNotificationsComponent,
-        title: 'Admin - Notifications'
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        component: AdminDashboardComponent,
+        title: 'Admin - Dashboard'
       },
       {
         path: 'character-template',
@@ -314,6 +344,11 @@ export const routes: Routes = [
         path: 'users',
         component: AdminUsersComponent,
         title: 'Admin - Users'
+      },
+      {
+        path: 'characters',
+        component: AdminCharactersComponent,
+        title: 'Admin - Characters'
       },
       {
         path: 'create-user',
@@ -379,8 +414,28 @@ export const routes: Routes = [
         path: 'smiles',
         component: AdminSmilesComponent,
         title: 'Admin - Smiles'
+      },
+      {
+        path: 'search',
+        component: AdminSearchComponent,
+        title: 'Admin - Search'
+      },
+      {
+        path: 'design-drafts',
+        component: AdminDesignDraftsComponent,
+        title: 'Admin - Design Drafts'
+      },
+      {
+        path: 'design-drafts/:id',
+        loadComponent: () => import('./admin/admin-design-draft-edit/admin-design-draft-edit.component').then(m => m.AdminDesignDraftEditComponent),
+        title: 'Admin - Edit Design Draft'
       }
     ]
+  },
+  {
+    path: 'search',
+    component: SearchComponent,
+    title: 'Search'
   },
   {
     path: 'post-page/:id',

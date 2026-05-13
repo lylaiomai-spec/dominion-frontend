@@ -1,13 +1,14 @@
 import { Component, inject, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ImageUploadComponent } from '../image-upload/image-upload.component';
+import { GridBuilderComponent } from '../grid-builder/grid-builder.component';
 import { ApiService } from '../../services/api.service';
 import { SmileCategoryWithSmiles } from '../../models/Smile';
 
 @Component({
   selector: 'app-bb-toolbar',
   standalone: true,
-  imports: [CommonModule, ImageUploadComponent],
+  imports: [CommonModule, ImageUploadComponent, GridBuilderComponent],
   templateUrl: './bb-toolbar.component.html',
 })
 export class BbToolbarComponent {
@@ -72,6 +73,16 @@ export class BbToolbarComponent {
     this.showSpoilerModal = false;
     textarea.focus();
     textarea.setSelectionRange(this.spoilerSelStart + tag.length, this.spoilerSelStart + tag.length);
+  }
+
+  insertGrid(bbCode: string) {
+    const textarea = this.textarea;
+    const start = textarea.selectionStart;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + bbCode + text.substring(start);
+    this.activeArea = null;
+    textarea.focus();
+    textarea.setSelectionRange(start + bbCode.length, start + bbCode.length);
   }
 
   onInsertImage(url: string) {

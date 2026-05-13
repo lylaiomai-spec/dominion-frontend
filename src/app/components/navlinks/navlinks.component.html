@@ -8,10 +8,10 @@
       }
       <li id="navaichat"><a routerLink="ai-chat"><span i18n="@@nav.aiChat">AI Chat</span></a></li>
       }
-      @if(authService.isAdmin()) {
-        <li id="navadmin"><a routerLink="admin/notifications"><span i18n="@@nav.admin">Admin</span></a></li>
+      @if(canSeeAdminPage()) {
+        <li id="navadmin"><a routerLink="admin/dashboard"><span i18n="@@nav.admin">Admin</span></a></li>
       }
-<!--      <li id="navsearch"><a href="/search"><span i18n="@@nav.search">Search</span></a></li>-->
+      <li id="navsearch"><a routerLink="/search"><span i18n="@@nav.search">Search</span></a></li>
       @if(isAuthenticated()) {
       <li id="navlogout"><a href="#" (click)="logout($event)"><span i18n="@@nav.logout">Logout</span></a></li>
       }
@@ -35,5 +35,12 @@
     <li class="item4" id="h-users"><a i18n="@@nav.userlist" routerLink="/user-list">User List</a></li>
     <li class="item5" id="h-episodes"><a i18n="@@nav.episodelist" routerLink="/episode-list">Episode List</a></li>
     <li class="item6" id="h-active-topics"><a i18n="@@nav.activeTopics" routerLink="/active-topics">Active Topics</a></li>
+    <li class="item7" id="h-absences"><a i18n="@@nav.absenceList" routerLink="/absence-list">Absences</a></li>
+    @if (showAutoArchiveLink() && isAuthenticated()) {
+      <li id="h-auto-archive"><a i18n="@@nav.autoArchive" routerLink="/auto-archive">Auto Archive</a></li>
+    }
+    @if (showShopLink() && isAuthenticated()) {
+      <li id="h-shop"><a i18n="@@nav.shop" routerLink="/shop">Shop</a></li>
+    }
   </ul>
 </div>

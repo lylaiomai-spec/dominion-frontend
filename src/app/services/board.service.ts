@@ -17,7 +17,10 @@ export class BoardService {
     total_episode_post_number: 0,
     last_registered_user: null,
     posts_per_page: 15,
-    visual_navlinks_after_header_panel: 'n'
+    visual_navlinks_after_header_panel: 'n',
+    auto_archiving_show_page_link: 'n',
+    auto_archiving_enabled: 'n',
+    auto_archiving_days: ''
   });
   readonly board = this.boardSignal.asReadonly();
 

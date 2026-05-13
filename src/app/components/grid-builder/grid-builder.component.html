@@ -1,0 +1,38 @@
+<div class="grid-builder-inputs">
+  <label i18n="@@gridBuilder.columns">
+    Columns
+    <input type="number" [(ngModel)]="cols" min="1" max="12" (ngModelChange)="onDimensionChange()" />
+  </label>
+  <label i18n="@@gridBuilder.rows">
+    Rows
+    <input type="number" [(ngModel)]="rows" min="1" max="12" (ngModelChange)="onDimensionChange()" />
+  </label>
+
+  <div class="grid-builder-tools">
+    <button
+      type="button"
+      [class.active]="tool === 'pencil'"
+      (click)="tool = 'pencil'"
+      title="Draw border"
+      i18n-title="@@gridBuilder.pencil">
+      <i class="bi bi-pencil-fill"></i>
+    </button>
+    <button
+      type="button"
+      [class.active]="tool === 'eraser'"
+      (click)="tool = 'eraser'"
+      title="Erase border"
+      i18n-title="@@gridBuilder.eraser">
+      <i class="bi bi-eraser-fill"></i>
+    </button>
+  </div>
+</div>
+
+<div class="grid-builder-canvas-wrapper">
+  <canvas #gridCanvas (click)="onCanvasClick($event)"></canvas>
+</div>
+
+<div class="grid-builder-actions">
+  <button type="button" class="button btn-primary" (click)="onInsert()" i18n="@@gridBuilder.insert">Insert</button>
+  <button type="button" class="button" (click)="close.emit()" i18n="@@gridBuilder.cancel">Cancel</button>
+</div>

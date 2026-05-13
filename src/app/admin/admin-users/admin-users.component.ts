@@ -1,7 +1,9 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ErrorBannerComponent } from '../../components/error-banner/error-banner.component';
 
 export interface AdminUserListItem {
   id: number;
@@ -21,7 +23,7 @@ export interface Role {
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, DatePipe, RouterLink],
+  imports: [CommonModule, DatePipe, RouterLink, FormsModule, ErrorBannerComponent],
   templateUrl: './admin-users.component.html',
   styleUrl: './admin-users.component.css'
 })
@@ -35,6 +37,16 @@ export class AdminUsersComponent implements OnInit {
 
   banModalUser = signal<AdminUserListItem | null>(null);
   banReason = signal<string>('');
+
+  editModalUser = signal<AdminUserListItem | null>(null);
+  editUsername = signal<string>('');
+  editAvatar = signal<string>('');
+
+  absenceModalUser = signal<AdminUserListItem | null>(null);
+  absenceStartDate = '';
+  absenceEndDate = '';
+  absenceError = signal<string | null>(null);
+  today = new Date().toISOString().slice(0, 10);
 
   ngOnInit() {
     this.apiService.get<AdminUserListItem[]>('admin/user-list').subscribe({
@@ -72,6 +84,63 @@ export class AdminUsersComponent implements OnInit {
 
   isRoleSelected(roleId: number): boolean {
     return this.selectedRoleIds().has(roleId);
+  }
+
+  openEditModal(user: AdminUserListItem) {
+    this.editUsername.set(user.username);
+    this.editAvatar.set('');
+    this.editModalUser.set(user);
+  }
+
+  closeEditModal() {
+    this.editModalUser.set(null);
+  }
+
+  submitEdit() {
+    const user = this.editModalUser();
+    if (!user) return;
+    const body: { username?: string; avatar?: string } = {};
+    const username = this.editUsername().trim();
+    const avatar = this.editAvatar().trim();
+    if (username && username !== user.username) body.username = username;
+    if (avatar) body.avatar = avatar;
+    this.apiService.post(`admin/user/update/${user.id}`, body).subscribe({
+      next: () => {
+        if (body.username) {
+          this.users.update(list => list.map(u => u.id === user.id ? { ...u, username: body.username! } : u));
+        }
+        this.closeEditModal();
+      },
+      error: (err) => console.error('Failed to update user', err)
+    });
+  }
+
+  openAbsenceModal(user: AdminUserListItem) {
+    this.absenceStartDate = this.today;
+    this.absenceEndDate = '';
+    this.absenceError.set(null);
+    this.absenceModalUser.set(user);
+  }
+
+  closeAbsenceModal() {
+    this.absenceModalUser.set(null);
+  }
+
+  submitAbsence() {
+    const user = this.absenceModalUser();
+    if (!user) return;
+    this.absenceError.set(null);
+    this.apiService.post(`admin/user/${user.id}/absence`, {
+      start_date: this.absenceStartDate,
+      end_date: this.absenceEndDate,
+    }).subscribe({
+      next: () => this.closeAbsenceModal(),
+      error: (err) => {
+        if (err.status === 400) {
+          this.absenceError.set(err.error?.message ?? err.error ?? 'Bad request');
+        }
+      },
+    });
   }
 
   openBanModal(user: AdminUserListItem) {

@@ -24,6 +24,7 @@
       @if (showSpoiler) {
         <td title="Spoiler" (click)="openSpoilerModal()"><i class="bi bi-eye-slash"></i></td>
       }
+      <td title="Grid" i18n-title="@@postform.grid" (click)="toggleArea('grid')"><i class="bi bi-grid-3x3-gap"></i></td>
     </tr>
     </tbody>
   </table>
@@ -87,6 +88,14 @@
         (close)="activeArea = null"
         (insert)="onInsertImage($event)">
       </app-image-upload>
+    </div>
+  }
+  @if (activeArea === 'grid') {
+    <div class="container" id="grid-builder-area">
+      <app-grid-builder
+        (close)="activeArea = null"
+        (insert)="insertGrid($event)">
+      </app-grid-builder>
     </div>
   }
 </div>

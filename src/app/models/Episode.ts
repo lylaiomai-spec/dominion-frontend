@@ -1,4 +1,5 @@
 import {CharacterShort, CustomFieldsData, ShortMask} from './Character';
+import {FieldTemplate} from './FieldTemplate';
 
 export interface Episode {
   id: number;
@@ -15,6 +16,7 @@ export interface EpisodeFilterRequest {
   character_ids: number[];
   faction_ids: number[];
   page: number;
+  order?: string[];
 }
 
 export interface EpisodeListItem {
@@ -25,6 +27,8 @@ export interface EpisodeListItem {
   subforum_name: string;
   topic_status: number;
   last_post_date: string;
+  custom_fields: { [key: string]: any };
+  characters: CharacterShort[];
 }
 
 export interface CreateEpisodeRequest {

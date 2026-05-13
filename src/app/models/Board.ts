@@ -11,4 +11,8 @@ export interface Board {
   last_registered_user: UserShort | null;
   posts_per_page: number;
   visual_navlinks_after_header_panel: string;
+  auto_archiving_show_page_link: string;
+  auto_archiving_enabled: string;
+  auto_archiving_days: string;
+  features?: { [key: string]: number };
 }
