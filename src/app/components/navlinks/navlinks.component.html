@@ -6,7 +6,9 @@
       @if(hasPrivateKey()) {
       <li id="navchat"><a routerLink="direct-chat"><span i18n="@@nav.messages">Messages</span></a></li>
       }
+      @if (showAiChatNavlink()) {
       <li id="navaichat"><a routerLink="ai-chat"><span i18n="@@nav.aiChat">AI Chat</span></a></li>
+      }
       }
       @if(canSeeAdminPage()) {
         <li id="navadmin"><a routerLink="admin/dashboard"><span i18n="@@nav.admin">Admin</span></a></li>
