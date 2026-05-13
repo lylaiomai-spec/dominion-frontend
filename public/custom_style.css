@@ -673,6 +673,48 @@ body::before {
   text-align: right;
 }
 
+/* ── AI Chat notice ───────────────────────────────────────────── */
+
+.main-notice {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: #f5f0e8;
+  border-left: 3px solid #9c7d58;
+  border-radius: 0 4px 4px 0;
+  color: #5a4a38;
+  font-size: 0.88em;
+  line-height: 1.5;
+}
+
+/* ── AI Chat sources ──────────────────────────────────────────── */
+
+.message-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e0dbd0;
+}
+
+.message-source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: #ede8da;
+  border: 1px solid #ccc7b8;
+  border-radius: 3px;
+  font-size: 0.78em;
+  color: #4a3b2a;
+  text-decoration: none;
+}
+
+.message-source-link:hover {
+  background: #e0d8c8;
+  text-decoration: underline;
+}
+
 /* ── Quote Block ──────────────────────────────────────────────── */
 
 .punbb .post-content .quote-box {
