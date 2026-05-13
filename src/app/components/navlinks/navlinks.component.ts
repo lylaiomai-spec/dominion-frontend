@@ -25,7 +25,7 @@ export class NavlinksComponent {
   public hasPrivateKey = this.userService.privateKey;
   public additionalNavlinks = this.additionalNavlinkService.navlinks;
   public canSeeAdminPage = computed(() => this.authService.hasPermission('show_admin_page'));
-  public showAiChatNavlink = computed(() => !!this.authService.currentUser()?.show_ai_chat_navlink);
+  public showAiChatNavlink = computed(() => this.authService.hasPermission('show_ai_chat_navlink'));
   public showAutoArchiveLink = computed(() => this.boardService.board().auto_archiving_show_page_link === 'y');
   public showShopLink = computed(() => this.boardService.board().features?.['currency'] === 1);
 

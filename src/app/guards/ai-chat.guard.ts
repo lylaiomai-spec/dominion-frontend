@@ -6,7 +6,7 @@ export const aiChatGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  if (authService.currentUser()?.show_ai_chat_navlink) {
+  if (authService.hasPermission('show_ai_chat_navlink')) {
     return true;
   }
 
