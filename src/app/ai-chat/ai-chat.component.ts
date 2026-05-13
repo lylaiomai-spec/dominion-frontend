@@ -1,13 +1,12 @@
-import { Component, ElementRef, effect, inject, OnInit, ViewChild, signal } from '@angular/core';
+import { Component, ElementRef, effect, inject, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
+import { NotificationService } from '../services/notification.service';
+import { AiMessageData } from '../models/event';
 import { Message } from '../models/Message';
-
-interface AiChatResponse {
-  reply: string;
-}
 
 @Component({
   selector: 'app-ai-chat',
@@ -15,9 +14,11 @@ interface AiChatResponse {
   imports: [CommonModule, FormsModule],
   templateUrl: './ai-chat.component.html',
 })
-export class AiChatComponent implements OnInit {
+export class AiChatComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
+  private aiMessageSub?: Subscription;
 
   @ViewChild('chatInput') messageField!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef<HTMLDivElement>;
@@ -43,7 +44,40 @@ export class AiChatComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.apiService.get<AiMessageData[]>('ai-chat/history').subscribe({
+      next: (history) => {
+        const user = this.currentUser();
+        const messages = history.map(msg => new Message(
+          ++this.messageIdCounter,
+          msg.content,
+          new Date(msg.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          msg.role === 'user',
+          msg.role === 'user' ? (user?.username ?? 'You') : 'AI',
+          msg.role === 'user' ? (user?.avatar ?? null) : null
+        ));
+        this.messages.set(messages);
+      },
+      error: (err) => console.error('Failed to load AI chat history', err)
+    });
+
+    this.aiMessageSub = this.notificationService.aiMessage$.subscribe(event => {
+      const aiMessage = new Message(
+        ++this.messageIdCounter,
+        event.data.content,
+        new Date(event.data.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        false,
+        'AI',
+        null
+      );
+      this.messages.update(msgs => [...msgs, aiMessage]);
+      this.isLoading.set(false);
+    });
+  }
+
+  ngOnDestroy() {
+    this.aiMessageSub?.unsubscribe();
+  }
 
   insertTag(tag: string) {
     const textarea = this.messageField.nativeElement;
@@ -86,22 +120,21 @@ export class AiChatComponent implements OnInit {
     textarea.value = '';
     this.isLoading.set(true);
 
-    this.apiService.post<AiChatResponse>('ai-chat/message', { content }).subscribe({
-      next: (response) => {
-        const aiMessage = new Message(
-          ++this.messageIdCounter,
-          response.reply,
-          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          false,
-          'AI',
-          null
-        );
-        this.messages.update(msgs => [...msgs, aiMessage]);
-        this.isLoading.set(false);
-      },
+    this.apiService.post('ai-chat/message', { content }).subscribe({
       error: (err) => {
         console.error('AI chat error', err);
         this.isLoading.set(false);
+        if (err?.status === 503) {
+          const systemMessage = new Message(
+            ++this.messageIdCounter,
+            'AI is currently unavailable. Please try again later.',
+            new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            false,
+            'System',
+            null
+          );
+          this.messages.update(msgs => [...msgs, systemMessage]);
+        }
       }
     });
   }

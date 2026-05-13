@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -53,6 +53,9 @@ export class NotificationService {
 
   private draftUpdatedSubject = new Subject<DraftUpdatedEvent>();
   public draftUpdated$ = this.draftUpdatedSubject.asObservable();
+
+  private aiMessageSubject = new Subject<AiMessageEvent>();
+  public aiMessage$ = this.aiMessageSubject.asObservable();
 
 private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
@@ -397,6 +400,9 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         break;
       case 'draft_updated':
         this.draftUpdatedSubject.next(notification as DraftUpdatedEvent);
+        break;
+      case 'ai_message':
+        this.aiMessageSubject.next(notification as AiMessageEvent);
         break;
       case 'user_refresh_required':
         this.authService.refreshToken().subscribe({

@@ -179,4 +179,18 @@ export interface DraftUpdatedEvent {
   draft_id: string;
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent | UserRefreshRequiredEvent | DraftUpdatedEvent;
+export interface AiMessageData {
+  id: number;
+  user_id: number;
+  role: string;
+  content: string;
+  date_created: string;
+}
+
+export interface AiMessageEvent {
+  type: 'ai_message';
+  msg_id?: number;
+  data: AiMessageData;
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent | UserRefreshRequiredEvent | DraftUpdatedEvent | AiMessageEvent;
