@@ -5,7 +5,8 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../services/api.service';
 import { AuthService } from '../services/auth.service';
 import { NotificationService } from '../services/notification.service';
-import { AiMessageData } from '../models/event';
+import { AiMessageData, AiSource } from '../models/event';
+import { TopicType, TopicTypeIcon } from '../models/Topic';
 import { Message } from '../models/Message';
 
 @Component({
@@ -54,7 +55,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
           new Date(msg.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           msg.role === 'user',
           msg.role === 'user' ? (user?.username ?? 'You') : 'AI',
-          msg.role === 'user' ? (user?.avatar ?? null) : null
+          msg.role === 'user' ? (user?.avatar ?? null) : null,
+          msg.sources
         ));
         this.messages.set(messages);
       },
@@ -68,7 +70,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
         new Date(event.data.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         false,
         'AI',
-        null
+        null,
+        event.data.sources
       );
       this.messages.update(msgs => [...msgs, aiMessage]);
       this.isLoading.set(false);
@@ -137,6 +140,19 @@ export class AiChatComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  sourceIcon(source: AiSource): string {
+    if (source.topic_type == null) return 'bi-chat';
+    return TopicTypeIcon[source.topic_type as TopicType] ?? 'bi-chat';
+  }
+
+  sourceLink(source: AiSource): string {
+    return `${window.location.origin}/viewtopic/${source.topic_id}?post_id=${source.post_id}#${source.post_id}`;
+  }
+
+  sourceLabel(source: AiSource): string {
+    return `${source.topic_name ?? 'Topic'} #${source.post_id}`;
   }
 
   highlightMatch(text: string): string {

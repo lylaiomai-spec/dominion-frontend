@@ -51,6 +51,7 @@ import { RestorePasswordComponent } from './restore-password/restore-password.co
 import { WipeOutMyUserComponent } from './wipe-out-my-user/wipe-out-my-user.component';
 import { adminGuard } from './guards/admin.guard';
 import { privateKeyGuard } from './guards/private-key.guard';
+import { aiChatGuard } from './guards/ai-chat.guard';
 import { CharacterFieldListComponent } from './character-field-list/character-field-list.component';
 import { AdminWidgetPanelsComponent } from './admin/admin-widget-panels/admin-widget-panels.component';
 import { AdminWidgetPanelEditComponent } from './admin/admin-widget-panel-edit/admin-widget-panel-edit.component';
@@ -121,6 +122,7 @@ export const routes: Routes = [
   {
     path: 'ai-chat',
     component: AiChatComponent,
+    canActivate: [aiChatGuard],
     title: 'AI Chat',
     data: { pageId: 'pun-ai-chat' }
   },

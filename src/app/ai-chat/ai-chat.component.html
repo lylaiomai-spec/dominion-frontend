@@ -3,6 +3,10 @@
     <h1><span i18n="@@aiChat.title">AI Chat</span></h1>
   </div>
 
+  <div class="main-notice">
+    <em i18n="@@aiChat.notice">This chat is designed primarily for advanced search in forum topics. Its capabilities are limited, and the message history passed with each request is limited to the last 20 messages. Please do not use this chat to roleplay, have long sophisticated conversations, or conduct psychoanalysis sessions. Use your personal AI account for those purposes.</em>
+  </div>
+
   <div id="pm" class="category">
     <div class="main-content">
       <div class="pm-history" style="width: 100%;">
@@ -29,6 +33,15 @@
                           <p [innerHTML]="highlightMatch(msg.text)"></p>
                         </div>
                       </div>
+                      @if (msg.sources && msg.sources.length > 0) {
+                        <div class="message-sources">
+                          @for (source of msg.sources; track source.post_id) {
+                            <a [href]="sourceLink(source)" class="message-source-link">
+                              <i class="bi {{ sourceIcon(source) }}"></i> {{ sourceLabel(source) }}
+                            </a>
+                          }
+                        </div>
+                      }
                       <p class="message-metadata"><span>{{ msg.time }}</span></p>
                     </div>
                   </div>

@@ -179,11 +179,19 @@ export interface DraftUpdatedEvent {
   draft_id: string;
 }
 
+export interface AiSource {
+  post_id?: number;
+  topic_id?: number;
+  topic_name?: string;
+  topic_type?: number;
+}
+
 export interface AiMessageData {
   id: number;
   user_id: number;
   role: string;
   content: string;
+  sources?: AiSource[];
   date_created: string;
 }
 
