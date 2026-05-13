@@ -133,6 +133,7 @@ export const TRANSLATIONS_RU = {
   "nav.profile": "Профиль",
   "nav.characters": "Мои персонажи",
   "nav.messages": "Личные сообщения",
+  "nav.aiChat": "AI Чат",
   "nav.search": "Поиск",
   "nav.logout": "Выход",
   "nav.register": "Регистрация",
