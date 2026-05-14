@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent, AiTaskDoneEvent, AiQueuePositionEvent, AiErrorEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { environment } from '../../environments/environment';
@@ -57,6 +57,15 @@ export class NotificationService {
   private aiMessageSubject = new Subject<AiMessageEvent>();
   public aiMessage$ = this.aiMessageSubject.asObservable();
 
+  private aiTaskDoneSubject = new Subject<AiTaskDoneEvent>();
+  public aiTaskDone$ = this.aiTaskDoneSubject.asObservable();
+
+  private aiQueuePositionSubject = new Subject<AiQueuePositionEvent>();
+  public aiQueuePosition$ = this.aiQueuePositionSubject.asObservable();
+
+  private aiErrorSubject = new Subject<AiErrorEvent>();
+  public aiError$ = this.aiErrorSubject.asObservable();
+
 private systemNotificationsSignal = signal<NotificationData[]>([]);
   public systemNotifications = this.systemNotificationsSignal.asReadonly();
   private gameNotificationsSignal = signal<NotificationData[]>([]);
@@ -102,6 +111,22 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         this.pendingToasts.forEach(n => this.notificationSubject.next(n));
         this.pendingToasts = [];
       }
+    });
+  }
+
+  public showToast(title: string, message: string): void {
+    this.notificationSubject.next({
+      id: Date.now(),
+      user_id: 0,
+      type: 'system',
+      title,
+      message,
+      date_created: new Date().toISOString(),
+      is_read: false,
+      mention: null,
+      game: null,
+      direct_message: null,
+      data: null
     });
   }
 
@@ -403,6 +428,15 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         break;
       case 'ai_message':
         this.aiMessageSubject.next(notification as AiMessageEvent);
+        break;
+      case 'ai_task_done':
+        this.aiTaskDoneSubject.next(notification as AiTaskDoneEvent);
+        break;
+      case 'ai_queue_position':
+        this.aiQueuePositionSubject.next(notification as AiQueuePositionEvent);
+        break;
+      case 'ai_error':
+        this.aiErrorSubject.next(notification as AiErrorEvent);
         break;
       case 'user_refresh_required':
         this.authService.refreshToken().subscribe({

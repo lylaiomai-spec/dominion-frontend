@@ -201,4 +201,22 @@ export interface AiMessageEvent {
   data: AiMessageData;
 }
 
-export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent | UserRefreshRequiredEvent | DraftUpdatedEvent | AiMessageEvent;
+export interface AiTaskDoneEvent {
+  type: 'ai_task_done';
+  msg_id?: number;
+  data: AiMessageData;
+}
+
+export interface AiQueuePositionEvent {
+  type: 'ai_queue_position';
+  msg_id?: number;
+  data: { position: number };
+}
+
+export interface AiErrorEvent {
+  type: 'ai_error';
+  msg_id?: number;
+  data: { error: string };
+}
+
+export type WebSocketEvent = TopicCreatedEvent | PostCreatedEvent | PostUpdatedEvent | NotificationEvent | TopicViewersUpdateEvent | DirectMessageCreatedEvent | ActiveUsersUpdateEvent | ActiveUsersActivityUpdateEvent | PanelReloadEvent | ReactionCreatedEvent | HealthUpdateEvent | UserRefreshRequiredEvent | DraftUpdatedEvent | AiMessageEvent | AiTaskDoneEvent | AiQueuePositionEvent | AiErrorEvent;
