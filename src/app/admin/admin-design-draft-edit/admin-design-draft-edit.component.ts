@@ -22,6 +22,7 @@ export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {
   draft = signal<DesignDraft | null>(null);
   saveState = signal<SaveState>('idle');
   autoSave = signal(false);
+  showPublishModal = signal(false);
 
   private changeSubject = new Subject<void>();
   private autoSaveSubscription: Subscription | null = null;
@@ -57,6 +58,15 @@ export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {
         console.error('Failed to save design draft', err);
         this.flashState('error');
       },
+    });
+  }
+
+  publish() {
+    const draft = this.draft();
+    if (!draft) return;
+    this.draftService.publish(draft.id).subscribe({
+      next: () => this.showPublishModal.set(false),
+      error: (err) => console.error('Failed to publish design draft', err),
     });
   }
 

@@ -39,6 +39,14 @@ export enum TopicType {
   lore = 4
 }
 
+export const TopicTypeIcon: Record<TopicType, string> = {
+  [TopicType.general]: 'bi-chat',
+  [TopicType.episode]: 'bi-camera-reels',
+  [TopicType.character]: 'bi-person',
+  [TopicType.wanted_character]: 'bi-person-plus',
+  [TopicType.lore]: 'bi-book',
+};
+
 export enum TopicStatus {
   active = 0,
   inactive = 1,

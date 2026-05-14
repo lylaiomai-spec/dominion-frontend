@@ -96,6 +96,12 @@ export class AppComponent implements OnInit {
     this.loadHeaderPanel();
     this.loadFooterPanel();
 
+    this.notificationService.aiTaskDone$.subscribe(() => {
+      if (!this.router.url.startsWith('/ai-chat')) {
+        this.notificationService.showToast('AI Chat', 'Your AI response is ready.');
+      }
+    });
+
     this.notificationService.panelReload$.subscribe(event => {
       if (event.panel_name === 'header') {
         this.loadHeaderPanel();

@@ -133,6 +133,7 @@ export const TRANSLATIONS_RU = {
   "nav.profile": "Профиль",
   "nav.characters": "Мои персонажи",
   "nav.messages": "Личные сообщения",
+  "nav.aiChat": "AI Чат",
   "nav.search": "Поиск",
   "nav.logout": "Выход",
   "nav.register": "Регистрация",
@@ -617,6 +618,7 @@ export const TRANSLATIONS_RU = {
   "admin.design.uploadMainStyle": "Загрузить main_style.css",
   "admin.design.previousVersions": "Предыдущие версии",
   "admin.design.view": "Открыть",
+  "admin.design.revert": "Откатить",
   "admin.features": "Дополнительные функции",
   "adminFeatures.title": "Дополнительные функции",
   "adminFeatures.settings": "Настройки",
@@ -822,9 +824,21 @@ export const TRANSLATIONS_RU = {
   "adminDesignDrafts.dateLastChanged": "Изменён",
   "adminDesignDrafts.openPreview": "Открыть превью",
   "adminDesignDrafts.empty": "Черновики оформления не найдены.",
+  "adminDesignDrafts.publish": "Опубликовать",
+  "adminDesignDrafts.publishTitle": "Опубликовать «{{ draft.name }}»?",
+  "adminDesignDrafts.publishWarning1": "Это действие перезапишет файлы стилей для всех пользователей.",
+  "adminDesignDrafts.publishWarning2": "Пользователи могут не увидеть изменения до перезагрузки страницы.",
+  "adminDesignDrafts.publishWarning3": "Действие можно отменить через страницу статических файлов.",
 
   "adminDesignDraftEdit.title": "Редактировать черновик оформления",
   "adminDesignDraftEdit.openPreview": "Открыть превью",
   "adminDesignDraftEdit.name": "Название",
-  "adminDesignDraftEdit.autoSave": "Автосохранение"
+  "adminDesignDraftEdit.autoSave": "Автосохранение",
+
+  "aiChat.title": "AI Чат",
+  "aiChat.notice": "Этот чат предназначен прежде всего для расширенного поиска по темам форума. Его возможности ограничены, а история сообщений, передаваемая с каждым запросом, ограничена последними 20 сообщениями. Пожалуйста, не используйте этот чат для ролевых игр, длинных изощрённых разговоров или сеансов психоанализа. Для этих целей используйте свой личный аккаунт AI.",
+  "aiChat.emptyState": "Отправьте сообщение, чтобы начать общение с AI",
+  "aiChat.placeholder": "Ваше сообщение...",
+  "aiChat.send": "Отправить",
+  "aiChat.queuePosition": "Ваш запрос в очереди. Задач впереди вас: {{ queuePosition() }}"
 };

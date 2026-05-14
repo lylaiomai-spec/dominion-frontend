@@ -1,0 +1,103 @@
+<div id="pun-main" class="main">
+  <div class="main-header">
+    <h1><span i18n="@@aiChat.title">AI Chat</span></h1>
+  </div>
+
+  <div class="main-notice">
+    <em i18n="@@aiChat.notice">This chat is designed primarily for advanced search in forum topics. Its capabilities are limited, and the message history passed with each request is limited to the last 20 messages. Please do not use this chat to roleplay, have long sophisticated conversations, or conduct psychoanalysis sessions. Use your personal AI account for those purposes.</em>
+  </div>
+
+  <div id="pm" class="category">
+    <div class="main-content">
+      <div class="pm-history" style="width: 100%;">
+        <div class="main-item">
+          <div class="history-scroll" #scrollContainer>
+            @if (messages().length === 0 && !isLoading()) {
+              <div class="pm-no-chat" i18n="@@aiChat.emptyState">Send a message to start chatting with AI</div>
+            }
+            @for (msg of messages(); track msg.id) {
+              <div class="message" [class.altstyle]="msg.isMe">
+                <div class="container">
+                  <div class="message-author">
+                    @if (msg.avatar) {
+                      <img [src]="msg.avatar" [alt]="msg.username" class="message-avatar" />
+                    } @else {
+                      <div class="message-avatar message-avatar-placeholder">{{ msg.username[0] }}</div>
+                    }
+                    <span class="message-username">{{ msg.username }}</span>
+                  </div>
+                  <div class="message-main">
+                    <div class="message-body">
+                      <div class="message-box">
+                        <div class="message-content">
+                          <p [innerHTML]="highlightMatch(msg.text)"></p>
+                        </div>
+                      </div>
+                      @if (msg.sources && msg.sources.length > 0) {
+                        <div class="message-sources">
+                          @for (source of msg.sources; track source.post_id) {
+                            <a [href]="sourceLink(source)" class="message-source-link">
+                              <i class="bi {{ sourceIcon(source) }}"></i> {{ sourceLabel(source) }}
+                            </a>
+                          }
+                        </div>
+                      }
+                      <p class="message-metadata"><span>{{ msg.time }}</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+            @if (isLoading()) {
+              <div class="message">
+                <div class="container">
+                  <div class="message-author">
+                    <div class="message-avatar message-avatar-placeholder">A</div>
+                    <span class="message-username">AI</span>
+                  </div>
+                  <div class="message-main">
+                    <div class="message-body">
+                      <div class="message-box">
+                        @if (queuePosition() !== null) {
+                          <div class="message-content">
+                            <p i18n="@@aiChat.queuePosition">Your task is in queue. Tasks in front of you: {{ queuePosition() }}</p>
+                          </div>
+                        } @else {
+                          <div class="message-content ai-thinking">
+                            <span></span><span></span><span></span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="pm-input">
+            <div id="pm-form-buttons">
+              <table cellspacing="0" cellpadding="0">
+                <tbody>
+                <tr>
+                  <td title="Bold" (click)="insertTag('b')"><i class="bi bi-type-bold"></i></td>
+                  <td title="Italic" (click)="insertTag('i')"><i class="bi bi-type-italic"></i></td>
+                  <td title="Strikethrough" (click)="insertTag('s')"><i class="bi bi-type-strikethrough"></i></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="textarea-wrapper">
+              <textarea #chatInput (keydown.enter)="handleSend()" [disabled]="isLoading()" i18n-placeholder="@@aiChat.placeholder" placeholder="Your message..."></textarea>
+            </div>
+            <div class="buttons">
+              <input type="button" class="button" i18n-value="@@aiChat.send" value="Send" (click)="handleSend()" [disabled]="isLoading()">
+              <div class="clearer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </div>
+</div>
