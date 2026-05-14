@@ -19,13 +19,14 @@ export class AiChatComponent implements OnInit, OnDestroy {
   private apiService = inject(ApiService);
   private authService = inject(AuthService);
   private notificationService = inject(NotificationService);
-  private aiMessageSub?: Subscription;
+  private subs: Subscription[] = [];
 
   @ViewChild('chatInput') messageField!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef<HTMLDivElement>;
 
   messages = signal<Message[]>([]);
   isLoading = signal(false);
+  queuePosition = signal<number | null>(null);
 
   private currentUser = this.authService.currentUser;
   private messageIdCounter = 0;
@@ -63,23 +64,49 @@ export class AiChatComponent implements OnInit, OnDestroy {
       error: (err) => console.error('Failed to load AI chat history', err)
     });
 
-    this.aiMessageSub = this.notificationService.aiMessage$.subscribe(event => {
+    const appendAiMessage = (data: AiMessageData) => {
       const aiMessage = new Message(
         ++this.messageIdCounter,
-        event.data.content,
-        new Date(event.data.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        data.content,
+        new Date(data.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         false,
         'AI',
         null,
-        event.data.sources
+        data.sources
       );
       this.messages.update(msgs => [...msgs, aiMessage]);
       this.isLoading.set(false);
-    });
+      this.queuePosition.set(null);
+    };
+
+    this.subs.push(
+      this.notificationService.aiMessage$.subscribe(event => appendAiMessage(event.data)),
+      this.notificationService.aiTaskDone$.subscribe(event => appendAiMessage(event.data)),
+      this.notificationService.aiQueuePosition$.subscribe(event => {
+        if (event.data.position > 0) {
+          this.queuePosition.set(event.data.position);
+        } else {
+          this.queuePosition.set(null);
+        }
+      }),
+      this.notificationService.aiError$.subscribe(() => {
+        this.isLoading.set(false);
+        this.queuePosition.set(null);
+        const systemMessage = new Message(
+          ++this.messageIdCounter,
+          'An error occurred while processing your request. Please try again.',
+          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          false,
+          'System',
+          null
+        );
+        this.messages.update(msgs => [...msgs, systemMessage]);
+      })
+    );
   }
 
   ngOnDestroy() {
-    this.aiMessageSub?.unsubscribe();
+    this.subs.forEach(s => s.unsubscribe());
   }
 
   insertTag(tag: string) {
@@ -123,7 +150,12 @@ export class AiChatComponent implements OnInit, OnDestroy {
     textarea.value = '';
     this.isLoading.set(true);
 
-    this.apiService.post('ai-chat/message', { content }).subscribe({
+    this.apiService.post<{ queue_position: number }>('ai-chat/message', { content }).subscribe({
+      next: (res) => {
+        if (res.queue_position > 0) {
+          this.queuePosition.set(res.queue_position);
+        }
+      },
       error: (err) => {
         console.error('AI chat error', err);
         this.isLoading.set(false);

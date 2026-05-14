@@ -58,9 +58,15 @@
                   <div class="message-main">
                     <div class="message-body">
                       <div class="message-box">
-                        <div class="message-content ai-thinking">
-                          <span></span><span></span><span></span>
-                        </div>
+                        @if (queuePosition() !== null) {
+                          <div class="message-content">
+                            <p i18n="@@aiChat.queuePosition">Your task is in queue. Tasks in front of you: {{ queuePosition() }}</p>
+                          </div>
+                        } @else {
+                          <div class="message-content ai-thinking">
+                            <span></span><span></span><span></span>
+                          </div>
+                        }
                       </div>
                     </div>
                   </div>
