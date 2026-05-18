@@ -1,0 +1,45 @@
+<div class="permission-matrix-container">
+  <h2>AI Index</h2>
+
+  <form (submit)="saveMatrix(); $event.preventDefault()">
+    <div class="table-wrapper">
+      <table class="permission-table">
+        <thead>
+          <tr>
+            <th>Subforum</th>
+            @for (bucket of bucketKeys(); track bucket) {
+              <th>{{ bucket }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.subforum_id) {
+            <tr>
+              <td>{{ row.subforum_name }}</td>
+              @for (bucket of bucketKeys(); track bucket) {
+                <td>
+                  <input
+                    type="checkbox"
+                    [name]="row.subforum_id + '.' + bucket"
+                    [(ngModel)]="row.buckets[bucket]"
+                  />
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [class]="'btn-save btn-save--' + saveState()" [disabled]="saveState() === 'loading'">
+        @switch (saveState()) {
+          @case ('loading') { <span class="spinner"></span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.save">Save</span> }
+        }
+      </button>
+    </div>
+  </form>
+</div>
