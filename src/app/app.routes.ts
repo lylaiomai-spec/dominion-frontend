@@ -23,6 +23,8 @@ import {CharacterCreateComponent} from './character-create/character-create.comp
 import {EpisodeTemplateEditComponent} from './admin/episode-template-edit/episode-template-edit.component';
 import {CharacterProfileTemplateEditComponent} from './admin/character-profile-template-edit/character-profile-template-edit.component';
 import {PermissionMatrixComponent} from './admin/permission-matrix/permission-matrix.component';
+import {AdminAiIndexComponent} from './admin/admin-ai-index/admin-ai-index.component';
+import {AdminAiIndexSettingsComponent} from './admin/admin-ai-index-settings/admin-ai-index-settings.component';
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
 import {AdminFeaturesComponent} from './admin/admin-features/admin-features.component';
 import {AdminCurrencyComponent} from './admin/admin-currency/admin-currency.component';
@@ -421,6 +423,16 @@ export const routes: Routes = [
         path: 'search',
         component: AdminSearchComponent,
         title: 'Admin - Search'
+      },
+      {
+        path: 'ai-index',
+        component: AdminAiIndexComponent,
+        title: 'Admin - AI Index'
+      },
+      {
+        path: 'ai-index-settings',
+        component: AdminAiIndexSettingsComponent,
+        title: 'Admin - AI Index Settings'
       },
       {
         path: 'design-drafts',

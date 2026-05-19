@@ -30,7 +30,7 @@
                     <div class="message-body">
                       <div class="message-box">
                         <div class="message-content">
-                          <p [innerHTML]="highlightMatch(msg.text)"></p>
+                          <p [innerHTML]="msg.text | safeHtml"></p>
                         </div>
                       </div>
                       @if (msg.sources && msg.sources.length > 0) {

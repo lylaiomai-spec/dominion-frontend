@@ -1,30 +1,97 @@
 <div class="container">
   <div id="admin-wrapper">
     <nav id="admin-nav">
-      <ul>
-        <li><a routerLink="/admin/dashboard" i18n="@@admin.dashboard">Dashboard</a></li>
-        <li><a routerLink="/admin/settings" i18n="@@admin.settings">Settings</a></li>
-        <li><a routerLink="/admin/subforums" i18n="@@admin.subforums">Subforums</a></li>
-        <li><a routerLink="/admin/topic-commander" i18n="@@admin.topicCommander">Topic Commander</a></li>
-        <li><a routerLink="/admin/users" i18n="@@admin.users">Users</a></li>
-        <li><a routerLink="/admin/characters" i18n="@@admin.characters">Characters</a></li>
-        <li><a routerLink="/admin/character-template" i18n="@@admin.charactertemplates">Character Template</a></li>
-        <li><a routerLink="/admin/character-profile-template" i18n="@@admin.characterprofiletemplates">Character Profile Template</a></li>
-        <li><a routerLink="/admin/factions" i18n="@@admin.factions">Factions</a></li>
-        <li><a routerLink="/admin/episode-template" i18n="@@admin.episodetemplate">Episode Template</a></li>
-        <li><a routerLink="/admin/permissions" i18n="@@admin.permissions">Permissions</a></li>
-        <li><a routerLink="/admin/character-claims" i18n="@@admin.characterClaims">Character Claims</a></li>
-        <li><a routerLink="/admin/wanted-character-template" i18n="@@admin.wantedCharacterTemplate">Wanted Character Template</a></li>
-        <li><a routerLink="/admin/widget-panels" i18n="@@admin.widgetPanels">Widget Panels</a></li>
-        <li><a routerLink="/admin/widgets" i18n="@@admin.widgets">Widgets</a></li>
-        <li><a routerLink="/admin/design" i18n="@@admin.design">Design</a></li>
-        <li><a routerLink="/admin/design-drafts" i18n="@@admin.designDrafts">Design Drafts</a></li>
-        <li><a routerLink="/admin/additional-navlinks" i18n="@@admin.additionalNavlinks">Additional Navlinks</a></li>
-        <li><a routerLink="/admin/features" i18n="@@admin.features">Features</a></li>
-        <li><a routerLink="/admin/reactions" i18n="@@admin.reactions">Reactions</a></li>
-        <li><a routerLink="/admin/smiles" i18n="@@admin.smiles">Smiles</a></li>
-        <li><a routerLink="/admin/search" i18n="@@admin.search">Search</a></li>
-      </ul>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('general')" [class.open]="isOpen('general')">
+          <span i18n="@@admin.group.general">General Settings and Monitoring</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('general')) {
+          <ul>
+            <li><a routerLink="/admin/dashboard" routerLinkActive="active" i18n="@@admin.dashboard">Dashboard</a></li>
+            <li><a routerLink="/admin/settings" routerLinkActive="active" i18n="@@admin.settings">Settings</a></li>
+            <li><a routerLink="/admin/subforums" routerLinkActive="active" i18n="@@admin.subforums">Subforums</a></li>
+            <li><a routerLink="/admin/topic-commander" routerLinkActive="active" i18n="@@admin.topicCommander">Topic Commander</a></li>
+          </ul>
+        }
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('characters')" [class.open]="isOpen('characters')">
+          <span i18n="@@admin.group.characters">Characters and Templates</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('characters')) {
+          <ul>
+            <li><a routerLink="/admin/characters" routerLinkActive="active" i18n="@@admin.characters">Characters</a></li>
+            <li><a routerLink="/admin/character-template" routerLinkActive="active" i18n="@@admin.charactertemplates">Character Template</a></li>
+            <li><a routerLink="/admin/character-profile-template" routerLinkActive="active" i18n="@@admin.characterprofiletemplates">Character Profile Template</a></li>
+            <li><a routerLink="/admin/episode-template" routerLinkActive="active" i18n="@@admin.episodetemplate">Episode Template</a></li>
+            <li><a routerLink="/admin/wanted-character-template" routerLinkActive="active" i18n="@@admin.wantedCharacterTemplate">Wanted Character Template</a></li>
+            <li><a routerLink="/admin/factions" routerLinkActive="active" i18n="@@admin.factions">Factions</a></li>
+            <li><a routerLink="/admin/character-claims" routerLinkActive="active" i18n="@@admin.characterClaims">Character Claims</a></li>
+          </ul>
+        }
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('users')" [class.open]="isOpen('users')">
+          <span i18n="@@admin.group.users">Users and Permissions</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('users')) {
+          <ul>
+            <li><a routerLink="/admin/users" routerLinkActive="active" i18n="@@admin.users">Users</a></li>
+            <li><a routerLink="/admin/permissions" routerLinkActive="active" i18n="@@admin.permissions">Permissions</a></li>
+            <li><a routerLink="/admin/additional-navlinks" routerLinkActive="active" i18n="@@admin.additionalNavlinks">Additional Navlinks</a></li>
+          </ul>
+        }
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('ai')" [class.open]="isOpen('ai')">
+          <span i18n="@@admin.group.ai">AI and Search</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('ai')) {
+          <ul>
+            <li><a routerLink="/admin/search" routerLinkActive="active" i18n="@@admin.search">Search</a></li>
+            <li><a routerLink="/admin/ai-index" routerLinkActive="active" i18n="@@admin.aiIndex">AI Index</a></li>
+            <li><a routerLink="/admin/ai-index-settings" routerLinkActive="active" i18n="@@admin.aiIndexSettings">AI Index Settings</a></li>
+          </ul>
+        }
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('design')" [class.open]="isOpen('design')">
+          <span i18n="@@admin.group.design">Smiles and Design</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('design')) {
+          <ul>
+            <li><a routerLink="/admin/smiles" routerLinkActive="active" i18n="@@admin.smiles">Smiles</a></li>
+            <li><a routerLink="/admin/reactions" routerLinkActive="active" i18n="@@admin.reactions">Reactions</a></li>
+            <li><a routerLink="/admin/design" routerLinkActive="active" i18n="@@admin.design">Design</a></li>
+            <li><a routerLink="/admin/design-drafts" routerLinkActive="active" i18n="@@admin.designDrafts">Design Drafts</a></li>
+            <li><a routerLink="/admin/widget-panels" routerLinkActive="active" i18n="@@admin.widgetPanels">Widget Panels</a></li>
+            <li><a routerLink="/admin/widgets" routerLinkActive="active" i18n="@@admin.widgets">Widgets</a></li>
+          </ul>
+        }
+      </div>
+
+      <div class="nav-group">
+        <button class="nav-group-header" (click)="toggleGroup('extra')" [class.open]="isOpen('extra')">
+          <span i18n="@@admin.group.extra">Additional Functions</span>
+          <span class="chevron">&#8250;</span>
+        </button>
+        @if (isOpen('extra')) {
+          <ul>
+            <li><a routerLink="/admin/features/currency" routerLinkActive="active" i18n="@@admin.currency">Currency Settings</a></li>
+          </ul>
+        }
+      </div>
+
     </nav>
     <main id="admin-content">
       <router-outlet></router-outlet>

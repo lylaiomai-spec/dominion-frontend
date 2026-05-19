@@ -1,0 +1,32 @@
+<h2 i18n="@@admin.aiIndex">AI Index</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th i18n="@@adminAiIndex.colBucket">Bucket</th>
+      <th i18n="@@adminAiIndex.colLastId">Last ID</th>
+      <th i18n="@@adminAiIndex.colCurrentMaxId">Current Max ID</th>
+      <th i18n="@@adminAiIndex.colDateIngested">Date Ingested</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of cursors(); track item.bucket) {
+      <tr>
+        <td>{{ item.bucket }}</td>
+        <td>{{ item.last_id ?? '—' }}</td>
+        <td>{{ item.current_max_id }}</td>
+        <td>{{ item.date_ingested ? (item.date_ingested | date:'dd.MM.yyyy HH:mm') : '—' }}</td>
+        <td>
+          @if (isOutOfSync(item)) {
+            <button (click)="catchUp(item)" [disabled]="isCatchingUp(item.bucket)" i18n="@@adminAiIndex.catchUp">Catch Up</button>
+          }
+        </td>
+      </tr>
+    } @empty {
+      <tr>
+        <td colspan="5" i18n="@@adminAiIndex.empty">No data found.</td>
+      </tr>
+    }
+  </tbody>
+</table>
