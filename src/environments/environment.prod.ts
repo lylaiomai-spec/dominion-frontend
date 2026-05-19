@@ -4,6 +4,6 @@ export const environment = {
   apiUrl: '/api',
   wsUrl: `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`,
   customTemplates: [
-    { component: 'src/app/components/header/header.component.html', template: 'src/app/components/header/header.custom.component.html' }
+    { component: 'src/app/components/header', template: 'src/app/components/header/header.custom.component.html' }
   ] as { component: string; template: string }[]
 };
