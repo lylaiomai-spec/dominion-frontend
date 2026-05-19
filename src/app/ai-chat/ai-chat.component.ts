@@ -8,11 +8,12 @@ import { NotificationService } from '../services/notification.service';
 import { AiMessageData, AiSource } from '../models/event';
 import { TopicType, TopicTypeIcon } from '../models/Topic';
 import { Message } from '../models/Message';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-ai-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SafeHtmlPipe],
   templateUrl: './ai-chat.component.html',
 })
 export class AiChatComponent implements OnInit, OnDestroy {
