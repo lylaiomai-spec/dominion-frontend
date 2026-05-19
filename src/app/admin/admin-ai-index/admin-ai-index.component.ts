@@ -1,60 +1,54 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 
-export interface SubforumBucketRow {
-  subforum_id: number;
-  subforum_name: string;
-  buckets: { [key: string]: boolean };
+export interface QdrantCursorItem {
+  bucket: string;
+  last_id: number | null;
+  date_ingested: string | null;
+  current_max_id: number;
 }
 
 @Component({
   selector: 'app-admin-ai-index',
-  imports: [CommonModule, FormsModule],
-  templateUrl: './admin-ai-index.component.html',
   standalone: true,
-  styleUrl: './admin-ai-index.component.css'
+  imports: [CommonModule, DatePipe],
+  templateUrl: './admin-ai-index.component.html',
 })
 export class AdminAiIndexComponent implements OnInit {
   private apiService = inject(ApiService);
 
-  rows = signal<SubforumBucketRow[]>([]);
-
-  bucketKeys = computed(() => {
-    const data = this.rows();
-    if (data.length === 0) return [];
-    return Object.keys(data[0].buckets);
-  });
-
-  saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+  cursors = signal<QdrantCursorItem[]>([]);
+  catchingUp = signal<Set<string>>(new Set());
 
   ngOnInit() {
-    this.apiService.get<SubforumBucketRow[]>('admin/qdrant/subforum-matrix').subscribe({
-      next: (data) => this.rows.set(data),
-      error: (err) => console.error('Failed to load subforum matrix', err)
+    this.apiService.get<QdrantCursorItem[]>('admin/qdrant/cursors').subscribe({
+      next: (data) => this.cursors.set(data),
+      error: (err) => console.error('Failed to load qdrant cursors', err)
     });
   }
 
-  saveMatrix() {
-    const payload = this.rows().flatMap(row =>
-      Object.entries(row.buckets)
-        .filter(([, enabled]) => enabled)
-        .map(([bucket]) => ({ subforum_id: row.subforum_id, bucket }))
-    );
+  isOutOfSync(item: QdrantCursorItem): boolean {
+    return item.last_id !== item.current_max_id;
+  }
 
-    this.saveState.set('loading');
-    this.apiService.post('admin/qdrant/subforum-matrix/update', payload).subscribe({
-      next: () => this.flashState('success'),
+  catchUp(item: QdrantCursorItem) {
+    this.catchingUp.update(s => new Set(s).add(item.bucket));
+    this.apiService.post(`admin/qdrant/catchup/${item.bucket}`, {}).subscribe({
+      next: () => {
+        this.cursors.update(list =>
+          list.map(c => c.bucket === item.bucket ? { ...c, last_id: c.current_max_id } : c)
+        );
+        this.catchingUp.update(s => { const next = new Set(s); next.delete(item.bucket); return next; });
+      },
       error: (err) => {
-        console.error('Failed to save subforum matrix', err);
-        this.flashState('error');
+        console.error('Failed to catch up bucket', item.bucket, err);
+        this.catchingUp.update(s => { const next = new Set(s); next.delete(item.bucket); return next; });
       }
     });
   }
 
-  private flashState(state: 'success' | 'error') {
-    this.saveState.set(state);
-    setTimeout(() => this.saveState.set('idle'), 3000);
+  isCatchingUp(bucket: string): boolean {
+    return this.catchingUp().has(bucket);
   }
 }
