@@ -1,0 +1,45 @@
+<app-breadcrumbs [items]="[
+  { label: 'Admin', link: '/admin' },
+  { label: 'Custom Templates', link: '/admin/frontend-templates' },
+  { label: name() }
+]" />
+
+<div class="template-container">
+  <div class="template-header">
+    <div class="header-title">
+      <h2>
+        {{ name() }}
+        @if (readonly()) {
+          <span class="badge-readonly" i18n="@@admin.componentTemplate.readonlyBadge">default</span>
+        }
+      </h2>
+      @if (filePath()) {
+        <code class="file-path">{{ filePath() }}</code>
+      }
+    </div>
+    @if (!readonly()) {
+      <button
+        type="button"
+        class="btn-save"
+        [class]="'btn-save--' + saveState()"
+        [disabled]="saveState() === 'loading'"
+        (click)="save()"
+      >
+        @switch (saveState()) {
+          @case ('loading') { <span class="spinner"></span> }
+          @case ('success') { <span i18n="@@common.saved">Saved</span> }
+          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+          @default { <span i18n="@@common.save">Save</span> }
+        }
+      </button>
+    }
+  </div>
+
+  <div class="editor-wrap" [class.editor-wrap--readonly]="readonly()">
+    <app-html-editor
+      [value]="content()"
+      [readonly]="readonly()"
+      (valueChange)="updateContent($event)"
+    />
+  </div>
+</div>

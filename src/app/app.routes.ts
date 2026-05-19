@@ -65,6 +65,7 @@ import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
 import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
 import { AdminDesignDraftsComponent } from './admin/admin-design-drafts/admin-design-drafts.component';
+import { AdminFrontendTemplatesComponent } from './admin/admin-frontend-templates/admin-frontend-templates.component';
 import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
@@ -388,6 +389,22 @@ export const routes: Routes = [
         path: 'design',
         component: AdminDesignComponent,
         title: 'Admin - Design'
+      },
+      {
+        path: 'frontend-templates',
+        component: AdminFrontendTemplatesComponent,
+        title: 'Admin - Custom Templates'
+      },
+      {
+        path: 'frontend-templates/component',
+        loadComponent: () => import('./admin/admin-component-template/admin-component-template.component').then(m => m.AdminComponentTemplateComponent),
+        title: 'Admin - Component Template'
+      },
+      {
+        path: 'frontend-templates/component-default',
+        loadComponent: () => import('./admin/admin-component-template/admin-component-template.component').then(m => m.AdminComponentTemplateComponent),
+        data: { readonly: true },
+        title: 'Admin - Component Template (Default)'
       },
       {
         path: 'additional-navlinks',
