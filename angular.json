@@ -37,7 +37,8 @@
               }
             ],
             "styles": [],
-            "scripts": []
+            "scripts": [],
+            "plugins": ["./custom-templates.plugin.mjs"]
           },
           "configurations": {
             "production": {
