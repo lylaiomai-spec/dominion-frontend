@@ -1,8 +1,7 @@
-import {afterNextRender, Component, effect, inject, Injector, OnInit, computed, signal, HostBinding} from '@angular/core';
+import {afterNextRender, Component, effect, inject, Injector, OnInit, signal, HostBinding} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {ActivatedRoute, NavigationEnd, NavigationStart, Router, RouterOutlet} from '@angular/router';
 import {FooterComponent} from './components/footer/footer.component';
-import {NavlinksComponent} from './components/navlinks/navlinks.component';
 import {filter, map, mergeMap} from 'rxjs';
 import {ToastComponent} from './components/toast/toast.component';
 import {ScrollNavComponent} from './components/scroll-nav/scroll-nav.component';
@@ -11,16 +10,16 @@ import {AuthService} from './services/auth.service';
 import {FeatureService} from './services/feature.service';
 import {CurrencyService} from './services/currency.service';
 import {UserService} from './services/user.service';
-import {NotificationsComponent} from './components/notifications/notifications.component';
 import {NotificationService} from './services/notification.service';
 import {ApiService} from './services/api.service';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { RouterLinksDirective } from './directives/router-links.directive';
 import { environment } from '../environments/environment';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, FooterComponent, NavlinksComponent, ToastComponent, NotificationsComponent, ScrollNavComponent, RouterLinksDirective],
+  imports: [RouterOutlet, FooterComponent, ToastComponent, ScrollNavComponent, RouterLinksDirective, HeaderComponent],
   templateUrl: './app.component.html',
   standalone: true,
 })
@@ -35,11 +34,7 @@ export class AppComponent implements OnInit {
   private apiService = inject(ApiService);
   private sanitizer = inject(DomSanitizer);
 
-  headerPanelHtml = signal<SafeHtml>('');
   footerPanelHtml = signal<SafeHtml>('');
-
-  title = computed(() => this.boardService.board().site_name || 'Cuento');
-  navlinksAfterHeader = computed(() => this.boardService.board().visual_navlinks_after_header_panel === 'y');
 
   @HostBinding('class')
   get designClass(): string {
@@ -93,7 +88,6 @@ export class AppComponent implements OnInit {
         this.currencyService.loadSettings();
       }
     });
-    this.loadHeaderPanel();
     this.loadFooterPanel();
 
     this.notificationService.aiTaskDone$.subscribe(() => {
@@ -103,9 +97,6 @@ export class AppComponent implements OnInit {
     });
 
     this.notificationService.panelReload$.subscribe(event => {
-      if (event.panel_name === 'header') {
-        this.loadHeaderPanel();
-      }
       if (event.panel_name === 'footer') {
         this.loadFooterPanel();
       }
@@ -115,19 +106,8 @@ export class AppComponent implements OnInit {
       if (document.visibilityState === 'visible' && this.authService.isAuthenticated()) {
         this.notificationService.loadUnreadNotifications();
         this.notificationService.sendPageChange(this.currentPageType, this.currentPageNumId);
-        this.loadHeaderPanel();
         this.loadFooterPanel();
       }
-    });
-  }
-
-  private loadHeaderPanel() {
-    this.apiService.getText('panel/header/content').subscribe({
-      next: html => {
-        this.headerPanelHtml.set(this.sanitizer.bypassSecurityTrustHtml(html));
-        afterNextRender(() => this.processHeaderPanel(), { injector: this.injector });
-      },
-      error: () => {}
     });
   }
 
@@ -238,38 +218,7 @@ export class AppComponent implements OnInit {
     };
   }
 
-  private widgetRefreshIntervals: ReturnType<typeof setInterval>[] = [];
   private footerWidgetRefreshIntervals: ReturnType<typeof setInterval>[] = [];
-
-  private processHeaderPanel() {
-    this.widgetRefreshIntervals.forEach(id => clearInterval(id));
-    this.widgetRefreshIntervals = [];
-
-    const panel = document.getElementById('header-widget-panel');
-    if (!panel) return;
-
-    panel.querySelectorAll<HTMLElement>('[data-is-link="true"]').forEach(widget => {
-      this.attachWidgetLinks(widget);
-    });
-
-    panel.querySelectorAll<HTMLElement>('[data-refresh-interval][data-widget-id]').forEach(widget => {
-      const intervalSeconds = +(widget.getAttribute('data-refresh-interval') ?? 0);
-      const widgetId = widget.getAttribute('data-widget-id');
-      if (!intervalSeconds || !widgetId) return;
-
-      const isLink = widget.getAttribute('data-is-link') === 'true';
-      const id = setInterval(() => {
-        this.apiService.getText(`widget/${widgetId}/render?innerOnly=true`).subscribe({
-          next: html => {
-            widget.innerHTML = html;
-            if (isLink) this.attachWidgetLinks(widget);
-          },
-          error: () => {}
-        });
-      }, intervalSeconds * 1000);
-      this.widgetRefreshIntervals.push(id);
-    });
-  }
 
   private processFooterPanel() {
     this.footerWidgetRefreshIntervals.forEach(id => clearInterval(id));

@@ -1,32 +1,6 @@
 <div id="pun">
   <div [id]="pageId" class="punbb">
-    <div id="pun-title" class="section">
-      <div class="container">
-        <div class="title-site">
-          <h1><a href="/">{{ title() }}</a></h1>
-          <p><span></span></p>
-        </div>
-      </div>
-    </div>
-
-    @if (!navlinksAfterHeader()) {
-      <div id="pun-navlinks" class="section" app-navlinks></div>
-    }
-
-    <div id="header-widget-panel" appRouterLinks [innerHTML]="headerPanelHtml()"></div>
-
-    @if (navlinksAfterHeader()) {
-      <div id="pun-navlinks" class="section" app-navlinks></div>
-    }
-
-    <div id="pun-status" class="section">
-      <div class="container">
-        <p class="conl"><span><ng-container i18n="@@app.hello">Hello</ng-container>, {{currentUser()?.username}}!</span></p>
-        @if (authService.isAuthenticated()) {
-          <app-notifications></app-notifications>
-        }
-      </div>
-    </div>
+    <app-header></app-header>
 <router-outlet />
 
   <div id="footer-widget-panel" appRouterLinks [innerHTML]="footerPanelHtml()"></div>

@@ -851,6 +851,21 @@ export const TRANSLATIONS_RU = {
   "adminDesignDraftEdit.name": "Название",
   "adminDesignDraftEdit.autoSave": "Автосохранение",
 
+  "common.edit": "Редактировать",
+  "common.view": "Просмотр",
+
+  "admin.frontendTemplates": "Пользовательские шаблоны",
+  "admin.frontendTemplates.banner.title": "Внимание:",
+  "admin.frontendTemplates.banner.body": "Каждое изменение запускает пересборку фронтенда, которая занимает время. Если вы вносите несколько изменений подряд, возможно, придётся подождать несколько минут. После завершения сборки перезагрузите страницу, чтобы увидеть изменения.",
+  "admin.frontendTemplates.components": "Frontend-компоненты",
+  "admin.frontendTemplates.empty": "Компоненты не найдены.",
+  "admin.frontendTemplates.col.name": "Название",
+  "admin.frontendTemplates.col.description": "Описание",
+  "admin.frontendTemplates.col.templatePath": "Пользовательский шаблон",
+  "admin.frontendTemplates.col.defaultTemplatePath": "Шаблон по умолчанию",
+  "admin.frontendTemplates.col.active": "Активен",
+  "admin.componentTemplate.readonlyBadge": "по умолчанию",
+
   "aiChat.title": "AI Чат",
   "aiChat.notice": "Этот чат предназначен прежде всего для расширенного поиска по темам форума. Его возможности ограничены, а история сообщений, передаваемая с каждым запросом, ограничена последними 20 сообщениями. Пожалуйста, не используйте этот чат для ролевых игр, длинных изощрённых разговоров или сеансов психоанализа. Для этих целей используйте свой личный аккаунт AI.",
   "aiChat.emptyState": "Отправьте сообщение, чтобы начать общение с AI",
