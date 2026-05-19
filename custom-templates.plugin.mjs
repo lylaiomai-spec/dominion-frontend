@@ -46,8 +46,8 @@ const prodEnv = readFileSync(resolve(__dirname, 'src/environments/environment.pr
 const prodTemplates = parseCustomTemplates(prodEnv);
 
 const envReplacement = { replace: 'src/environments/environment.ts', with: 'src/environments/environment.prod.ts' };
-const prodTemplateReplacements = prodTemplates.map(({ component, template }) => ({
-  replace: component,
+const prodTemplateReplacements = prodTemplates.map(({ default_template, template }) => ({
+  replace: default_template,
   with: template,
 }));
 buildConfig.production.fileReplacements = [envReplacement, ...prodTemplateReplacements];
@@ -56,8 +56,8 @@ buildConfig.production.fileReplacements = [envReplacement, ...prodTemplateReplac
 const devEnv = readFileSync(resolve(__dirname, 'src/environments/environment.ts'), 'utf-8');
 const devTemplates = parseCustomTemplates(devEnv);
 
-const devTemplateReplacements = devTemplates.map(({ component, template }) => ({
-  replace: component,
+const devTemplateReplacements = devTemplates.map(({ default_template, template }) => ({
+  replace: default_template,
   with: template,
 }));
 buildConfig.development = buildConfig.development ?? {};
