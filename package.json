@@ -5,7 +5,7 @@
     "ng": "ng",
     "sync-templates": "node custom-templates.plugin.mjs",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "node custom-templates.plugin.mjs && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:visual": "playwright test tests/visual-tour.spec.ts",
