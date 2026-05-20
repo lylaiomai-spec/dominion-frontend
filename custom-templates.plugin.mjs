@@ -1,45 +1,54 @@
 /**
- * Syncs src/environments/custom_templates.json into angular.json fileReplacements.
- * Run with: node custom-templates.plugin.mjs
- *           npm run sync-templates
+ * Applies custom HTML template overrides, runs ng build, then restores originals.
+ * Usage: node custom-templates.plugin.mjs [ng build args...]
  *
- * If custom_templates.json does not exist, all template overrides are cleared.
+ * Reads src/environments/custom_templates.json if it exists.
+ * If the file is absent, builds normally with no overrides.
  */
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { existsSync, copyFileSync, unlinkSync } from 'fs';
+import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const jsonPath = resolve(__dirname, 'src/environments/custom_templates.json');
+const templates = existsSync(jsonPath)
+  ? JSON.parse(readFileSync(jsonPath, 'utf-8'))
+  : [];
 
-let templates = [];
-if (existsSync(jsonPath)) {
-  templates = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+// Apply overrides: copy custom file over default, keeping a .bak of the original
+const applied = [];
+for (const { default_template, template } of templates) {
+  const defaultPath = resolve(__dirname, default_template);
+  const customPath  = resolve(__dirname, template);
+  const backupPath  = defaultPath + '.bak';
+
+  if (!existsSync(defaultPath)) { console.warn(`[build] Missing default template: ${default_template}`); continue; }
+  if (!existsSync(customPath))  { console.warn(`[build] Missing custom template: ${template}`); continue; }
+
+  copyFileSync(defaultPath, backupPath);
+  copyFileSync(customPath, defaultPath);
+  applied.push({ defaultPath, backupPath });
+  console.log(`[build] Applied: ${template} → ${default_template}`);
 }
 
-const templateReplacements = templates.map(({ default_template, template }) => ({
-  replace: default_template,
-  with: template,
-}));
-
-const angularJsonPath = resolve(__dirname, 'angular.json');
-const angularJson = JSON.parse(readFileSync(angularJsonPath, 'utf-8'));
-
-const buildConfig = angularJson.projects['cuento-frontend'].architect.build.configurations;
-
-const envReplacement = { replace: 'src/environments/environment.ts', with: 'src/environments/environment.prod.ts' };
-buildConfig.production.fileReplacements = [envReplacement, ...templateReplacements];
-
-buildConfig.development = buildConfig.development ?? {};
-if (templateReplacements.length) {
-  buildConfig.development.fileReplacements = templateReplacements;
-} else {
-  delete buildConfig.development.fileReplacements;
+// Run ng build, passing through any extra args (e.g. --configuration production)
+const ngArgs = process.argv.slice(2).join(' ');
+let exitCode = 0;
+try {
+  execSync(`ng build ${ngArgs}`, { stdio: 'inherit' });
+} catch {
+  exitCode = 1;
+} finally {
+  // Always restore originals
+  for (const { defaultPath, backupPath } of applied) {
+    copyFileSync(backupPath, defaultPath);
+    unlinkSync(backupPath);
+  }
+  if (applied.length) console.log('[build] Original templates restored.');
 }
 
-writeFileSync(angularJsonPath, JSON.stringify(angularJson, null, 2) + '\n');
-
-console.log(`[sync-templates] ${templateReplacements.length} template replacement(s) applied.`);
-console.log('[sync-templates] angular.json updated.');
+process.exit(exitCode);

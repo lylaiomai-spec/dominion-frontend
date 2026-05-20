@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "sync-templates": "node custom-templates.plugin.mjs",
-    "start": "ng serve",
-    "build": "node custom-templates.plugin.mjs && ng build",
+"start": "ng serve",
+    "build": "node custom-templates.plugin.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:visual": "playwright test tests/visual-tour.spec.ts",
