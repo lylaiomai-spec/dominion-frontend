@@ -21,6 +21,7 @@ export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {
 
   draft = signal<DesignDraft | null>(null);
   saveState = signal<SaveState>('idle');
+  publishState = signal<SaveState>('idle');
   autoSave = signal(false);
   showPublishModal = signal(false);
 
@@ -64,9 +65,20 @@ export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {
   publish() {
     const draft = this.draft();
     if (!draft) return;
+    this.publishState.set('loading');
     this.draftService.publish(draft.id).subscribe({
-      next: () => this.showPublishModal.set(false),
-      error: (err) => console.error('Failed to publish design draft', err),
+      next: () => {
+        this.publishState.set('success');
+        setTimeout(() => {
+          this.publishState.set('idle');
+          this.showPublishModal.set(false);
+        }, 1500);
+      },
+      error: (err) => {
+        console.error('Failed to publish design draft', err);
+        this.publishState.set('error');
+        setTimeout(() => this.publishState.set('idle'), 3000);
+      },
     });
   }
 
