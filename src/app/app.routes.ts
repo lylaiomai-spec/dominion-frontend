@@ -46,7 +46,6 @@ import {CharacterProfileEditComponent} from './character-profile-edit/character-
 import { UserListComponent } from './user-list/user-list.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ActiveTopicsComponent } from './active-topics/active-topics.component';
-import { MaskListComponent } from './mask-list/mask-list.component';
 import { MaskPageComponent } from './mask-page/mask-page.component';
 import { RecoveryCodesComponent } from './recovery-codes/recovery-codes.component';
 import { SettingsRestorationCodesComponent } from './settings-restoration-codes/settings-restoration-codes.component';
@@ -273,12 +272,6 @@ export const routes: Routes = [
     component: CharacterProfileEditComponent,
     title: 'Update Character Profile',
     data: { pageId: 'pun-character-profile-update' }
-  },
-  {
-    path: 'user-masks/:userId',
-    component: MaskListComponent,
-    title: 'User Masks',
-    data: { pageId: 'pun-user-masks' }
   },
   {
     path: 'mask/:id',
