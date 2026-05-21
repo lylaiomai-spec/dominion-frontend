@@ -133,6 +133,45 @@
       }
     </div>
   </div>
+
+  @if (profile.masks?.length) {
+    <div class="category character-section">
+      <div class="main-content">
+        <details>
+          <summary i18n="@@userprofile.masks">Masks</summary>
+          <table cellspacing="0">
+            <thead>
+              <tr>
+                <th scope="col" i18n="@@userprofile.maskName">Mask Name</th>
+                <th scope="col" i18n="@@userprofile.episodes">Episodes</th>
+                <th scope="col" i18n="@@userprofile.posts">Posts</th>
+                <th scope="col" i18n="@@userprofile.lastPost">Last Post</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (mask of profile.masks; track mask.id; let isEven = $even) {
+                <tr [class.altstyle]="isEven">
+                  <td>
+                    <div class="intd">
+                      <div class="tclcon">
+                        <a [routerLink]="['/mask', mask.id]">{{ mask.name }}</a>
+                        @if (isOwnProfile()) {
+                          <a [routerLink]="['/character-profile-update', mask.id]" [queryParams]="{is_mask: true}" class="edit-link" title="Edit mask" i18n-title="@@userprofile.editMask"><i class="bi bi-pencil-square"></i></a>
+                        }
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ mask.total_episodes }}</td>
+                  <td>{{ mask.total_posts }}</td>
+                  <td>{{ mask.date_last_post | date }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </details>
+      </div>
+    </div>
+  }
 </div>
 
 }

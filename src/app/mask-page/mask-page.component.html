@@ -1,0 +1,93 @@
+<div id="pun-main" class="main mask-page">
+
+  <div class="mask-info">
+    @if (isLoadingMask()) {
+      <p i18n="@@maskpage.loadingMask">Loading mask...</p>
+    } @else if (mask()) {
+      <div class="mask-header">
+        @if (mask()!.avatar) {
+          <img [src]="mask()!.avatar" [alt]="mask()!.mask_name ?? mask()!.character_name" class="mask-avatar" />
+        }
+        <div class="mask-title">
+          <h1>{{ mask()!.mask_name ?? mask()!.character_name }}</h1>
+        </div>
+      </div>
+
+      <div class="mask-fields">
+        @for (field of getCustomFields(mask()!); track field.fieldName) {
+          @if (field.fieldValue) {
+            <div class="mask-field">
+              <span class="mask-field-label">{{ field.fieldName }}</span>
+              @if (field.type === 'long_text') {
+                <div class="mask-field-value" [innerHTML]="field.fieldValue"></div>
+              } @else if (field.type === 'image' || field.type === 'cropped_image') {
+                <img [src]="field.fieldValue" [alt]="field.fieldName" class="mask-field-image" />
+              } @else {
+                <span class="mask-field-value">{{ field.fieldValue }}</span>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+
+  <div class="mask-episodes">
+    <h2 i18n="@@maskpage.episodesTitle">Episodes</h2>
+
+    @if (isLoadingEpisodes()) {
+      <p i18n="@@maskpage.loadingEpisodes">Loading episodes...</p>
+    } @else if (episodes().length === 0) {
+      <p i18n="@@maskpage.noEpisodes">No episodes found for this mask.</p>
+    } @else {
+      <table class="episode-table" cellspacing="0">
+        <thead>
+          <tr>
+            <th i18n="@@maskpage.topicTitle">Topic Title</th>
+            <th i18n="@@maskpage.subforum">Subforum</th>
+            <th i18n="@@maskpage.status">Status</th>
+            <th i18n="@@maskpage.lastPostDate">Last Post Date</th>
+            <th i18n="@@maskpage.characters">Characters</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (episode of episodes(); track episode.id) {
+            <tr>
+              <td>
+                <a [routerLink]="['/viewtopic', episode.topic_id]">{{ episode.name }}</a>
+              </td>
+              <td>{{ episode.subforum_name }}</td>
+              <td>
+                @if (episode.topic_status === TopicStatus.active) {
+                  <ng-container i18n="@@maskpage.inProgress">In Progress</ng-container>
+                } @else {
+                  <ng-container i18n="@@maskpage.completed">Completed</ng-container>
+                }
+              </td>
+              <td>{{ episode.last_post_date }}</td>
+              <td>
+                <span class="character-list">
+                  @for (char of episode.characters; track char.id) {
+                    <span class="character-tag">{{ char.name }}</span>
+                  }
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button [disabled]="currentPage() === 1" (click)="prevPage()" i18n="@@maskpage.previous">Previous</button>
+        <span>
+          <ng-container i18n="@@maskpage.page">Page</ng-container>
+          {{ currentPage() }}
+          <ng-container i18n="@@maskpage.of">of</ng-container>
+          {{ totalPages() }}
+        </span>
+        <button [disabled]="currentPage() === totalPages()" (click)="nextPage()" i18n="@@maskpage.next">Next</button>
+      </div>
+    }
+  </div>
+
+</div>

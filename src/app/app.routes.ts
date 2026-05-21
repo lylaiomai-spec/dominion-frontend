@@ -47,6 +47,7 @@ import { UserListComponent } from './user-list/user-list.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ActiveTopicsComponent } from './active-topics/active-topics.component';
 import { MaskListComponent } from './mask-list/mask-list.component';
+import { MaskPageComponent } from './mask-page/mask-page.component';
 import { RecoveryCodesComponent } from './recovery-codes/recovery-codes.component';
 import { SettingsRestorationCodesComponent } from './settings-restoration-codes/settings-restoration-codes.component';
 import { RestorePasswordComponent } from './restore-password/restore-password.component';
@@ -278,6 +279,12 @@ export const routes: Routes = [
     component: MaskListComponent,
     title: 'User Masks',
     data: { pageId: 'pun-user-masks' }
+  },
+  {
+    path: 'mask/:id',
+    component: MaskPageComponent,
+    title: 'Mask',
+    data: { pageId: 'pun-mask' }
   },
   {
     path: 'admin',

@@ -38,3 +38,14 @@ character_ids: number[];
 custom_fields: any;
 open_to_everyone: boolean;
 }
+
+export interface EpisodesByMaskRequest {
+  mask_id: number;
+  page: number;
+  order: string[];
+}
+
+export interface EpisodesByMaskResponse {
+  items: EpisodeListItem[];
+  total_pages: number;
+}
