@@ -20,15 +20,17 @@
           <input [id]="'level-' + setting.id" type="number" [(ngModel)]="setting.level" [name]="'level-' + setting.id" />
         </div>
 
+        @if (setting.level > 0) {
         <div class="field-row">
           <label [for]="'parent-' + setting.id" i18n="@@factionSetting.parent">Parent</label>
           <select [id]="'parent-' + setting.id" [(ngModel)]="setting.parent_faction_id" [name]="'parent-' + setting.id">
             <option [ngValue]="null" i18n="@@factionSetting.noParent">— none —</option>
-            @for (option of parentOptions(); track option.id) {
+            @for (option of parentOptions(setting); track option.id) {
               <option [ngValue]="option.id">{{ option.name }} (level {{ option.level }})</option>
             }
           </select>
         </div>
+        }
 
         @if (!isNew(setting) && setting.parent) {
           <div class="field-row parent-info">

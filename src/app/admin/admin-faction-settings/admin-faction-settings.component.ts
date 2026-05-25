@@ -72,8 +72,9 @@ export class AdminFactionSettingsComponent implements OnInit {
     });
   }
 
-  parentOptions(): Faction[] {
-    return this.factions();
+  parentOptions(setting: FactionSetting): Faction[] {
+    if (setting.level === 0) return [];
+    return this.factions().filter(f => f.level === setting.level - 1);
   }
 
   private replace(temp: FactionSetting, updated: FactionSetting) {

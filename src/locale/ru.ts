@@ -359,6 +359,7 @@ export const TRANSLATIONS_RU = {
   "admin.charactertemplates": "Шаблон анкеты",
   "admin.characterprofiletemplates": "Шаблон профиля",
   "admin.factions": "Фракции",
+  "admin.factionSettings": "Настройки фракций",
   "admin.episodetemplate": "Шаблон эпизода",
   "admin.permissions": "Права доступа",
   "profile.title": "Профиль",
@@ -869,6 +870,15 @@ export const TRANSLATIONS_RU = {
   "admin.frontendTemplates.col.defaultTemplatePath": "Шаблон по умолчанию",
   "admin.frontendTemplates.col.active": "Активен",
   "admin.componentTemplate.readonlyBadge": "по умолчанию",
+
+  "factionSetting.new": "Новая настройка фракции",
+  "factionSetting.humanName": "Название",
+  "factionSetting.level": "Уровень",
+  "factionSetting.parent": "Родительская фракция",
+  "factionSetting.noParent": "— нет —",
+  "factionSetting.currentParent": "Текущая родительская фракция:",
+  "factionSetting.delete": "Удалить",
+  "factionSetting.addNew": "Добавить",
 
   "aiChat.title": "AI Чат",
   "aiChat.notice": "Этот чат предназначен прежде всего для расширенного поиска по темам форума. Его возможности ограничены, а история сообщений, передаваемая с каждым запросом, ограничена последними 20 сообщениями. Пожалуйста, не используйте этот чат для ролевых игр, длинных изощрённых разговоров или сеансов психоанализа. Для этих целей используйте свой личный аккаунт AI.",
