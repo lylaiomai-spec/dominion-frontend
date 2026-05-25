@@ -7,6 +7,7 @@ import {TopicStatus} from '../models/Topic';
 import {EpisodeService} from '../services/episode.service';
 import {CharacterService} from '../services/character.service';
 import {FactionService} from '../services/faction.service';
+import {FactionSettingService} from '../services/faction-setting.service';
 import {CommonModule} from '@angular/common';
 import {debounceTime, distinctUntilChanged, forkJoin, Subject} from 'rxjs';
 import {Faction} from '../models/Faction';
@@ -29,6 +30,7 @@ export class EpisodeListComponent implements OnInit {
   protected episodeService = inject(EpisodeService);
   protected characterService = inject(CharacterService);
   protected factionService = inject(FactionService);
+  private factionSettingService = inject(FactionSettingService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -57,10 +59,17 @@ export class EpisodeListComponent implements OnInit {
 
   private characterSearchTerms = new Subject<string>();
 
+  protected factionsHeader = computed(() => {
+    const setting = this.factionSettingService.factionSettings()
+      .find(s => s.level === 0 && s.parent_faction_id === null);
+    return setting?.human_name ?? $localize`:@@episodelist.factions:Фракции участников`;
+  });
+
   constructor() {
     this.episodeService.loadSubforumList();
     this.episodeService.loadEpisodeTemplate();
     this.factionService.loadFactions();
+    this.factionSettingService.load();
   }
 
   public ngOnInit(): void {

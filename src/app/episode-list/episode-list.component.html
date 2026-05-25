@@ -49,7 +49,7 @@
       </div>
 
       <div class="filter-group">
-        <h4 i18n="@@episodelist.factions">Factions</h4>
+        <h4>{{ factionsHeader() }}</h4>
         <div class="checkbox-list">
           @for (faction of factions(); track faction.id) {
             <label [style.padding-left.rem]="faction.level > 0 ? faction.level * 1.5 : 0">

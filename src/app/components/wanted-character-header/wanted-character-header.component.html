@@ -11,7 +11,7 @@
 
     @if (wantedCharacter.factions && wantedCharacter.factions.length > 0) {
       <div class="wanted-character-factions">
-        <h3 i18n="@@wantedCharacter.factions">Factions</h3>
+        <h3>{{ factionsHeader }}</h3>
         <ul>
           @for (faction of wantedCharacter.factions; track faction.id) {
             <li>{{ faction.name }}</li>
