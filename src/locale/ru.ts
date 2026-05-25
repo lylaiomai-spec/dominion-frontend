@@ -385,6 +385,8 @@ export const TRANSLATIONS_RU = {
   "breadcrumbs.youAreHere": "Вы здесь",
   "topicreadby.title": "Тему просматривают",
   "currentlyActive.title": "Сейчас на сайте",
+  "currentlyActive.guests": " {$INTERPOLATION} гостей,",
+  "currentlyActive.users": " {$INTERPOLATION} игроков:",
   "recentlyActive.activeUsers": "Активные за 24 часа пользователи",
   "recentlyActive.activeCharacters": "Активные за 24 часа персонажи",
   "recentlyActive.users": "Пользователи",
