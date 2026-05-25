@@ -5,7 +5,8 @@
     } @else {
       <span style="font-weight:bold" i18n="@@currentlyActive.title">Currently active</span>
     }
-    ({{ users().length }}):
+    <ng-container i18n="@@currentlyActive.guests"> {{ guests() }} гостей,</ng-container>
+    <ng-container i18n="@@currentlyActive.users"> {{ users().length }} игроков:</ng-container>
     @for (user of users(); track user.id; let last = $last) {
       <a class="group4" [routerLink]="['/profile', user.id]">{{ user.username }}</a>@if(!last){, }
     }
