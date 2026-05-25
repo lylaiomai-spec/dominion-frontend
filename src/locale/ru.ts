@@ -730,6 +730,8 @@ export const TRANSLATIONS_RU = {
   "wantedCharacterList.next": "Вперёд",
   "wantedCharacterList.page": "Страница",
   "wantedCharacterList.of": "из",
+  "characterFieldList.characters": "Персонажи",
+  "characterFieldList.wantedCharacters": "Разыскиваемые персонажи",
   "charactercreate.claimQuestion": "Эта анкета пишется по заявке на персонажа?",
   "charactercreate.claimNo": "Нет",
   "charactercreate.claimWanted": "Да, на разыскиваемого персонажа",
