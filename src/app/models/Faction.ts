@@ -9,6 +9,7 @@ export interface Faction {
   icon: string|null,
   faction_status: number,
   show_on_profile: boolean,
+  faction_setting_name?: string,
   characters: CharacterListItem[]
 }
 

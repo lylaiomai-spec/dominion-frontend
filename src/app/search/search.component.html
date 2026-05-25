@@ -4,6 +4,8 @@
   <form (submit)="search($event)" class="search-form">
     <div class="search-input-row">
       <input
+        id="search-input"
+        name="search-input"
         type="text"
         [value]="searchTerm()"
         (input)="onSearchTermInput($event)"
@@ -53,6 +55,8 @@
         <span class="search-filter-label" i18n="@@search.filterAuthor">Author</span>
         <div class="new-chat-autocomplete">
           <input
+            id="search-author-input"
+            name="search-author-input"
             type="text"
             [(ngModel)]="authorTerm"
             [ngModelOptions]="{standalone: true}"

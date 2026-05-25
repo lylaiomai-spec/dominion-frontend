@@ -29,7 +29,7 @@
 
     @if (character.factions && character.factions.length > 0) {
       <div class="character-sheet-factions">
-        <h3>Factions</h3>
+        <h3>{{ factionsHeader }}</h3>
         <ul>
           @for (faction of character.factions; track faction.id) {
             <li>{{ faction.name }}</li>

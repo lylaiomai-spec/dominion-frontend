@@ -3,7 +3,7 @@
     <legend>Choose Faction</legend>
     @for (level of path; track $index; let i = $index) {
       <div class="faction-field">
-        <label [for]="'faction-' + pathIndex + '-' + i">{{ level.label }}:</label>
+        <label [for]="'faction-' + pathIndex + '-' + i">{{ getLabelForLevel(pathIndex, i) }}:</label>
         <div class="select-group">
           <select
             [id]="'faction-' + pathIndex + '-' + i"
