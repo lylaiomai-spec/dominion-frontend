@@ -15,4 +15,6 @@ export interface Board {
   auto_archiving_enabled: string;
   auto_archiving_days: string;
   features?: { [key: string]: number };
+  use_rating_system?: string;
+  site_max_rating?: string;
 }

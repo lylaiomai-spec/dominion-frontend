@@ -1,4 +1,4 @@
-import {Component, effect, inject, Input, OnInit, OnDestroy, ViewChild, signal, computed, numberAttribute, ViewChildren, QueryList, input, untracked} from '@angular/core';
+import {Component, effect, inject, Input, OnInit, OnDestroy, ViewChild, signal, computed, numberAttribute, ViewChildren, QueryList, input, untracked, LOCALE_ID} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {PostFormComponent} from '../components/post-form/post-form.component';
 import {TopicService} from '../services/topic.service';
@@ -29,6 +29,7 @@ import { EpisodeService } from '../services/episode.service';
 import { PreviewService } from '../services/preview.service';
 import { LoreTopicHeaderComponent } from '../components/lore-topic-header/lore-topic-header.component';
 import { UserInfoComponent } from '../components/user-info/user-info.component';
+import { StandardWarning } from '../models/StandardWarning';
 
 function coerceToPage(value: unknown): number {
   const num = numberAttribute(value, 1);
@@ -71,6 +72,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   previewService = inject(PreviewService);
   router = inject(Router);
   route = inject(ActivatedRoute);
+  private locale = inject(LOCALE_ID);
 
   // Signal inputs for reactivity
   id = input<number | undefined, unknown>(undefined, { transform: numberAttribute });
@@ -126,6 +128,10 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   showDeactivateModal = signal(false);
   postToDelete = signal<Post | null>(null);
 
+  episodeWarnings = signal<StandardWarning[]>([]);
+  warningsAcknowledged = signal(false);
+  private warningsLoaded = signal(false);
+
   reactionPickerPostId = signal<number | null>(null);
   activeReactions = signal<Reaction[]>([]);
   private activeReactionsLoaded = false;
@@ -137,7 +143,26 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   @ViewChild('mainPostForm') postForm!: PostFormComponent;
   @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
 
+  acknowledgeWarnings() {
+    this.warningsAcknowledged.set(true);
+    const episodeId = this.topic()?.episode?.id;
+    if (episodeId && this.authService.currentUser()) {
+      this.episodeService.recordWarningsConsent(episodeId).subscribe();
+    }
+  }
+
   constructor() {
+    effect(() => {
+      const episode = this.topic()?.episode;
+      if (!episode?.has_warnings || untracked(() => this.warningsLoaded())) return;
+      this.warningsLoaded.set(true);
+      const locale = this.locale.startsWith('ru') ? 'ru' : 'en';
+      this.episodeService.getEpisodeWarnings(episode.id, locale).subscribe({
+        next: (warnings) => this.episodeWarnings.set(warnings),
+        error: () => this.warningsAcknowledged.set(true)
+      });
+    });
+
     // Effect for breadcrumbs and profile loading
     effect(() => {
       const t = this.topic();
