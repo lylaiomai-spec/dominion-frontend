@@ -25,6 +25,11 @@ export class EpisodeHeaderComponent implements OnInit, OnChanges {
     }
   }
 
+  get ratingBadge(): string | null {
+    if (!this.episode?.rating_set) return null;
+    return `L${this.episode.rating_language}V${this.episode.rating_violence}S${this.episode.rating_sex}`;
+  }
+
   private updateCustomFields() {
     if (this.episode && this.episode.custom_fields) {
       this.customFields = this.processCustomFields(this.episode.custom_fields);

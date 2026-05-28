@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -9,5 +9,19 @@ import { CommonModule } from '@angular/common';
   styleUrl: './admin-wrapper.component.css'
 })
 export class AdminWrapperComponent {
+  openGroups = signal<Set<string>>(new Set(['general']));
 
+  isOpen(group: string): boolean {
+    return this.openGroups().has(group);
+  }
+
+  toggleGroup(group: string) {
+    const current = new Set(this.openGroups());
+    if (current.has(group)) {
+      current.delete(group);
+    } else {
+      current.add(group);
+    }
+    this.openGroups.set(current);
+  }
 }

@@ -1,0 +1,57 @@
+<div class="factions-container">
+  <h2 i18n="@@admin.factionSettings">Faction Settings</h2>
+
+  @for (setting of factionSettings(); track setting.id) {
+    <form (submit)="save(setting); $event.preventDefault()">
+      <fieldset class="faction-fieldset">
+        @if (isNew(setting)) {
+          <legend i18n="@@factionSetting.new">New Faction Setting</legend>
+        } @else {
+          <legend>{{ setting.human_name || 'Faction Setting #' + setting.id }}</legend>
+        }
+
+        <div class="field-row">
+          <label [for]="'human-name-' + setting.id" i18n="@@factionSetting.humanName">Human Name</label>
+          <input [id]="'human-name-' + setting.id" type="text" [(ngModel)]="setting.human_name" [name]="'human-name-' + setting.id" required />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'level-' + setting.id" i18n="@@factionSetting.level">Level</label>
+          <input [id]="'level-' + setting.id" type="number" [(ngModel)]="setting.level" [name]="'level-' + setting.id" />
+        </div>
+
+        @if (setting.level > 0) {
+        <div class="field-row">
+          <label [for]="'parent-' + setting.id" i18n="@@factionSetting.parent">Parent</label>
+          <select [id]="'parent-' + setting.id" [(ngModel)]="setting.parent_faction_id" [name]="'parent-' + setting.id">
+            <option [ngValue]="null" i18n="@@factionSetting.noParent">— none —</option>
+            @for (option of parentOptions(setting); track option.id) {
+              <option [ngValue]="option.id">{{ option.name }} (level {{ option.level }})</option>
+            }
+          </select>
+        </div>
+        }
+
+        @if (!isNew(setting) && setting.parent) {
+          <div class="field-row parent-info">
+            <span i18n="@@factionSetting.currentParent">Current parent:</span>
+            <span>{{ setting.parent.human_name }}</span>
+          </div>
+        }
+
+        <div class="form-actions">
+          @if (isNew(setting)) {
+            <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
+          } @else {
+            <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+          }
+          <button type="button" class="btn-decline" (click)="delete(setting)" i18n="@@factionSetting.delete">Delete</button>
+        </div>
+      </fieldset>
+    </form>
+  }
+
+  <div class="add-row">
+    <button type="button" class="btn-primary" (click)="addNew()" i18n="@@factionSetting.addNew">Add New</button>
+  </div>
+</div>

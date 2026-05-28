@@ -1,4 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { FieldTemplate } from "../models/FieldTemplate";
 import { Faction } from "../models/Faction";
@@ -92,16 +94,23 @@ export class CharacterService {
     })
   }
 
-  loadUserCharacterProfilesForTopic(topicId: number): void {
-    this.apiService.get<CharacterProfile[]>(`user/character-profiles-topic/${topicId}`).subscribe({
-      next: (data) => {
-        this.userCharacterProfilesSignal.set(data);
-      },
-      error: (err) => {
-        console.error('Failed to load user character profiles for topic', err);
-        this.userCharacterProfilesSignal.set([]);
-      }
-    })
+  private topicProfilesCache = new Map<number, Observable<CharacterProfile[]>>();
+
+  loadUserCharacterProfilesForTopic(topicId: number): Observable<CharacterProfile[]> {
+    if (!this.topicProfilesCache.has(topicId)) {
+      const obs = this.apiService.get<CharacterProfile[]>(`user/character-profiles-topic/${topicId}`).pipe(
+        shareReplay(1)
+      );
+      obs.subscribe({
+        next: (data) => this.userCharacterProfilesSignal.set(data),
+        error: (err) => {
+          console.error('Failed to load user character profiles for topic', err);
+          this.userCharacterProfilesSignal.set([]);
+        }
+      });
+      this.topicProfilesCache.set(topicId, obs);
+    }
+    return this.topicProfilesCache.get(topicId)!;
   }
 
   loadCharacterProfileTemplate(): void {

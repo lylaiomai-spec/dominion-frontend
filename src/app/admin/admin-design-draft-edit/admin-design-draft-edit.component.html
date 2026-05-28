@@ -18,8 +18,15 @@
         <p i18n="@@adminDesignDrafts.publishWarning2">Users may not see the changes until they reload the page.</p>
         <p i18n="@@adminDesignDrafts.publishWarning3">The action can be reverted via the static files page.</p>
         <div style="margin-top: 15px; text-align: right;">
-          <button class="button" (click)="publish()" i18n="@@adminDesignDrafts.publish">Publish</button>
-          <button class="button" (click)="showPublishModal.set(false)" i18n="@@common.cancel">Cancel</button>
+          <button class="button" (click)="publish()" [disabled]="publishState() === 'loading' || publishState() === 'success'">
+            @switch (publishState()) {
+              @case ('loading') { <span i18n="@@common.saving">Saving…</span> }
+              @case ('success') { <span i18n="@@common.saved">Saved</span> }
+              @case ('error') { <span i18n="@@adminDesignDrafts.publishFailed">Failed to publish</span> }
+              @default { <span i18n="@@adminDesignDrafts.publish">Publish</span> }
+            }
+          </button>
+          <button class="button" (click)="showPublishModal.set(false)" [disabled]="publishState() === 'loading'" i18n="@@common.cancel">Cancel</button>
         </div>
       </div>
     </div>

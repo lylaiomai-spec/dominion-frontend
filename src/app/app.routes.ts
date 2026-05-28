@@ -23,7 +23,10 @@ import {CharacterCreateComponent} from './character-create/character-create.comp
 import {EpisodeTemplateEditComponent} from './admin/episode-template-edit/episode-template-edit.component';
 import {CharacterProfileTemplateEditComponent} from './admin/character-profile-template-edit/character-profile-template-edit.component';
 import {PermissionMatrixComponent} from './admin/permission-matrix/permission-matrix.component';
+import {AdminAiIndexComponent} from './admin/admin-ai-index/admin-ai-index.component';
+import {AdminAiIndexSettingsComponent} from './admin/admin-ai-index-settings/admin-ai-index-settings.component';
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
+import {AdminFactionSettingsComponent} from './admin/admin-faction-settings/admin-faction-settings.component';
 import {AdminFeaturesComponent} from './admin/admin-features/admin-features.component';
 import {AdminCurrencyComponent} from './admin/admin-currency/admin-currency.component';
 import {AdminPostTopComponent} from './admin/admin-post-top/admin-post-top.component';
@@ -44,7 +47,7 @@ import {CharacterProfileEditComponent} from './character-profile-edit/character-
 import { UserListComponent } from './user-list/user-list.component';
 import { SettingsComponent } from './settings/settings.component';
 import { ActiveTopicsComponent } from './active-topics/active-topics.component';
-import { MaskListComponent } from './mask-list/mask-list.component';
+import { MaskPageComponent } from './mask-page/mask-page.component';
 import { RecoveryCodesComponent } from './recovery-codes/recovery-codes.component';
 import { SettingsRestorationCodesComponent } from './settings-restoration-codes/settings-restoration-codes.component';
 import { RestorePasswordComponent } from './restore-password/restore-password.component';
@@ -63,6 +66,7 @@ import { AdminReactionsComponent } from './admin/admin-reactions/admin-reactions
 import { AdminSmilesComponent } from './admin/admin-smiles/admin-smiles.component';
 import { AdminSearchComponent } from './admin/admin-search/admin-search.component';
 import { AdminDesignDraftsComponent } from './admin/admin-design-drafts/admin-design-drafts.component';
+import { AdminFrontendTemplatesComponent } from './admin/admin-frontend-templates/admin-frontend-templates.component';
 import { SearchComponent } from './search/search.component';
 import { PostPageComponent } from './post-page/post-page.component';
 import { LorePageComponent } from './lore-page/lore-page.component';
@@ -271,10 +275,10 @@ export const routes: Routes = [
     data: { pageId: 'pun-character-profile-update' }
   },
   {
-    path: 'user-masks/:userId',
-    component: MaskListComponent,
-    title: 'User Masks',
-    data: { pageId: 'pun-user-masks' }
+    path: 'mask/:id',
+    component: MaskPageComponent,
+    title: 'Mask',
+    data: { pageId: 'pun-mask' }
   },
   {
     path: 'admin',
@@ -316,6 +320,11 @@ export const routes: Routes = [
         path: 'factions',
         component: AdminFactionsComponent,
         title: 'Admin - Factions'
+      },
+      {
+        path: 'faction-settings',
+        component: AdminFactionSettingsComponent,
+        title: 'Admin - Faction Settings'
       },
       {
         path: 'permissions',
@@ -388,6 +397,22 @@ export const routes: Routes = [
         title: 'Admin - Design'
       },
       {
+        path: 'frontend-templates',
+        component: AdminFrontendTemplatesComponent,
+        title: 'Admin - Custom Templates'
+      },
+      {
+        path: 'frontend-templates/component',
+        loadComponent: () => import('./admin/admin-component-template/admin-component-template.component').then(m => m.AdminComponentTemplateComponent),
+        title: 'Admin - Component Template'
+      },
+      {
+        path: 'frontend-templates/component-default',
+        loadComponent: () => import('./admin/admin-component-template/admin-component-template.component').then(m => m.AdminComponentTemplateComponent),
+        data: { readonly: true },
+        title: 'Admin - Component Template (Default)'
+      },
+      {
         path: 'additional-navlinks',
         component: AdminAdditionalNavlinksComponent,
         title: 'Admin - Additional Navlinks'
@@ -421,6 +446,16 @@ export const routes: Routes = [
         path: 'search',
         component: AdminSearchComponent,
         title: 'Admin - Search'
+      },
+      {
+        path: 'ai-index',
+        component: AdminAiIndexComponent,
+        title: 'Admin - AI Index'
+      },
+      {
+        path: 'ai-index-settings',
+        component: AdminAiIndexSettingsComponent,
+        title: 'Admin - AI Index Settings'
       },
       {
         path: 'design-drafts',

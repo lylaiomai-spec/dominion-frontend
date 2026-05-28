@@ -1,0 +1,164 @@
+.design-container {
+  padding: 1rem;
+  max-width: 900px;
+}
+
+.design-container h2 {
+  margin-bottom: 1.5rem;
+}
+
+.design-section {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.design-section h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.info-banner {
+  background-color: #fff8e1;
+  border: 1px solid #ffe082;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #5a4a00;
+  line-height: 1.5;
+}
+
+.info-banner strong {
+  margin-right: 0.35rem;
+}
+
+.empty-message {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Table */
+.templates-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.templates-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.templates-table td {
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.templates-table tr:last-child td {
+  border-bottom: none;
+}
+
+.row--active td {
+  background-color: #f0faf3;
+}
+
+.cell-name {
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.cell-description {
+  color: #555;
+}
+
+.edit-link {
+  font-size: 0.85rem;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.edit-link:hover {
+  text-decoration: underline;
+}
+
+.cell-active {
+  text-align: center;
+}
+
+.toggle-input {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: #007bff;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  padding: 0.4rem 1.1rem;
+  min-width: 90px;
+  font-size: 0.9rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background-color 0.2s;
+}
+
+.btn-save--idle,
+.btn-save--loading {
+  background-color: #007bff;
+}
+
+.btn-save--idle:hover {
+  background-color: #0069d9;
+}
+
+.btn-save--success {
+  background-color: #28a745;
+}
+
+.btn-save--error {
+  background-color: #dc3545;
+}
+
+.btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

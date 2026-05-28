@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, Input, Output, EventEmitter, signal } from '@angular/core';
 import { FormArray, FormControl, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EpisodeService } from '../services/episode.service';
@@ -12,6 +12,8 @@ import { Topic, TopicType, TopicStatus } from '../models/Topic';
 import { MaskService } from '../services/mask.service';
 import { ShortMask } from '../models/Character';
 import { PreviewService } from '../services/preview.service';
+import { BoardService } from '../services/board.service';
+import { StandardWarning } from '../models/StandardWarning';
 
 @Component({
   selector: 'app-episode-create',
@@ -24,10 +26,12 @@ export class EpisodeCreateComponent implements OnInit {
   topicService = inject(TopicService);
   maskService = inject(MaskService);
   previewService = inject(PreviewService);
+  boardService = inject(BoardService);
   router = inject(Router);
   route = inject(ActivatedRoute);
   episodeTemplate = this.episodeService.episodeTemplate;
   characterSuggestions = this.characterService.shortCharacterList;
+  useRatingSystem = computed(() => this.boardService.board().use_rating_system === 'y');
 
   @Input() initialData: Episode | null = null;
   @Output() formSubmit = new EventEmitter<any>();
@@ -35,6 +39,20 @@ export class EpisodeCreateComponent implements OnInit {
 
   statusActive = signal(false);
   showConfirmModal = signal(false);
+  showRatingHelp = signal(false);
+  showRatingWarning = signal(false);
+  ratingWarnings = signal<{ language: boolean; violence: boolean; sex: boolean }>({ language: false, violence: false, sex: false });
+
+  private pendingRequest: any = null;
+
+  private maxRatingValues = computed(() => {
+    const raw = this.boardService.board().site_max_rating ?? '';
+    return {
+      l: parseInt(raw.match(/L(\d)/)?.[1] ?? '3'),
+      v: parseInt(raw.match(/V(\d)/)?.[1] ?? '3'),
+      s: parseInt(raw.match(/S(\d)/)?.[1] ?? '3'),
+    };
+  });
 
   // Character inputs
   characterControls = new FormArray([new FormControl('')]);
@@ -46,6 +64,20 @@ export class EpisodeCreateComponent implements OnInit {
   subforumId: number = 0;
   subject: string = '';
   openToEveryone: boolean = false;
+
+  // Rating — manual baseline set by the user directly in the dropdowns
+  manualRatingLanguage: number = 0;
+  manualRatingViolence: number = 0;
+  manualRatingSex: number = 0;
+  // Effective values = max(manual, max of selected warnings)
+  ratingLanguage: number = 0;
+  ratingViolence: number = 0;
+  ratingSex: number = 0;
+
+  // Warnings
+  availableWarnings = signal<StandardWarning[]>([]);
+  selectedWarnings: StandardWarning[] = [];
+  selectedWarningId: number | null = null;
 
   // Mask inputs
   maskControls = new FormArray([new FormControl('')]);
@@ -142,6 +174,10 @@ export class EpisodeCreateComponent implements OnInit {
 
     this.statusActive.set((this.initialData?.episode_status ?? 1) === 0);
     this.episodeService.loadEpisodeTemplate();
+    this.episodeService.getStandardWarnings().subscribe({
+      next: (warnings) => this.availableWarnings.set(warnings),
+      error: (err) => console.error('Failed to load standard warnings', err)
+    });
     this.route.queryParams.subscribe(params => {
       if (params['fid']) {
         this.subforumId = +params['fid'];
@@ -156,6 +192,11 @@ export class EpisodeCreateComponent implements OnInit {
   populateForm(data: Episode) {
     this.subject = data.name;
     this.openToEveryone = data.open_to_everyone ?? false;
+    this.manualRatingLanguage = data.rating_language ?? 0;
+    this.manualRatingViolence = data.rating_violence ?? 0;
+    this.manualRatingSex = data.rating_sex ?? 0;
+    this.selectedWarnings = [...(data.warnings ?? [])];
+    this.recalculateRatings();
 
     // Clear initial controls
     this.characterControls.clear();
@@ -281,6 +322,43 @@ export class EpisodeCreateComponent implements OnInit {
     }
   }
 
+  onRatingLanguageChange(value: number) {
+    this.manualRatingLanguage = +value;
+    this.recalculateRatings();
+  }
+
+  onRatingViolenceChange(value: number) {
+    this.manualRatingViolence = +value;
+    this.recalculateRatings();
+  }
+
+  onRatingSexChange(value: number) {
+    this.manualRatingSex = +value;
+    this.recalculateRatings();
+  }
+
+  private recalculateRatings() {
+    const warningMaxL = this.selectedWarnings.reduce((max, w) => Math.max(max, w.rating_language), 0);
+    const warningMaxV = this.selectedWarnings.reduce((max, w) => Math.max(max, w.rating_violence), 0);
+    const warningMaxS = this.selectedWarnings.reduce((max, w) => Math.max(max, w.rating_sex), 0);
+    this.ratingLanguage = Math.max(this.manualRatingLanguage, warningMaxL);
+    this.ratingViolence = Math.max(this.manualRatingViolence, warningMaxV);
+    this.ratingSex = Math.max(this.manualRatingSex, warningMaxS);
+  }
+
+  addWarning() {
+    if (this.selectedWarningId === null) return;
+    const warning = this.availableWarnings().find(w => w.id === this.selectedWarningId);
+    if (!warning || this.selectedWarnings.some(w => w.id === warning.id)) return;
+    this.selectedWarnings = [...this.selectedWarnings, warning];
+    this.recalculateRatings();
+  }
+
+  removeWarning(index: number) {
+    this.selectedWarnings = this.selectedWarnings.filter((_, i) => i !== index);
+    this.recalculateRatings();
+  }
+
   getFieldValue(machineName: string): any {
     if (this.initialData && this.initialData.custom_fields && this.initialData.custom_fields.custom_fields) {
       const field = this.initialData.custom_fields.custom_fields[machineName];
@@ -310,7 +388,12 @@ export class EpisodeCreateComponent implements OnInit {
       character_ids: this.selectedCharacterIds.filter((id): id is number => id !== null),
       mask_ids: this.selectedMaskIds.filter((id): id is number => id !== null),
       custom_fields: customFields,
-      open_to_everyone: this.openToEveryone
+      open_to_everyone: this.openToEveryone,
+      rating_set: this.useRatingSystem(),
+      rating_language: this.ratingLanguage,
+      rating_violence: this.ratingViolence,
+      rating_sex: this.ratingSex,
+      warning_ids: this.selectedWarnings.map(w => w.id),
     };
 
     const isPreview = ((event as SubmitEvent).submitter as HTMLInputElement | null)?.name === 'preview';
@@ -346,6 +429,25 @@ export class EpisodeCreateComponent implements OnInit {
       return;
     }
 
+    if (this.useRatingSystem()) {
+      const max = this.maxRatingValues();
+      const warnings = {
+        language: this.ratingLanguage > max.l,
+        violence: this.ratingViolence > max.v,
+        sex: this.ratingSex > max.s,
+      };
+      if (warnings.language || warnings.violence || warnings.sex) {
+        this.ratingWarnings.set(warnings);
+        this.pendingRequest = request;
+        this.showRatingWarning.set(true);
+        return;
+      }
+    }
+
+    this.executeSubmit(request);
+  }
+
+  private executeSubmit(request: any) {
     if (this.formSubmit.observed) {
       this.formSubmit.emit(request);
     } else {
@@ -359,6 +461,17 @@ export class EpisodeCreateComponent implements OnInit {
         }
       });
     }
+  }
+
+  continueWithRatingWarning() {
+    this.showRatingWarning.set(false);
+    this.executeSubmit(this.pendingRequest);
+    this.pendingRequest = null;
+  }
+
+  cancelRatingWarning() {
+    this.showRatingWarning.set(false);
+    this.pendingRequest = null;
   }
 
   onCancel() {

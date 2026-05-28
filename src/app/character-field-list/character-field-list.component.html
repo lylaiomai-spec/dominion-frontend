@@ -4,11 +4,42 @@
   </div>
   <div class="main-content">
     <div class="container">
+      @if (items().length > 0) {
+      <h2 i18n="@@characterFieldList.characters">Characters</h2>
       <ul>
         @for (item of items(); track $index) {
-          <li>{{ item }}</li>
+          <li>
+            {{ item.value }}
+            @if (item.characters.length > 0) {
+              (<span>@for (char of item.characters; track char.id; let last = $last) {
+                <a [routerLink]="['/character', char.id]">{{ char.name }}</a>@if (!last) {, }
+              }</span>)
+            }
+          </li>
         }
       </ul>
+      }
+
+      @if (wantedItems().length > 0) {
+      <h2 i18n="@@characterFieldList.wantedCharacters">Wanted Characters</h2>
+      <ul>
+        @for (item of wantedItems(); track $index) {
+          <li>
+            {{ item.value }}
+            @if (item.characters.length > 0) {
+              (<span>@for (char of item.characters; track char.name; let last = $last) {
+                @if (char.topic_id != null) {
+                  <a [routerLink]="['/viewtopic', char.topic_id]">{{ char.name }}</a>
+                } @else {
+                  {{ char.name }}
+                }
+                @if (!last) {, }
+              }</span>)
+            }
+          </li>
+        }
+      </ul>
+      }
     </div>
   </div>
 </div>

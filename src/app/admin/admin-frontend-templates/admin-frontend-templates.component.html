@@ -1,0 +1,69 @@
+<div class="design-container">
+  <h2 i18n="@@admin.frontendTemplates">Custom Templates</h2>
+
+  <div class="info-banner">
+    <strong i18n="@@admin.frontendTemplates.banner.title">Heads up:</strong>
+    <span i18n="@@admin.frontendTemplates.banner.body">
+      Every change triggers a frontend rebuild which takes time. If you make several changes in a row, you may need to wait several minutes before the result is available. Once the build is complete, reload the page to see the changes.
+    </span>
+  </div>
+
+  <section class="design-section">
+    <h3 i18n="@@admin.frontendTemplates.components">Frontend Components</h3>
+
+    @if (components().length === 0) {
+      <p class="empty-message" i18n="@@admin.frontendTemplates.empty">No components found.</p>
+    } @else {
+      <table class="templates-table">
+        <thead>
+          <tr>
+            <th i18n="@@admin.frontendTemplates.col.name">Name</th>
+            <th i18n="@@admin.frontendTemplates.col.description">Description</th>
+            <th i18n="@@admin.frontendTemplates.col.templatePath">Custom template</th>
+            <th i18n="@@admin.frontendTemplates.col.defaultTemplatePath">Default template</th>
+            <th i18n="@@admin.frontendTemplates.col.active">Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (comp of components(); track comp.name) {
+            <tr [class.row--active]="comp.active">
+              <td class="cell-name">{{ comp.name }}</td>
+              <td class="cell-description">{{ comp.description }}</td>
+              <td class="cell-path">
+                <a class="edit-link" [routerLink]="['/admin/frontend-templates/component']" [queryParams]="{ name: comp.name, path: comp.template_path }" i18n="@@common.edit">Edit</a>
+              </td>
+              <td class="cell-path">
+                <a class="edit-link" [routerLink]="['/admin/frontend-templates/component-default']" [queryParams]="{ name: comp.name, path: comp.default_template_path }" i18n="@@common.view">View</a>
+              </td>
+              <td class="cell-active">
+                <input
+                  type="checkbox"
+                  class="toggle-input"
+                  [checked]="comp.active"
+                  (change)="toggle(comp)"
+                />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="actions">
+        <button
+          type="button"
+          class="btn-save"
+          [class]="'btn-save--' + saveState()"
+          [disabled]="saveState() === 'loading'"
+          (click)="save()"
+        >
+          @switch (saveState()) {
+            @case ('loading') { <span class="spinner"></span> }
+            @case ('success') { <span i18n="@@common.saved">Saved</span> }
+            @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+            @default { <span i18n="@@common.update">Update</span> }
+          }
+        </button>
+      </div>
+    }
+  </section>
+</div>

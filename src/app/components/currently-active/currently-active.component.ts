@@ -20,6 +20,7 @@ export class CurrentlyActiveComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   users = signal<UserShort[]>([]);
+  guests = signal<number>(0);
 
   private visibilityHandler = () => {
     if (document.visibilityState === 'visible') {
@@ -46,8 +47,9 @@ export class CurrentlyActiveComponent implements OnInit, OnDestroy {
   }
 
   private fetchActiveUsers() {
-    this.apiService.get<UserShort[]>('active-users').subscribe(users => {
-      this.users.set(users);
+    this.apiService.get<{ guests: number; users: UserShort[] }>('active-users').subscribe(data => {
+      this.users.set(data.users);
+      this.guests.set(data.guests);
     });
   }
 }

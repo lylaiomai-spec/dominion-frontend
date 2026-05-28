@@ -6,6 +6,7 @@ import {CategoryService} from '../services/category.service';
 import {CurrentlyActiveComponent} from '../components/currently-active/currently-active.component';
 import {RecentlyActiveComponent} from '../components/recently-active/recently-active.component';
 import { RouterLinksDirective } from '../directives/router-links.directive';
+import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,8 @@ import { RouterLinksDirective } from '../directives/router-links.directive';
     RouterLink,
     CurrentlyActiveComponent,
     RecentlyActiveComponent,
-    RouterLinksDirective
+    RouterLinksDirective,
+    SafeHtmlPipe
   ]
 })
 export class HomeComponent implements OnInit {

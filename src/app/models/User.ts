@@ -45,6 +45,7 @@ export interface UserProfileResponse {
   registration_date: string;
   avatar: string;
   characters: CharacterProfileListItem[];
+  masks: MaskProfileListItem[];
   total_posts: number;
   total_general_posts: number;
   currency_amount?: number;
@@ -58,6 +59,15 @@ export interface CharacterProfileListItem {
   total_posts: number;
   last_post_date: string | null;
   factions: Faction[];
+}
+
+export interface MaskProfileListItem {
+  id: number;
+  name: string;
+  avatar: string;
+  total_episodes: number;
+  total_posts: number;
+  date_last_post: string | null;
 }
 
 export interface UpdateSettingsRequest {

@@ -82,6 +82,65 @@
           </p>
         </div>
       }
+      @if (useRatingSystem()) {
+        <div class="fs-box hashelp">
+          <div class="inputfield episode-rating-row">
+            <label i18n="@@episodecreate.rating">Rating</label>
+            <div class="episode-rating-selects">
+              <label>
+                <span i18n="@@rating.language">Language</span>
+                <select [ngModel]="ratingLanguage" (ngModelChange)="onRatingLanguageChange($event)" name="rating_language">
+                  <option [ngValue]="0">L0</option>
+                  <option [ngValue]="1">L1</option>
+                  <option [ngValue]="2">L2</option>
+                  <option [ngValue]="3">L3</option>
+                </select>
+              </label>
+              <label>
+                <span i18n="@@rating.violence">Violence</span>
+                <select [ngModel]="ratingViolence" (ngModelChange)="onRatingViolenceChange($event)" name="rating_violence">
+                  <option [ngValue]="0">V0</option>
+                  <option [ngValue]="1">V1</option>
+                  <option [ngValue]="2">V2</option>
+                  <option [ngValue]="3">V3</option>
+                </select>
+              </label>
+              <label>
+                <span i18n="@@rating.sexContent">Sexual Content</span>
+                <select [ngModel]="ratingSex" (ngModelChange)="onRatingSexChange($event)" name="rating_sex">
+                  <option [ngValue]="0">S0</option>
+                  <option [ngValue]="1">S1</option>
+                  <option [ngValue]="2">S2</option>
+                  <option [ngValue]="3">S3</option>
+                </select>
+              </label>
+              <a class="rating-help-link" (click)="showRatingHelp.set(true)" i18n="@@episodecreate.ratingHelp">Help</a>
+            </div>
+          </div>
+          <div class="inputfield">
+            <label i18n="@@episodecreate.warnings">Content Warnings</label>
+            <div class="episode-warnings-add">
+              <select [(ngModel)]="selectedWarningId" name="warning_select" [ngModelOptions]="{standalone: true}">
+                <option [ngValue]="null" i18n="@@episodecreate.selectWarning">Select a warning...</option>
+                @for (w of availableWarnings(); track w.id) {
+                  <option [ngValue]="w.id">{{ w.name }}</option>
+                }
+              </select>
+              <button type="button" class="button" (click)="addWarning()" i18n="@@episodecreate.addWarning">Add</button>
+            </div>
+            @if (selectedWarnings.length > 0) {
+              <ul class="episode-warnings-list">
+                @for (w of selectedWarnings; track w.id; let i = $index) {
+                  <li>
+                    <span>{{ w.name }}</span>
+                    <span class="remove-char" (click)="removeWarning(i)">x</span>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      }
     </fieldset>
 
     <p class="formsubmit">
@@ -95,6 +154,77 @@
   </form>
 </div>
 <div id="ajaxpostpreview"></div>
+
+@if (showRatingWarning()) {
+  <div class="modal-overlay">
+    <div class="modal-content">
+      <h2 i18n="@@episodecreate.ratingWarningTitle">Rating Warning</h2>
+      <p i18n="@@episodecreate.ratingWarningText">The selected rating exceeds the maximum allowed for this site:</p>
+      <ul>
+        @if (ratingWarnings().language) {
+          <li i18n="@@episodecreate.ratingWarningLanguage">Language</li>
+        }
+        @if (ratingWarnings().violence) {
+          <li i18n="@@episodecreate.ratingWarningViolence">Violence</li>
+        }
+        @if (ratingWarnings().sex) {
+          <li i18n="@@episodecreate.ratingWarningSex">Sexual Content</li>
+        }
+      </ul>
+      <div class="buttons">
+        <button type="button" class="button submit" (click)="continueWithRatingWarning()" i18n="@@common.continue">Continue</button>
+        <button type="button" class="button" (click)="cancelRatingWarning()" i18n="@@common.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRatingHelp()) {
+  <div class="modal-overlay" (click)="showRatingHelp.set(false)">
+    <div class="modal-content rating-help-modal" (click)="$event.stopPropagation()">
+      <h2 i18n="@@episodecreate.ratingHelpTitle">RPG Rating Guide</h2>
+      <table class="rating-help-table">
+        <thead>
+          <tr>
+            <th i18n="@@common.level">Level</th>
+            <th i18n="@@rating.language">Language</th>
+            <th i18n="@@rating.violence">Violence</th>
+            <th i18n="@@rating.sexContent">Sexual Content</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>0</td>
+            <td i18n="@@rating.L0">No swearing permitted.</td>
+            <td i18n="@@rating.V0">No violence permitted.</td>
+            <td i18n="@@rating.S0">No sexual content is permitted.</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td i18n="@@rating.L1">Infrequent, mild swearing is permitted.</td>
+            <td i18n="@@rating.V1">Mild violence is permitted.</td>
+            <td i18n="@@rating.S1">Mild sexual innuendo and references permitted.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td i18n="@@rating.L2">Swearing is permitted, with some limitations.</td>
+            <td i18n="@@rating.V2">Violence is permitted, with some limitations.</td>
+            <td i18n="@@rating.S2">Sexual content is permitted, with some limitations.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td i18n="@@rating.L3">Swearing and mature language is permitted.</td>
+            <td i18n="@@rating.V3">Explicit violence is permitted.</td>
+            <td i18n="@@rating.S3">Sexual content may be described in detail.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="buttons">
+        <button type="button" class="button" (click)="showRatingHelp.set(false)" i18n="@@common.close">Close</button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (showConfirmModal()) {
   <div class="modal-overlay">

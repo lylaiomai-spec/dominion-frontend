@@ -1,0 +1,111 @@
+.template-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.template-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.template-header h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.file-path {
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.badge-readonly {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  background: #e9ecef;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  vertical-align: middle;
+}
+
+.editor-wrap {
+  flex: 1;
+  border: 1px solid #444;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.editor-wrap--readonly {
+  opacity: 0.85;
+}
+
+/* Save button */
+.btn-save {
+  margin-left: auto;
+  padding: 0.4rem 1.1rem;
+  min-width: 80px;
+  font-size: 0.9rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.btn-save--idle,
+.btn-save--loading {
+  background-color: #007bff;
+}
+
+.btn-save--idle:hover {
+  background-color: #0069d9;
+}
+
+.btn-save--success {
+  background-color: #28a745;
+}
+
+.btn-save--error {
+  background-color: #dc3545;
+}
+
+.btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

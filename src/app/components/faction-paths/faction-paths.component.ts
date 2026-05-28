@@ -2,6 +2,7 @@ import { Component, inject, signal, Input, Output, EventEmitter, OnInit } from '
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FactionService } from '../../services/faction.service';
+import { FactionSettingService } from '../../services/faction-setting.service';
 import { Faction } from '../../models/Faction';
 import { FactionCreateModalComponent } from '../faction-create-modal/faction-create-modal.component';
 
@@ -19,6 +20,7 @@ interface FactionLevel {
 })
 export class FactionPathsComponent implements OnInit {
   private factionService = inject(FactionService);
+  private factionSettingService = inject(FactionSettingService);
 
   @Input() initialFactions: Faction[] = [];
   @Input() allowCreate: boolean = true;
@@ -33,6 +35,8 @@ export class FactionPathsComponent implements OnInit {
   activeParentId: number | null = null;
 
   ngOnInit() {
+    this.factionSettingService.load();
+
     if (this.initialFactions.length > 0) {
       const factions = this.initialFactions;
       const factionMap = new Map(factions.map(f => [f.id, f]));
@@ -180,6 +184,21 @@ export class FactionPathsComponent implements OnInit {
       });
       this.onFactionChange(pathIndex, index);
     }
+  }
+
+  getLabelForLevel(pathIndex: number, levelIndex: number): string {
+    const settings = this.factionSettingService.factionSettings();
+    const parentFactionId = levelIndex === 0
+      ? null
+      : this.pathLevels()[pathIndex][levelIndex - 1].selectedId ?? null;
+
+    const withParent = settings.find(s => s.level === levelIndex && s.parent_faction_id === parentFactionId);
+    if (withParent) return withParent.human_name;
+
+    const withNoParent = settings.find(s => s.level === levelIndex && s.parent_faction_id === null);
+    if (withNoParent) return withNoParent.human_name;
+
+    return `Faction ${levelIndex + 1}`;
   }
 
   private emitSelection() {

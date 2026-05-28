@@ -1,5 +1,6 @@
 import {CharacterShort, CustomFieldsData, ShortMask} from './Character';
 import {FieldTemplate} from './FieldTemplate';
+import {StandardWarning} from './StandardWarning';
 
 export interface Episode {
   id: number;
@@ -9,6 +10,13 @@ export interface Episode {
   custom_fields: CustomFieldsData;
   open_to_everyone: boolean;
   episode_status?: number;
+  rating_set?: boolean;
+  rating_language?: number;
+  rating_violence?: number;
+  rating_sex?: number;
+  warnings?: StandardWarning[];
+  has_warnings?: boolean;
+  warnings_consent?: boolean;
 }
 
 export interface EpisodeFilterRequest {
@@ -32,9 +40,25 @@ export interface EpisodeListItem {
 }
 
 export interface CreateEpisodeRequest {
-subforum_id: number;
-name: string;
-character_ids: number[];
-custom_fields: any;
-open_to_everyone: boolean;
+  subforum_id: number;
+  name: string;
+  character_ids: number[];
+  custom_fields: any;
+  open_to_everyone: boolean;
+  rating_set: boolean;
+  rating_language: number;
+  rating_violence: number;
+  rating_sex: number;
+  warning_ids: number[];
+}
+
+export interface EpisodesByMaskRequest {
+  mask_id: number;
+  page: number;
+  order: string[];
+}
+
+export interface EpisodesByMaskResponse {
+  items: EpisodeListItem[];
+  total_pages: number;
 }

@@ -57,9 +57,30 @@
         (formSubmit)="onUpdateEpisode($event)"
         (cancel)="cancelEditTopic()">
       </app-episode-create>
-    } @else {
+    } @else if (showPostForm() || !topic().episode?.has_warnings || topic().episode?.warnings_consent || warningsAcknowledged()) {
       <app-episode-header [episode]="topic().episode" ></app-episode-header>
     }
+  }
+
+  @if (topic().episode?.has_warnings && !topic().episode?.warnings_consent && !showPostForm() && !warningsAcknowledged() && episodeWarnings().length > 0) {
+    <div class="modal-overlay episode-warning-overlay">
+      <div class="modal-content episode-warning-modal">
+        <h2 i18n="@@episode.warningTitle">Content Warning</h2>
+        <ul class="episode-warning-list">
+          @for (w of episodeWarnings(); track w.id) {
+            <li>
+              <strong>{{ w.name }}</strong>
+              @if (w.description) {
+                <p>{{ w.description }}</p>
+              }
+            </li>
+          }
+        </ul>
+        <div class="buttons">
+          <button type="button" class="button submit" (click)="acknowledgeWarnings()" i18n="@@episode.warningContinue">I understand, continue</button>
+        </div>
+      </div>
+    </div>
   }
   @if(isWantedCharacter() && topic().wanted_character != null) {
     @if (editingTopic()) {

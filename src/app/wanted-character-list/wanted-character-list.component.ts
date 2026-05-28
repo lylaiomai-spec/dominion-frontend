@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WantedCharacterService } from '../services/wanted-character.service';
 import { FactionService } from '../services/faction.service';
+import { FactionSettingService } from '../services/faction-setting.service';
 import { AuthService } from '../services/auth.service';
 import { WantedCharacter } from '../models/WantedCharacter';
 import { Faction } from '../models/Faction';
@@ -28,6 +29,7 @@ interface ProcessedField {
 export class WantedCharacterListComponent implements OnInit {
   private wantedCharacterService = inject(WantedCharacterService);
   private factionService = inject(FactionService);
+  private factionSettingService = inject(FactionSettingService);
   private authService = inject(AuthService);
 
   isAuthenticated = this.authService.isAuthenticated;
@@ -42,6 +44,12 @@ export class WantedCharacterListComponent implements OnInit {
   list = this.wantedCharacterService.wantedCharacterList;
   treeList = this.wantedCharacterService.wantedCharacterTreeList;
   factions = this.factionService.wantedFactions;
+
+  factionsHeader = computed(() => {
+    const setting = this.factionSettingService.factionSettings()
+      .find(s => s.level === 0 && s.parent_faction_id === null);
+    return setting?.human_name ?? $localize`:@@wantedCharacterList.factions:Factions`;
+  });
 
   groupedTreeList = computed(() => {
     const list = this.treeList();
@@ -64,6 +72,7 @@ export class WantedCharacterListComponent implements OnInit {
   ngOnInit() {
     this.wantedCharacterService.loadTreeList();
     this.factionService.loadWantedFactions();
+    this.factionSettingService.load();
     this.applyFilters();
   }
 

@@ -30,7 +30,7 @@
                     <div class="message-body">
                       <div class="message-box">
                         <div class="message-content">
-                          <p [innerHTML]="highlightMatch(msg.text)"></p>
+                          <p [innerHTML]="msg.text | safeHtml"></p>
                         </div>
                       </div>
                       @if (msg.sources && msg.sources.length > 0) {
@@ -88,7 +88,7 @@
               </table>
             </div>
             <div class="textarea-wrapper">
-              <textarea #chatInput (keydown.enter)="handleSend()" [disabled]="isLoading()" i18n-placeholder="@@aiChat.placeholder" placeholder="Your message..."></textarea>
+              <textarea id="ai-chat-input" name="ai-chat-input" #chatInput (keydown.enter)="handleSend()" [disabled]="isLoading()" i18n-placeholder="@@aiChat.placeholder" placeholder="Your message..."></textarea>
             </div>
             <div class="buttons">
               <input type="button" class="button" i18n-value="@@aiChat.send" value="Send" (click)="handleSend()" [disabled]="isLoading()">

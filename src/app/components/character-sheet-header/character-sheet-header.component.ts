@@ -67,6 +67,11 @@ export class CharacterSheetHeaderComponent implements OnInit, OnChanges {
     }).sort((a, b) => a.order - b.order);
   }
 
+  get factionsHeader(): string {
+    const level0 = (this.character?.factions ?? []).find(f => f.level === 0 && f.faction_setting_name);
+    return level0?.faction_setting_name ?? 'Factions';
+  }
+
   get hasPendingFactions(): boolean {
     return (this.character?.factions ?? []).some(f => f.faction_status === 2);
   }

@@ -3476,3 +3476,138 @@ app-number-field-display:host {
 .card-user-info {
   margin-top: 10px;
 }
+
+.episode-rating-selects {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.episode-rating-selects label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.episode-warning-overlay {
+  background: rgba(0, 0, 0, 0.97) !important;
+}
+
+.episode-warning-modal {
+  width: 500px;
+  max-width: 95vw;
+  border-top: 4px solid #dc3545;
+}
+
+.episode-warning-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.episode-warning-list li p {
+  margin: 0.25rem 0 0;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.episode-warnings-add {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.episode-warnings-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.episode-warnings-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #e2e3e5;
+  border: 1px solid #d6d8db;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.9em;
+}
+
+.rating-help-link {
+  cursor: pointer;
+  align-self: flex-end;
+  white-space: nowrap;
+}
+
+.rating-help-modal {
+  width: 700px;
+  max-width: 95vw;
+}
+
+.rating-help-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.rating-help-table th,
+.rating-help-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.rating-help-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
+
+.rating-help-table td:first-child {
+  text-align: center;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.episode-rating-badge {
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+#pun-footer-inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+#pun-footer-left {
+  flex: 1;
+  text-align: left;
+}
+
+#pun-footer-center {
+  flex: 1;
+  text-align: center;
+}
+
+#pun-footer-right {
+  flex: 1;
+  text-align: right;
+}
+
+.footer-rating-value {
+  cursor: help;
+}

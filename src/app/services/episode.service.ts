@@ -4,6 +4,7 @@ import {ApiService} from './api.service';
 import {TopicType, TopicStatus} from '../models/Topic';
 import {SubforumShort} from '../models/Subforum';
 import {FieldTemplate} from '../models/FieldTemplate';
+import {StandardWarning} from '../models/StandardWarning';
 
 @Injectable({ providedIn: 'root' })
 export class EpisodeService {
@@ -88,6 +89,18 @@ export class EpisodeService {
 
   deactivateEpisode(id: number) {
     return this.apiService.post<{ episode_status: number, topic_status: number }>(`episode/deactivate/${id}`, null);
+  }
+
+  getStandardWarnings() {
+    return this.apiService.get<StandardWarning[]>('standard-warnings');
+  }
+
+  getEpisodeWarnings(id: number, locale: string) {
+    return this.apiService.get<StandardWarning[]>(`episode/${id}/warnings/${locale}`);
+  }
+
+  recordWarningsConsent(id: number) {
+    return this.apiService.post<void>(`episode/${id}/warnings-consent`, null);
   }
 
 }

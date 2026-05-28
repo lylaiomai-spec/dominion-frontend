@@ -26,6 +26,11 @@ export class WantedCharacterHeaderComponent implements OnInit, OnChanges {
     }
   }
 
+  get factionsHeader(): string {
+    const level0 = (this.wantedCharacter?.factions ?? []).find(f => f.level === 0 && f.faction_setting_name);
+    return level0?.faction_setting_name ?? 'Factions';
+  }
+
   private updateCustomFields() {
     if (this.wantedCharacter?.custom_fields) {
       this.customFields = this.processCustomFields(this.wantedCharacter.custom_fields);

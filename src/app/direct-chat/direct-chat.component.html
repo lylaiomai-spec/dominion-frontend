@@ -13,6 +13,8 @@
               [(ngModel)]="newChatTerm"
               (input)="onNewChatInput()"
               placeholder="Find user..."
+              id="new-chat-input"
+              name="new-chat-input"
               class="new-chat-input"
               autocomplete="off" />
             @if (autocompleteResults.length > 0) {

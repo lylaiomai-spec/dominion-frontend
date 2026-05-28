@@ -1,14 +1,21 @@
-<div class="container">
-  <div class="conl">
+<div class="container" id="pun-footer-inner">
+  <div id="pun-footer-left">
+    @if (useRatingSystem()) {
+      <p>
+        <span i18n="@@footer.ratingBefore">This site follows the </span><a href="https://rpgrating.com/" target="_blank" rel="noopener noreferrer" i18n="@@footer.ratingLink">RPG Rating system</a>.
+      </p>
+      <p>
+        <span i18n="@@footer.ratingMax">Maximum allowed rating:</span>
+        <span [title]="ratingTooltip()" class="footer-rating-value"> {{ maxRating() }}</span>
+      </p>
+    }
+  </div>
+  <div id="pun-footer-center">
+    <p id="poweredby"><span>&copy; {{ siteName() }}</span></p>
     <p><a href="https://cuento.ca/" target="_blank" rel="noopener noreferrer"><span i18n="@@footer.poweredBy">Powered by Cuento</span></a></p>
   </div>
-  <div class="conr">
-    <p id="poweredby"><span>&copy; {{ siteName() }}</span></p>
+  <div id="pun-footer-right">
+    <p><a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer" i18n="@@footer.privacyPolicy">Privacy Policy</a></p>
+    <p><a routerLink="/wipe-out-my-user" i18n="@@footer.deleteAccount">Delete My Account</a></p>
   </div>
-</div>
-<div class="container" id="pun-footer-links">
-  <ul>
-    <li><a [href]="privacyPolicyUrl" target="_blank" rel="noopener noreferrer" i18n="@@footer.privacyPolicy">Privacy Policy</a></li>
-    <li><a routerLink="/wipe-out-my-user" i18n="@@footer.deleteAccount">Delete My Account</a></li>
-  </ul>
 </div>
