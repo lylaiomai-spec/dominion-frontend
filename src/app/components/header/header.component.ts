@@ -8,12 +8,13 @@ import { NotificationService } from '../../services/notification.service';
 import { ApiService } from '../../services/api.service';
 import { NotificationsComponent } from '../notifications/notifications.component';
 import { NavlinksComponent } from '../navlinks/navlinks.component';
+import { UlinksComponent } from '../ulinks/ulinks.component';
 import { RouterLinksDirective } from '../../directives/router-links.directive';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [NavlinksComponent, NotificationsComponent, RouterLinksDirective],
+  imports: [NavlinksComponent, UlinksComponent, NotificationsComponent, RouterLinksDirective],
   templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit, OnDestroy {

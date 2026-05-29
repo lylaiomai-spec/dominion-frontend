@@ -30,19 +30,3 @@
       }
     </ul>
 </div>
-<div id="pun-ulinks" class="section">
-  <ul class="container">
-    <li class="item2" id="h-characters"><a i18n="@@nav.characterlist" routerLink="/character-list">Character List</a></li>
-    <li class="item3" id="h-wanted-characters"><a i18n="@@nav.wantedCharacterList" routerLink="/wanted-character-list">Wanted Characters</a></li>
-    <li class="item4" id="h-users"><a i18n="@@nav.userlist" routerLink="/user-list">User List</a></li>
-    <li class="item5" id="h-episodes"><a i18n="@@nav.episodelist" routerLink="/episode-list">Episode List</a></li>
-    <li class="item6" id="h-active-topics"><a i18n="@@nav.activeTopics" routerLink="/active-topics">Active Topics</a></li>
-    <li class="item7" id="h-absences"><a i18n="@@nav.absenceList" routerLink="/absence-list">Absences</a></li>
-    @if (showAutoArchiveLink() && isAuthenticated()) {
-      <li id="h-auto-archive"><a i18n="@@nav.autoArchive" routerLink="/auto-archive">Auto Archive</a></li>
-    }
-    @if (showShopLink() && isAuthenticated()) {
-      <li id="h-shop"><a i18n="@@nav.shop" routerLink="/shop">Shop</a></li>
-    }
-  </ul>
-</div>
