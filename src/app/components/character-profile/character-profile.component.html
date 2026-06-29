@@ -53,17 +53,26 @@
         <li class="pa-fld{{ j }}">
           @switch (field.type) {
             @case('short_text') {
-              <app-short-text-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue" ></app-short-text-field-display>
+              <app-short-text-field-display
+                [fieldMachineName]="field.fieldMachineName"
+                [fieldId]="post ? post.id + '-' + field.fieldMachineName : field.fieldMachineName"
+                [fieldName]="field.fieldName"
+                [fieldValue]="field.fieldValue"></app-short-text-field-display>
             }
             @case('long_text') {
               <app-long-text-field-display
                 [fieldMachineName]="field.fieldMachineName"
+                [fieldId]="post ? post.id + '-' + field.fieldMachineName : field.fieldMachineName"
                 [showFieldName]="field.showFieldName"
                 [fieldName]="field.fieldName"
-                [fieldValue]="field.fieldValue" ></app-long-text-field-display>
+                [fieldValue]="field.fieldValue"></app-long-text-field-display>
             }
             @case('number') {
-              <app-number-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-number-field-display>
+              <app-number-field-display
+                [fieldMachineName]="field.fieldMachineName"
+                [fieldId]="post ? post.id + '-' + field.fieldMachineName : field.fieldMachineName"
+                [fieldName]="field.fieldName"
+                [fieldValue]="field.fieldValue"></app-number-field-display>
             }
             @case('image') {
               <app-image-field-display [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-image-field-display>

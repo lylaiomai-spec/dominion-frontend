@@ -504,6 +504,7 @@ export const TRANSLATIONS_RU = {
   "common.password": "Пароль",
   "common.add": "Добавить",
   "common.save": "Сохранить",
+  "common.saving": "Сохранение…",
   "common.saved": "Сохранено",
   "common.saveFailed": "Ошибка",
   "common.cancel": "Отмена",

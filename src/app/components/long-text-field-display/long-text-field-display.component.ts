@@ -9,6 +9,7 @@ import { SafeHtmlPipe } from '../../pipes/safe-html.pipe';
 })
 export class LongTextFieldDisplayComponent {
   @Input() fieldMachineName: string | undefined;
+  @Input() fieldId?: string;
   @Input() fieldName: string | undefined;
   @Input() fieldValue: string = '';
   @Input() showFieldName: boolean = true;
