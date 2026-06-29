@@ -14,6 +14,7 @@ import { FieldDisplayComponent } from '../components/field-display/field-display
 import { UserInfoComponent } from '../components/user-info/user-info.component';
 
 interface ProcessedField {
+  fieldMachineName: string;
   fieldName: string;
   fieldValue: any;
   type: string;
