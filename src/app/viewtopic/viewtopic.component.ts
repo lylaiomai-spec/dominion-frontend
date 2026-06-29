@@ -250,7 +250,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
       if (topicId) {
         // Only reload the main topic data if the ID has actually changed
-        if (this.topic().id !== topicId) {
+        if (untracked(() => this.topic().id) !== topicId) {
           this.topicService.loadTopic(topicId).subscribe({
             next: (data) => this.topicService.setTopic(data),
             error: (err) => {

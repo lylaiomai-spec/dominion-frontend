@@ -184,6 +184,7 @@ export class WantedCharacterListComponent implements OnInit {
         }
 
         return {
+          fieldMachineName: config.machine_field_name,
           fieldName: config.human_field_name,
           fieldValue: fieldValue ?? '',
           type: config.content_field_type,

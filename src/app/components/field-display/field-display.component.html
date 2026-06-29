@@ -1,12 +1,12 @@
 @switch (type) {
   @case ('short_text') {
-    <app-short-text-field-display [fieldName]="fieldName" [fieldValue]="fieldValue"></app-short-text-field-display>
+    <app-short-text-field-display [fieldMachineName]="fieldMachineName" [fieldName]="fieldName" [fieldValue]="fieldValue"></app-short-text-field-display>
   }
   @case ('long_text') {
-    <app-long-text-field-display [fieldName]="fieldName" [fieldValue]="fieldValue"></app-long-text-field-display>
+    <app-long-text-field-display [fieldMachineName]="fieldMachineName" [fieldName]="fieldName" [fieldValue]="fieldValue"></app-long-text-field-display>
   }
   @case ('number') {
-    <app-number-field-display [fieldName]="fieldName" [fieldValue]="fieldValue"></app-number-field-display>
+    <app-number-field-display [fieldMachineName]="fieldMachineName" [fieldName]="fieldName" [fieldValue]="fieldValue"></app-number-field-display>
   }
   @case ('image') {
     <app-image-field-display [fieldName]="fieldName" [fieldValue]="fieldValue"></app-image-field-display>
