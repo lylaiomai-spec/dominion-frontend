@@ -139,6 +139,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private lastLoadedProfilesForTopicId: number | null = null;
   private pageLoadedSubscription: Subscription | null = null;
+  private topicLoadedOnInit = false;
 
   @ViewChild('mainPostForm') postForm!: PostFormComponent;
   @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
@@ -249,8 +250,9 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       const postId = this.postId();
 
       if (topicId) {
-        // Only reload the main topic data if the ID has actually changed
-        if (untracked(() => this.topic().id) !== topicId) {
+        // Always reload on first mount; after that, only reload if the topic ID changed
+        if (!this.topicLoadedOnInit || untracked(() => this.topic().id) !== topicId) {
+          this.topicLoadedOnInit = true;
           this.topicService.loadTopic(topicId).subscribe({
             next: (data) => this.topicService.setTopic(data),
             error: (err) => {
