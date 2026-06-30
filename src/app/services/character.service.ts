@@ -97,6 +97,7 @@ export class CharacterService {
   private topicProfilesCache = new Map<number, Observable<CharacterProfile[]>>();
 
   loadUserCharacterProfilesForTopic(topicId: number): Observable<CharacterProfile[]> {
+    this.userCharacterProfilesSignal.set([]);
     if (!this.topicProfilesCache.has(topicId)) {
       const obs = this.apiService.get<CharacterProfile[]>(`user/character-profiles-topic/${topicId}`).pipe(
         shareReplay(1)

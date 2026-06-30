@@ -92,6 +92,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   showPostForm = signal<boolean>(false);
   loadProfiles = true;
   showAccount = true;
+  savedTopicCharacter = signal<number | undefined>(undefined);
 
   postsPerPage = computed(() => this.boardService.board().posts_per_page || 15);
 
@@ -200,6 +201,8 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
             this.showAccount = true;
             this.characterService.loadUserCharacterProfilesForTopic(currentTopicId);
             this.lastLoadedProfilesForTopicId = currentTopicId;
+            const saved = sessionStorage.getItem(`topic-char-${currentTopicId}`);
+            this.savedTopicCharacter.set(saved !== null ? JSON.parse(saved) : undefined);
           }
         }
       }
@@ -307,6 +310,14 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
   onCharacterSelected(characterId: number | null) {
     this.selectedCharacterId = characterId;
+    const topicId = this.id();
+    if (topicId && this.topic().type === TopicType.general) {
+      if (characterId !== null) {
+        sessionStorage.setItem(`topic-char-${topicId}`, JSON.stringify(characterId));
+      } else {
+        sessionStorage.removeItem(`topic-char-${topicId}`);
+      }
+    }
   }
 
   onAuthorMention(username: string) {
