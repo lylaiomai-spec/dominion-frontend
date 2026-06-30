@@ -103,7 +103,7 @@
                         <a [routerLink]="['/viewtopic', topic.topic_id]" class="topic-link">{{ topic.name }}</a>
                       }
                       @case ('subforum_name') {
-                        <a [routerLink]="['/subforum', topic.subforum_id]">{{ topic.subforum_name }}</a>
+                        <a [routerLink]="['/viewforum', topic.subforum_id]">{{ topic.subforum_name }}</a>
                       }
                       @case ('topic_status') {
                         @if (topic.topic_status === TopicStatus.active) {
