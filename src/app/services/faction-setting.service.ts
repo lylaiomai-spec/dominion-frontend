@@ -10,7 +10,7 @@ export class FactionSettingService {
   factionSettings = signal<FactionSetting[]>([]);
 
   load(): void {
-    this.apiService.get<FactionSetting[]>('admin/faction-settings/list').subscribe({
+    this.apiService.get<FactionSetting[]>('faction-settings/list').subscribe({
       next: (data) => this.factionSettings.set(data),
       error: (err) => console.error('Failed to load faction settings', err)
     });
