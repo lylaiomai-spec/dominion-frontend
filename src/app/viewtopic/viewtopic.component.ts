@@ -93,6 +93,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   loadProfiles = true;
   showAccount = true;
   savedTopicCharacter = signal<number | undefined>(undefined);
+  isTopicLoading = computed(() => !!this.id() && this.topic().id !== this.id());
 
   postsPerPage = computed(() => this.boardService.board().posts_per_page || 15);
 

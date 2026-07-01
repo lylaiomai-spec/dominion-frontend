@@ -23,6 +23,7 @@ export const TRANSLATIONS_RU = {
   "viewforum.sticky": "Закреплённый",
   "viewforum.topicView": "просмотр темы",
   "viewforum.by": "от ",
+  "viewtopic.loading": "Загрузка…",
   "viewtopic.pages": "Страницы",
   "viewtopic.reply": "Ответить",
   "viewtopic.share": "Поделиться",

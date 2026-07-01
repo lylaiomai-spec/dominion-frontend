@@ -1,5 +1,12 @@
 <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
 
+@if (isTopicLoading()) {
+  <div id="pun-main" class="main">
+    <div class="main-header">
+      <h1><span i18n="@@viewtopic.loading">Loading…</span></h1>
+    </div>
+  </div>
+} @else {
 <div id="pun-main" class="main">
   <div class="main-header">
     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -310,6 +317,7 @@
 
   <div class="main-footer"></div>
 </div>
+}
 
 <app-breadcrumbs [items]="breadcrumbs"></app-breadcrumbs>
 
