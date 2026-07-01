@@ -19,19 +19,14 @@ export class RouterLinksDirective {
     if (!target) return;
 
     const href = target.getAttribute('href');
-    if (!href) return;
+    if (!href || href.startsWith('#')) return;
 
-    // Let external links, anchors-only, and non-http(s) schemes pass through
-    if (
-      target.host !== window.location.host ||
-      href.startsWith('#') ||
-      !href.startsWith('http')
-    ) {
-      return;
-    }
+    // target.hostname is empty for mailto:/javascript: and resolves correctly for
+    // both relative and absolute URLs; hostname (no port) avoids port-mismatch false negatives
+    if (target.hostname !== window.location.hostname) return;
 
     event.preventDefault();
-    const url = new URL(href);
+    const url = new URL(target.href);
     this.router.navigateByUrl(url.pathname + url.search + url.hash);
   }
 }

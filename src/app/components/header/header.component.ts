@@ -33,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private widgetRefreshIntervals: ReturnType<typeof setInterval>[] = [];
   private panelReloadSub?: Subscription;
+  private panelLinkHandler: ((e: MouseEvent) => void) | null = null;
 
   ngOnInit() {
     this.load();
@@ -74,6 +75,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     const panel = document.getElementById('header-widget-panel');
     if (!panel) return;
+
+    if (this.panelLinkHandler) panel.removeEventListener('click', this.panelLinkHandler);
+    this.panelLinkHandler = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest?.('a') as HTMLAnchorElement | null;
+      if (!target) return;
+      const href = target.getAttribute('href');
+      if (!href || href.startsWith('#')) return;
+      if (target.hostname !== window.location.hostname) return;
+      e.preventDefault();
+      this.router.navigateByUrl(target.pathname + target.search + target.hash);
+    };
+    panel.addEventListener('click', this.panelLinkHandler);
 
     panel.querySelectorAll<HTMLElement>('[data-is-link="true"]').forEach(widget => {
       this.attachWidgetLinks(widget);

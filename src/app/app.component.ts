@@ -219,6 +219,7 @@ export class AppComponent implements OnInit {
   }
 
   private footerWidgetRefreshIntervals: ReturnType<typeof setInterval>[] = [];
+  private footerLinkHandler: ((e: MouseEvent) => void) | null = null;
 
   private processFooterPanel() {
     this.footerWidgetRefreshIntervals.forEach(id => clearInterval(id));
@@ -226,6 +227,18 @@ export class AppComponent implements OnInit {
 
     const panel = document.getElementById('footer-widget-panel');
     if (!panel) return;
+
+    if (this.footerLinkHandler) panel.removeEventListener('click', this.footerLinkHandler);
+    this.footerLinkHandler = (e: MouseEvent) => {
+      const target = (e.target as HTMLElement).closest?.('a') as HTMLAnchorElement | null;
+      if (!target) return;
+      const href = target.getAttribute('href');
+      if (!href || href.startsWith('#')) return;
+      if (target.hostname !== window.location.hostname) return;
+      e.preventDefault();
+      this.router.navigateByUrl(target.pathname + target.search + target.hash);
+    };
+    panel.addEventListener('click', this.footerLinkHandler);
 
     panel.querySelectorAll<HTMLElement>('[data-is-link="true"]').forEach(widget => {
       this.attachWidgetLinks(widget);
