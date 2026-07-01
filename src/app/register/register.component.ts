@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
+import { MonitorService } from '../services/monitor.service';
 import { from } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
@@ -17,6 +18,7 @@ export class RegisterComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   private router = inject(Router);
+  private monitor = inject(MonitorService);
 
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
@@ -65,11 +67,13 @@ export class RegisterComponent {
       ).subscribe({
         next: () => {
           this.isLoading.set(false);
+          this.monitor.track('user_registered');
           this.router.navigate(['/recovery-codes'], { state: { codes } });
         },
         error: (err) => {
           this.isLoading.set(false);
           const backendError = err.error?.error || err.error?.message || 'Registration failed.';
+          this.monitor.track('user_registration_error', { error: backendError });
           this.errorMessage.set(backendError);
         }
       });

@@ -16,6 +16,7 @@ import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import { RouterLinksDirective } from './directives/router-links.directive';
 import { environment } from '../environments/environment';
 import { HeaderComponent } from './components/header/header.component';
+import { MonitorService } from './services/monitor.service';
 
 @Component({
   selector: 'app-root',
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
   private featureService = inject(FeatureService);
   private currencyService = inject(CurrencyService);
   private injector = inject(Injector);
+  private monitor = inject(MonitorService);
 
   private document = inject<Document>(DOCUMENT);
 
@@ -67,6 +69,11 @@ export class AppComponent implements OnInit {
       } else {
         this.notificationService.disconnect();
       }
+    });
+
+    // Effect to set New Relic user context
+    effect(() => {
+      this.monitor.setUserContext(this.currentUser());
     });
 
     // Effect to apply font size
@@ -168,6 +175,7 @@ export class AppComponent implements OnInit {
 
       this.currentPageType = pageType;
       this.currentPageNumId = pageId;
+      this.monitor.setCurrentPage(pageType);
       this.notificationService.sendPageChange(pageType, pageId);
     });
   }

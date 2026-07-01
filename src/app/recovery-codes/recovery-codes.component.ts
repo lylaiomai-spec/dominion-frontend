@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MonitorService } from '../services/monitor.service';
 
 @Component({
   selector: 'app-recovery-codes',
@@ -11,7 +12,8 @@ import { CommonModule } from '@angular/common';
 export class RecoveryCodesComponent implements OnInit {
   codes: string[] = [];
 
-  constructor(private router: Router) {}
+  private router = inject(Router);
+  private monitor = inject(MonitorService);
 
   ngOnInit() {
     const state = history.state;
@@ -20,5 +22,6 @@ export class RecoveryCodesComponent implements OnInit {
       return;
     }
     this.codes = state.codes;
+    this.monitor.track('recovery_codes_viewed');
   }
 }

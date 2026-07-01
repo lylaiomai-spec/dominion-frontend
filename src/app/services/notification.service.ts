@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent, AiTaskDoneEvent, AiQueuePositionEvent, AiErrorEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
+import { MonitorService } from './monitor.service';
 import { environment } from '../../environments/environment';
 
 
@@ -10,6 +11,7 @@ import { environment } from '../../environments/environment';
 export class NotificationService {
   private authService = inject(AuthService);
   private apiService = inject(ApiService);
+  private monitor = inject(MonitorService);
   private ws: WebSocket | null = null;
   private readonly url: string;
   private token: string | null = null;
@@ -291,9 +293,11 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
     this.ws.onopen = () => {
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
+      const wasReconnect = this.reconnectAttempts > 0;
       this.reconnectAttempts = 0;
       this.processMessageQueue();
       this.sendDraftConfirmation();
+      this.monitor.track('ws_connected', { reconnect: wasReconnect });
     };
 
     this.ws.onmessage = (event) => {
@@ -306,10 +310,12 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
     this.ws.onerror = (event) => {
       console.error('WebSocket error:', event);
+      this.monitor.track('ws_error', {});
     };
 
-    this.ws.onclose = () => {
+    this.ws.onclose = (event) => {
       if (this.connectionTimeout) clearTimeout(this.connectionTimeout);
+      this.monitor.track('ws_disconnected', { explicit: this.explicitlyClosed, code: event.code });
       this.ws = null;
       if (!this.explicitlyClosed) {
         this.handleConnectionFailure();
@@ -356,6 +362,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
       if (this.seenMsgIds.has(notification.msg_id)) return;
       this.seenMsgIds.add(notification.msg_id);
     }
+    this.monitor.track('ws_message', { messageType: notification.type });
     switch (notification.type) {
       case 'post_created':
         this.postCreatedSubject.next(notification as PostCreatedEvent);
@@ -449,4 +456,5 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         console.warn('Unknown notification type:', notification);
     }
   }
+
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { UserService } from '../services/user.service';
+import { MonitorService } from '../services/monitor.service';
 import { from, switchMap } from 'rxjs';
 
 type Step = 'idle' | 'checking' | 'confirm' | 'loading' | 'done' | 'error';
@@ -17,6 +18,7 @@ type Mode = 'initial_setup' | 'regenerate';
 export class SettingsRestorationCodesComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
+  private monitor = inject(MonitorService);
 
   step = signal<Step>('idle');
   mode = signal<Mode | null>(null);
@@ -70,10 +72,13 @@ export class SettingsRestorationCodesComponent {
       next: () => {
         this.newCodes.set(this.pendingCodes);
         this.step.set('done');
+        this.monitor.track('recovery_codes_generated', { mode: this.mode() });
       },
       error: (err) => {
-        this.errorMessage.set(err?.error?.error || err?.error?.message || 'Failed to generate recovery codes.');
+        const error = err?.error?.error || err?.error?.message || 'Failed to generate recovery codes.';
+        this.errorMessage.set(error);
         this.step.set('error');
+        this.monitor.track('recovery_codes_generation_error', { mode: this.mode(), error });
       }
     });
   }
