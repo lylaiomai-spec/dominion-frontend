@@ -25,7 +25,7 @@
         <ul>
           @for (field of customFields; track field.fieldMachineName) {
             <li>
-              <app-field-display [type]="field.type" [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-field-display>
+              <app-field-display [type]="field.type" [fieldMachineName]="field.fieldMachineName" [fieldName]="field.fieldName" [fieldValue]="field.fieldValue"></app-field-display>
             </li>
           }
         </ul>

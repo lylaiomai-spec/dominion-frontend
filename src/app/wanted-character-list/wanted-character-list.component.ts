@@ -14,6 +14,7 @@ import { FieldDisplayComponent } from '../components/field-display/field-display
 import { UserInfoComponent } from '../components/user-info/user-info.component';
 
 interface ProcessedField {
+  fieldMachineName: string;
   fieldName: string;
   fieldValue: any;
   type: string;
@@ -184,6 +185,7 @@ export class WantedCharacterListComponent implements OnInit {
         }
 
         return {
+          fieldMachineName: config.machine_field_name,
           fieldName: config.human_field_name,
           fieldValue: fieldValue ?? '',
           type: config.content_field_type,

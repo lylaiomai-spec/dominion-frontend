@@ -8,6 +8,7 @@ import {Component, Input} from '@angular/core';
 })
 export class NumberFieldDisplayComponent {
   @Input() fieldMachineName: string | undefined;
+  @Input() fieldId?: string;
   @Input() fieldName: string | undefined;
   @Input() fieldValue: number | null = null;
   @Input() showFieldName: boolean = true;

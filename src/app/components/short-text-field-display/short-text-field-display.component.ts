@@ -8,6 +8,7 @@ import {Component, Input} from '@angular/core';
 })
 export class ShortTextFieldDisplayComponent {
   @Input() fieldMachineName: string | undefined;
+  @Input() fieldId?: string;
   @Input() fieldName: string | undefined;
   @Input() fieldValue: string | undefined;
   @Input() showFieldName: boolean = true;

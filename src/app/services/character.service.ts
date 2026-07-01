@@ -101,15 +101,18 @@ export class CharacterService {
       const obs = this.apiService.get<CharacterProfile[]>(`user/character-profiles-topic/${topicId}`).pipe(
         shareReplay(1)
       );
-      obs.subscribe({
-        next: (data) => this.userCharacterProfilesSignal.set(data),
-        error: (err) => {
-          console.error('Failed to load user character profiles for topic', err);
-          this.userCharacterProfilesSignal.set([]);
-        }
-      });
       this.topicProfilesCache.set(topicId, obs);
     }
+    // Always clear stale data, then re-subscribe so shareReplay(1) replays the cached
+    // value synchronously (or populates it once the API responds on first load)
+    this.userCharacterProfilesSignal.set([]);
+    this.topicProfilesCache.get(topicId)!.subscribe({
+      next: (data) => this.userCharacterProfilesSignal.set(data),
+      error: (err) => {
+        console.error('Failed to load user character profiles for topic', err);
+        this.userCharacterProfilesSignal.set([]);
+      }
+    });
     return this.topicProfilesCache.get(topicId)!;
   }
 

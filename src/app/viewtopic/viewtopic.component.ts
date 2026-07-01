@@ -92,6 +92,8 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   showPostForm = signal<boolean>(false);
   loadProfiles = true;
   showAccount = true;
+  savedTopicCharacter = signal<number | undefined>(undefined);
+  isTopicLoading = computed(() => !!this.id() && this.topic().id !== this.id());
 
   postsPerPage = computed(() => this.boardService.board().posts_per_page || 15);
 
@@ -139,6 +141,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private lastLoadedProfilesForTopicId: number | null = null;
   private pageLoadedSubscription: Subscription | null = null;
+  private topicLoadedOnInit = false;
 
   @ViewChild('mainPostForm') postForm!: PostFormComponent;
   @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
@@ -199,6 +202,8 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
             this.showAccount = true;
             this.characterService.loadUserCharacterProfilesForTopic(currentTopicId);
             this.lastLoadedProfilesForTopicId = currentTopicId;
+            const saved = sessionStorage.getItem(`topic-char-${currentTopicId}`);
+            this.savedTopicCharacter.set(saved !== null ? JSON.parse(saved) : undefined);
           }
         }
       }
@@ -249,8 +254,9 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       const postId = this.postId();
 
       if (topicId) {
-        // Only reload the main topic data if the ID has actually changed
-        if (this.topic().id !== topicId) {
+        // Always reload on first mount; after that, only reload if the topic ID changed
+        if (!this.topicLoadedOnInit || untracked(() => this.topic().id) !== topicId) {
+          this.topicLoadedOnInit = true;
           this.topicService.loadTopic(topicId).subscribe({
             next: (data) => this.topicService.setTopic(data),
             error: (err) => {
@@ -305,6 +311,14 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
   onCharacterSelected(characterId: number | null) {
     this.selectedCharacterId = characterId;
+    const topicId = this.id();
+    if (topicId && this.topic().type === TopicType.general) {
+      if (characterId !== null) {
+        sessionStorage.setItem(`topic-char-${topicId}`, JSON.stringify(characterId));
+      } else {
+        sessionStorage.removeItem(`topic-char-${topicId}`);
+      }
+    }
   }
 
   onAuthorMention(username: string) {
