@@ -1,10 +1,11 @@
 import { Component, inject, OnInit, effect, signal } from '@angular/core';
 import { CharacterService } from '../../services/character.service';
 import { FieldTemplateRowComponent, FieldTemplateForm } from '../field-template-row/field-template-row.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-character-profile-template-edit',
-  imports: [FieldTemplateRowComponent],
+  imports: [FieldTemplateRowComponent, CommonModule],
   templateUrl: './character-profile-template-edit.component.html',
   standalone: true,
   styleUrl: './character-profile-template-edit.component.css'
@@ -13,17 +14,18 @@ export class CharacterProfileTemplateEditComponent implements OnInit {
   characterService = inject(CharacterService);
   fields: FieldTemplateForm[] = [];
   saveState = signal<'idle' | 'loading' | 'success' | 'error'>('idle');
+  schemaConflicts = signal<{ machineName: string; existingType: string; newType: string }[]>([]);
+
+  dbSchema = this.characterService.characterProfileDbSchema;
 
   private templateLoaded = false;
 
   constructor() {
-    // Watch for template changes
     effect(() => {
       const template = this.characterService.characterProfileTemplate();
       if (template.length > 0 && !this.templateLoaded) {
         this.templateLoaded = true;
         this.fields = template.map((field, index) => ({ ...field, id: index }));
-        // Add one empty fieldset
         this.addEmptyField();
       }
     });
@@ -31,8 +33,8 @@ export class CharacterProfileTemplateEditComponent implements OnInit {
 
   ngOnInit() {
     this.characterService.loadCharacterProfileTemplate();
+    this.characterService.loadCharacterProfileDbFieldSchema();
 
-    // Add empty field if template is still empty after init
     setTimeout(() => {
       if (this.fields.length === 0) {
         this.addEmptyField();
@@ -53,10 +55,30 @@ export class CharacterProfileTemplateEditComponent implements OnInit {
 
   removeField(index: number) {
     this.fields.splice(index, 1);
+    this.schemaConflicts.set([]);
   }
 
   saveTemplate() {
     const data = this.fields.filter(field => field.machine_field_name !== '');
+    const schemaMap = new Map(this.characterService.characterProfileDbSchema().map(s => [s.machine_name, s.field_type]));
+
+    const conflicts = data
+      .filter(field => {
+        const existingType = schemaMap.get(field.machine_field_name);
+        return existingType !== undefined && existingType !== field.field_type;
+      })
+      .map(field => ({
+        machineName: field.machine_field_name,
+        existingType: schemaMap.get(field.machine_field_name)!,
+        newType: field.field_type
+      }));
+
+    if (conflicts.length > 0) {
+      this.schemaConflicts.set(conflicts);
+      return;
+    }
+
+    this.schemaConflicts.set([]);
     this.saveState.set('loading');
     this.characterService.saveCharacterProfileTemplate(data).subscribe({
       next: () => { this.saveState.set('success'); setTimeout(() => this.saveState.set('idle'), 3000); },

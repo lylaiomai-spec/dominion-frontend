@@ -198,6 +198,36 @@ export class CharacterService {
     return this.apiService.post('template/wanted_character/update', template);
   }
 
+  private characterDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly characterDbSchema = this.characterDbSchemaSignal.asReadonly();
+
+  loadCharacterDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/character/database-field-schema').subscribe({
+      next: (data) => this.characterDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load character DB field schema', err)
+    });
+  }
+
+  private characterProfileDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly characterProfileDbSchema = this.characterProfileDbSchemaSignal.asReadonly();
+
+  loadCharacterProfileDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/character-profile/database-field-schema').subscribe({
+      next: (data) => this.characterProfileDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load character profile DB field schema', err)
+    });
+  }
+
+  private wantedCharacterDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly wantedCharacterDbSchema = this.wantedCharacterDbSchemaSignal.asReadonly();
+
+  loadWantedCharacterDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/wanted-character/database-field-schema').subscribe({
+      next: (data) => this.wantedCharacterDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load wanted character DB field schema', err)
+    });
+  }
+
   private claimAutocompleteSignal = signal<ClaimAutocompleteItem[]>([]);
   readonly claimAutocomplete = this.claimAutocompleteSignal.asReadonly();
 
