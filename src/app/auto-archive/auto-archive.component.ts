@@ -63,7 +63,6 @@ export class AutoArchiveComponent implements OnInit {
   today = new Date().toISOString().slice(0, 10);
 
   showActionsColumn = computed(() => this.canAddImmunity() || !!this.immunitySpendType());
-
   currencyName = computed(() => this.currencyService.settings().currency_name);
 
   get buyImmunityDays(): number {
@@ -83,6 +82,7 @@ export class AutoArchiveComponent implements OnInit {
   ngOnInit() {
     this.loadList();
     if (this.boardService.board().features?.['currency'] === 1) {
+      this.currencyService.loadSettings();
       this.currencyService.loadActiveSpendTypes().subscribe({
         next: (types) => {
           const found = types.find(t => t.key === 'auto_archiving_immunity') ?? null;
