@@ -17,7 +17,7 @@
           <th scope="col" i18n="@@autoArchive.colUser">User</th>
           <th scope="col" i18n="@@autoArchive.colLastPost">Last Post</th>
           <th scope="col" i18n="@@autoArchive.colDaysLeft">Days Left</th>
-          @if (canAddImmunity()) {
+          @if (showActionsColumn()) {
             <th scope="col"></th>
           }
         </tr>
@@ -29,13 +29,20 @@
             <td><a [routerLink]="['/profile', character.user_id]">{{ character.username }}</a></td>
             <td>{{ character.date_last_post ? (character.date_last_post | date:'yyyy-MM-dd') : '—' }}</td>
             <td>{{ character.days_left }}</td>
-            @if (canAddImmunity()) {
-              <td><button class="button" (click)="openImmunityModal(character)" i18n="@@autoArchive.addImmunity">Add Immunity</button></td>
+            @if (showActionsColumn()) {
+              <td class="actions-cell">
+                @if (canAddImmunity()) {
+                  <button class="button" (click)="openImmunityModal(character)" i18n="@@autoArchive.addImmunity">Add Immunity</button>
+                }
+                @if (immunitySpendType() && character.user_id === authService.currentUser()?.id) {
+                  <button class="button" (click)="openBuyImmunityModal(character)" i18n="@@autoArchive.buyImmunity">Buy Immunity</button>
+                }
+              </td>
             }
           </tr>
         } @empty {
           <tr>
-            <td [attr.colspan]="canAddImmunity() ? 5 : 4" i18n="@@autoArchive.empty">No characters at risk of archiving.</td>
+            <td [attr.colspan]="showActionsColumn() ? 5 : 4" i18n="@@autoArchive.empty">No characters at risk of archiving.</td>
           </tr>
         }
       </tbody>
@@ -71,6 +78,58 @@
       <div class="spoiler-modal-actions">
         <button type="button" class="button btn-primary" (click)="submitImmunity()" [disabled]="!immunityStartDate || !immunityEndDate" i18n="@@autoArchive.submit">Submit</button>
         <button type="button" class="button" (click)="closeImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (buyImmunityModalCharacter(); as character) {
+  <div class="modal-overlay" (click)="closeBuyImmunityModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <span class="close-button" (click)="closeBuyImmunityModal()">&times;</span>
+
+      <h2 i18n="@@autoArchive.buyModalTitle">Buy Immunity — {{ character.name }}</h2>
+
+      <div class="immunity-cost-info">
+        <span i18n="@@autoArchive.costPerDay">Cost per day:</span>
+        <strong>{{ immunitySpendType()?.amount }} {{ currencyName() }}</strong>
+        &nbsp;·&nbsp;
+        <span i18n="@@autoArchive.yourBalance">Your balance:</span>
+        <strong>{{ authService.currentUser()?.currency_amount }} {{ currencyName() }}</strong>
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.startDate">Start date</label>
+        <input type="date" [(ngModel)]="buyImmunityStartDate" [min]="today" />
+      </div>
+
+      <div class="inputfield">
+        <label i18n="@@autoArchive.endDate">End date</label>
+        <input type="date" [(ngModel)]="buyImmunityEndDate" [min]="buyImmunityStartDate || today" />
+      </div>
+
+      @if (buyImmunityDays > 0) {
+        <div class="immunity-summary">
+          <span i18n="@@autoArchive.duration">Duration:</span> {{ buyImmunityDays }}
+          <ng-container i18n="@@autoArchive.days">days</ng-container>
+          &nbsp;·&nbsp;
+          <span i18n="@@autoArchive.totalCost">Total cost:</span> <strong>{{ buyImmunityTotalCost }} {{ currencyName() }}</strong>
+        </div>
+        @if (!buyImmunityCanAfford) {
+          <p class="error-msg" i18n="@@autoArchive.insufficientBalance">Insufficient balance to purchase this immunity period.</p>
+        }
+      }
+
+      <app-error-banner [message]="buyImmunityError()"></app-error-banner>
+
+      <div class="spoiler-modal-actions">
+        <button
+          type="button"
+          class="button btn-primary"
+          (click)="submitBuyImmunity()"
+          [disabled]="!buyImmunityStartDate || !buyImmunityEndDate || buyImmunityDays <= 0 || !buyImmunityCanAfford"
+          i18n="@@autoArchive.submit">Submit</button>
+        <button type="button" class="button" (click)="closeBuyImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
       </div>
     </div>
   </div>
