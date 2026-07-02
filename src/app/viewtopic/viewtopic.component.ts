@@ -20,7 +20,7 @@ import { RouterLinksDirective } from '../directives/router-links.directive';
 import { CharacterService } from '../services/character.service';
 import { AuthService } from '../services/auth.service';
 import { BoardService } from '../services/board.service';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 import { EpisodeCreateComponent } from '../episode-create/episode-create.component';
 import { CharacterCreateComponent } from '../character-create/character-create.component';
 import { WantedCharacterCreateComponent } from '../wanted-character-create/wanted-character-create.component';
@@ -142,6 +142,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   private lastLoadedProfilesForTopicId: number | null = null;
   private pageLoadedSubscription: Subscription | null = null;
   private topicLoadedOnInit = false;
+  private pendingScrollPostId: number | null = null;
 
   @ViewChild('mainPostForm') postForm!: PostFormComponent;
   @ViewChildren('editPostForm') editPostForms!: QueryList<PostFormComponent>;
@@ -247,6 +248,12 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       }
     });
 
+    // Scroll to our post once it appears in the posts signal
+    effect(() => {
+      this.posts();
+      untracked(() => this.tryScrollToPost());
+    });
+
     // Effect to reload posts when page or topic ID changes
     effect(() => {
       const topicId = this.id();
@@ -280,7 +287,20 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
   isWantedCharacter() { return this.topic().type === TopicType.wanted_character; }
   isLore() { return this.topic().type === TopicType.lore; }
 
+  private tryScrollToPost(): void {
+    if (this.pendingScrollPostId === null) return;
+    const postId = this.pendingScrollPostId;
+    if (!this.posts().some(p => p.id === postId)) return;
+    this.pendingScrollPostId = null;
+    setTimeout(() => document.getElementById(String(postId))?.scrollIntoView({ behavior: 'smooth' }));
+  }
+
   ngOnInit() {
+    this.topicService.ownPostAdded$.pipe(takeUntil(this.destroy$)).subscribe(postId => {
+      this.pendingScrollPostId = postId;
+      this.tryScrollToPost();
+    });
+
     this.pageLoadedSubscription = this.topicService.pageLoaded$.subscribe(pageState => {
       const topicId = this.id();
       // Only sync if the page state is for the current topic
@@ -452,8 +472,9 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
       next: () => {
         this.postForm.messageField.nativeElement.value = '';
         if (!this.authService.isAuthenticated()) {
-          // Force reload to get updated view for guests
           window.location.reload();
+        } else {
+          this.topicService.notifyOwnPostSubmitted(this.id()!);
         }
       },
       error: (err: any) => console.error('Failed to create post', err)
