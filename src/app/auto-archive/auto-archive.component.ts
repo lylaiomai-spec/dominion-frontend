@@ -81,16 +81,14 @@ export class AutoArchiveComponent implements OnInit {
 
   ngOnInit() {
     this.loadList();
-    if (this.boardService.board().features?.['currency'] === 1) {
-      this.currencyService.loadSettings();
-      this.currencyService.loadActiveSpendTypes().subscribe({
-        next: (types) => {
-          const found = types.find(t => t.key === 'auto_archiving_immunity') ?? null;
-          this.immunitySpendType.set(found);
-        },
-        error: () => {}
-      });
-    }
+    this.currencyService.loadSettings();
+    this.currencyService.loadActiveSpendTypes().subscribe({
+      next: (types) => {
+        const found = types.find(t => t.key === 'auto_archiving_immunity') ?? null;
+        this.immunitySpendType.set(found);
+      },
+      error: () => {}
+    });
   }
 
   private loadList() {
