@@ -101,15 +101,18 @@ export class CharacterService {
       const obs = this.apiService.get<CharacterProfile[]>(`user/character-profiles-topic/${topicId}`).pipe(
         shareReplay(1)
       );
-      obs.subscribe({
-        next: (data) => this.userCharacterProfilesSignal.set(data),
-        error: (err) => {
-          console.error('Failed to load user character profiles for topic', err);
-          this.userCharacterProfilesSignal.set([]);
-        }
-      });
       this.topicProfilesCache.set(topicId, obs);
     }
+    // Always clear stale data, then re-subscribe so shareReplay(1) replays the cached
+    // value synchronously (or populates it once the API responds on first load)
+    this.userCharacterProfilesSignal.set([]);
+    this.topicProfilesCache.get(topicId)!.subscribe({
+      next: (data) => this.userCharacterProfilesSignal.set(data),
+      error: (err) => {
+        console.error('Failed to load user character profiles for topic', err);
+        this.userCharacterProfilesSignal.set([]);
+      }
+    });
     return this.topicProfilesCache.get(topicId)!;
   }
 
@@ -193,6 +196,36 @@ export class CharacterService {
 
   saveWantedCharacterTemplate(template: FieldTemplate[]) {
     return this.apiService.post('template/wanted_character/update', template);
+  }
+
+  private characterDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly characterDbSchema = this.characterDbSchemaSignal.asReadonly();
+
+  loadCharacterDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/character/database-field-schema').subscribe({
+      next: (data) => this.characterDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load character DB field schema', err)
+    });
+  }
+
+  private characterProfileDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly characterProfileDbSchema = this.characterProfileDbSchemaSignal.asReadonly();
+
+  loadCharacterProfileDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/character-profile/database-field-schema').subscribe({
+      next: (data) => this.characterProfileDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load character profile DB field schema', err)
+    });
+  }
+
+  private wantedCharacterDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly wantedCharacterDbSchema = this.wantedCharacterDbSchemaSignal.asReadonly();
+
+  loadWantedCharacterDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/wanted-character/database-field-schema').subscribe({
+      next: (data) => this.wantedCharacterDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load wanted character DB field schema', err)
+    });
   }
 
   private claimAutocompleteSignal = signal<ClaimAutocompleteItem[]>([]);

@@ -48,6 +48,11 @@ export class TopicService {
   private pageLoadedSubject = new Subject<{page: number, topicId: number}>();
   public pageLoaded$ = this.pageLoadedSubject.asObservable();
 
+  private ownPostAddedSubject = new Subject<number>();
+  public ownPostAdded$ = this.ownPostAddedSubject.asObservable();
+  private pendingOwnPostTimeout: ReturnType<typeof setTimeout> | null = null;
+  private pendingScrollAfterFallback = false;
+
   private loadPostsSubject = new Subject<{topicId: number, page: number, postId?: number}>();
 
   readonly singlePostSignal = signal<Post | null>(null);
@@ -69,6 +74,14 @@ export class TopicService {
         if (data && data.posts) {
           this.postsSignal.set(data.posts);
           this.pageLoadedSubject.next({ page: data.page, topicId });
+          if (this.pendingScrollAfterFallback) {
+            this.pendingScrollAfterFallback = false;
+            const currentUser = this.authService.currentUser();
+            if (currentUser) {
+              const ownPost = [...data.posts].reverse().find(p => p.user_profile?.user_id === currentUser.id);
+              if (ownPost) this.ownPostAddedSubject.next(ownPost.id);
+            }
+          }
           if (data.posts.length > 0) {
             const postIds = data.posts.map((p: Post) => p.id);
             const maxPostId = Math.max(...postIds);
@@ -222,6 +235,24 @@ export class TopicService {
     }));
   }
 
+  notifyOwnPostSubmitted(topicId: number): void {
+    this.clearOwnPostTimeout();
+    const postsPerPage = this.boardService.board().posts_per_page || 15;
+    const lastPage = Math.max(1, Math.ceil((this.topic().post_number + 1) / postsPerPage));
+    this.pendingOwnPostTimeout = setTimeout(() => {
+      this.pendingOwnPostTimeout = null;
+      this.pendingScrollAfterFallback = true;
+      this.loadPosts(topicId, lastPage);
+    }, 2000);
+  }
+
+  private clearOwnPostTimeout(): void {
+    if (this.pendingOwnPostTimeout !== null) {
+      clearTimeout(this.pendingOwnPostTimeout);
+      this.pendingOwnPostTimeout = null;
+    }
+  }
+
   private handleNewPost(post: Post) {
     if (this.postsSignal().some(p => p.id === post.id)) return;
     this.postsSignal.update(posts => [...posts, this.normalizePost(post)]);
@@ -231,7 +262,6 @@ export class TopicService {
     const prevLastPage = Math.ceil(prevTotal / postsPerPage) || 1;
     const newLastPage = Math.ceil((prevTotal + 1) / postsPerPage);
 
-    // Increment the post count in the topic
     this.topicSignal.update(topic => {
       if (topic) {
         return { ...topic, post_number: topic.post_number + 1 };
@@ -239,16 +269,16 @@ export class TopicService {
       return topic;
     });
 
-    // Notify backend that we viewed this new post
     this.notificationService.sendMessage({
       type: 'topic_view',
       topic_id: post.topic_id,
       post_id: post.id
     });
 
-    // Navigate to the new page only if the post spills onto a new page
     const currentUser = this.authService.currentUser();
     if (currentUser && post.user_profile && currentUser.id === post.user_profile.user_id) {
+      this.clearOwnPostTimeout();
+      this.ownPostAddedSubject.next(post.id);
       if (newLastPage > prevLastPage) {
         this.router.navigate(['/viewtopic', this.topic().id], { queryParams: { page: newLastPage } });
       }

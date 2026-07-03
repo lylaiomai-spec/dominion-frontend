@@ -1,4 +1,4 @@
 @if (showFieldName) {
-  <label [for]="fieldMachineName">{{ fieldName }}</label>
+  <label [class]="'field-' + fieldMachineName">{{ fieldName }}</label>
 }
-<span [id]="fieldMachineName">{{ fieldValue }}</span>
+<span [id]="fieldId ?? fieldMachineName" [class]="'field-' + fieldMachineName">{{ fieldValue }}</span>

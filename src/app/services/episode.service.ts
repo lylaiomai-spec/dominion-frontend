@@ -71,6 +71,16 @@ export class EpisodeService {
     return this.apiService.post('template/episode/update', template);
   }
 
+  private episodeDbSchemaSignal = signal<{ machine_name: string; field_type: string }[]>([]);
+  readonly episodeDbSchema = this.episodeDbSchemaSignal.asReadonly();
+
+  loadEpisodeDbFieldSchema(): void {
+    this.apiService.get<{ fields: { machine_name: string; field_type: string }[] }>('admin/episode/database-field-schema').subscribe({
+      next: (data) => this.episodeDbSchemaSignal.set(data.fields ?? []),
+      error: (err) => console.error('Failed to load episode DB field schema', err)
+    });
+  }
+
   createEpisode(data: any) {
     return this.apiService.post('episode/create', data);
   }

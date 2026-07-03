@@ -13,6 +13,7 @@ import { CroppedImageFieldDisplayComponent } from '../cropped-image-field-displa
 })
 export class FieldDisplayComponent {
   @Input() type: string = '';
+  @Input() fieldMachineName: string = '';
   @Input() fieldName: string = '';
   @Input() fieldValue: any = '';
 }

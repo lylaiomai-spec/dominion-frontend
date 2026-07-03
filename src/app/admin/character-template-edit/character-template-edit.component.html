@@ -1,6 +1,42 @@
 <div class="character-template-edit">
   <h2>Character Template Editor</h2>
 
+  @if (dbSchema().length > 0) {
+    <div class="db-schema">
+      <h3>Existing Database Fields</h3>
+      <table class="db-schema-table">
+        <thead>
+          <tr>
+            <th>Machine Name</th>
+            <th>DB Field Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (col of dbSchema(); track col.machine_name) {
+            <tr>
+              <td><code>{{ col.machine_name }}</code></td>
+              <td>{{ col.field_type }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (schemaConflicts().length > 0) {
+    <div class="schema-conflict-warning">
+      <strong>Warning: the following fields conflict with existing database columns.</strong>
+      <p>Changing the field type for an already-existing column will violate existing data. Please use a different machine name or restore the original field type.</p>
+      <ul>
+        @for (conflict of schemaConflicts(); track conflict.machineName) {
+          <li>
+            <code>{{ conflict.machineName }}</code>: database has type <strong>{{ conflict.existingType }}</strong>, form has <strong>{{ conflict.newType }}</strong>
+          </li>
+        }
+      </ul>
+    </div>
+  }
+
   <form (submit)="saveTemplate(); $event.preventDefault()">
     @for (field of fields; track field.id; let i = $index) {
       <app-field-template-row [field]="field" [index]="i" (remove)="removeField(i)" />

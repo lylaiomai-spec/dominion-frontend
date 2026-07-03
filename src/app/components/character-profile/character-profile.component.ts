@@ -29,6 +29,7 @@ export class CharacterProfileComponent implements OnInit {
   @Input() accountName: string = '';
   @Input() loadProfiles: boolean = true;
   @Input() showAccount: boolean = true;
+  @Input() initialCharacterId: number | null | undefined = undefined;
   @Output() characterSelected = new EventEmitter<number | null>();
   @Output() guestNameChanged = new EventEmitter<string>();
   @Output() authorClicked = new EventEmitter<string>();
@@ -43,13 +44,25 @@ export class CharacterProfileComponent implements OnInit {
 
   guestName: string = 'Guest';
 
+  private initialSelectionApplied = false;
+
   constructor() {
     effect(() => {
       const chars = this.characters();
       if (!this.post && !this.showAccount && chars.length > 0 && this.selectedCharacterId === 'account') {
-        // If account is hidden and we have characters, select the first one
+        // Episode: account is hidden, auto-select the first available character
         this.selectedCharacterId = chars[0].id;
         this.onSelect();
+        return;
+      }
+      // General topic: restore saved character selection once characters have loaded
+      if (!this.post && !this.initialSelectionApplied && this.initialCharacterId != null && chars.length > 0) {
+        this.initialSelectionApplied = true;
+        const found = chars.find(c => c.id === this.initialCharacterId);
+        if (found) {
+          this.selectedCharacterId = found.id;
+          this.onSelect();
+        }
       }
     });
   }
