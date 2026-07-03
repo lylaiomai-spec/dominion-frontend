@@ -60,12 +60,12 @@
 
       <div class="inputfield">
         <label i18n="@@autoArchive.startDate">Start date</label>
-        <input type="date" [(ngModel)]="immunityStartDate" />
+        <input type="date" [value]="character.archival_date" disabled />
       </div>
 
       <div class="inputfield">
         <label i18n="@@autoArchive.endDate">End date</label>
-        <input type="date" [(ngModel)]="immunityEndDate" [min]="today" />
+        <input type="date" [(ngModel)]="immunityEndDate" [min]="character.archival_date || today" />
       </div>
 
       <div class="inputfield">
@@ -76,7 +76,7 @@
       <app-error-banner [message]="immunityError()"></app-error-banner>
 
       <div class="spoiler-modal-actions">
-        <button type="button" class="button btn-primary" (click)="submitImmunity()" [disabled]="!immunityStartDate || !immunityEndDate" i18n="@@autoArchive.submit">Submit</button>
+        <button type="button" class="button btn-primary" (click)="submitImmunity()" [disabled]="!immunityEndDate" i18n="@@autoArchive.submit">Submit</button>
         <button type="button" class="button" (click)="closeImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
       </div>
     </div>
@@ -100,12 +100,12 @@
 
       <div class="inputfield">
         <label i18n="@@autoArchive.startDate">Start date</label>
-        <input type="date" [(ngModel)]="buyImmunityStartDate" [min]="today" />
+        <input type="date" [value]="character.archival_date" disabled />
       </div>
 
       <div class="inputfield">
         <label i18n="@@autoArchive.endDate">End date</label>
-        <input type="date" [(ngModel)]="buyImmunityEndDate" [min]="buyImmunityStartDate || today" />
+        <input type="date" [(ngModel)]="buyImmunityEndDate" [min]="character.archival_date || today" />
       </div>
 
       @if (buyImmunityDays > 0) {
@@ -127,7 +127,7 @@
           type="button"
           class="button btn-primary"
           (click)="submitBuyImmunity()"
-          [disabled]="!buyImmunityStartDate || !buyImmunityEndDate || buyImmunityDays <= 0 || !buyImmunityCanAfford"
+          [disabled]="!buyImmunityEndDate || buyImmunityDays <= 0 || !buyImmunityCanAfford"
           i18n="@@autoArchive.submit">Submit</button>
         <button type="button" class="button" (click)="closeBuyImmunityModal()" i18n="@@autoArchive.cancel">Cancel</button>
       </div>

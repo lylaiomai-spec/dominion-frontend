@@ -18,6 +18,7 @@ interface ArchivingWarningItem {
   username: string;
   date_last_post: string | null;
   days_left: number;
+  archival_date: string | null;
 }
 
 interface BuyImmunityResponse {
@@ -49,7 +50,6 @@ export class AutoArchiveComponent implements OnInit {
 
   // Admin immunity modal
   immunityModalCharacter = signal<ArchivingWarningItem | null>(null);
-  immunityStartDate = '';
   immunityEndDate = '';
   immunityReason = '';
   immunityError = signal<string | null>(null);
@@ -57,7 +57,6 @@ export class AutoArchiveComponent implements OnInit {
   // Buy immunity (user)
   immunitySpendType = signal<CurrencySpendType | null>(null);
   buyImmunityModalCharacter = signal<ArchivingWarningItem | null>(null);
-  buyImmunityStartDate = '';
   buyImmunityEndDate = '';
   buyImmunityError = signal<string | null>(null);
   userBalance = signal<number | null>(null);
@@ -68,8 +67,9 @@ export class AutoArchiveComponent implements OnInit {
   currencyName = computed(() => this.currencyService.settings().currency_name);
 
   get buyImmunityDays(): number {
-    if (!this.buyImmunityStartDate || !this.buyImmunityEndDate) return 0;
-    const diff = (new Date(this.buyImmunityEndDate).getTime() - new Date(this.buyImmunityStartDate).getTime()) / 86400000;
+    const start = this.buyImmunityModalCharacter()?.archival_date;
+    if (!start || !this.buyImmunityEndDate) return 0;
+    const diff = (new Date(this.buyImmunityEndDate).getTime() - new Date(start).getTime()) / 86400000;
     return Math.max(0, Math.round(diff));
   }
 
@@ -109,7 +109,6 @@ export class AutoArchiveComponent implements OnInit {
   // Admin immunity
   openImmunityModal(character: ArchivingWarningItem) {
     this.immunityModalCharacter.set(character);
-    this.immunityStartDate = this.today;
     this.immunityEndDate = '';
     this.immunityReason = '';
     this.immunityError.set(null);
@@ -125,7 +124,6 @@ export class AutoArchiveComponent implements OnInit {
     this.immunityError.set(null);
     this.apiService.post('admin/character/immunity', {
       character_id: character.id,
-      start_date: this.immunityStartDate,
       end_date: this.immunityEndDate,
       reason: this.immunityReason,
     }).subscribe({
@@ -144,7 +142,6 @@ export class AutoArchiveComponent implements OnInit {
   // Buy immunity (user)
   openBuyImmunityModal(character: ArchivingWarningItem) {
     this.buyImmunityModalCharacter.set(character);
-    this.buyImmunityStartDate = this.today;
     this.buyImmunityEndDate = '';
     this.buyImmunityError.set(null);
     this.userBalance.set(null);
@@ -167,7 +164,6 @@ export class AutoArchiveComponent implements OnInit {
     this.buyImmunityError.set(null);
     this.apiService.post<BuyImmunityResponse>('character/immunity/buy', {
       character_id: character.id,
-      start_date: this.buyImmunityStartDate,
       duration_days: this.buyImmunityDays,
     }).subscribe({
       next: (res) => {
