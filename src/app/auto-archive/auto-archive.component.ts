@@ -84,22 +84,16 @@ export class AutoArchiveComponent implements OnInit {
     this.currencyService.loadSettings();
     this.currencyService.loadActiveSpendTypes().subscribe({
       next: (types) => {
-        console.log('[AutoArchive] active spend types:', types);
-        const found = types.find(t => t.key === 'auto_archiving_immunity') ?? null;
-        console.log('[AutoArchive] immunity spend type found:', found);
+        const found = types.find(t => t.key === 'currency_spend_auto_archiving_immunity') ?? null;
         this.immunitySpendType.set(found);
       },
-      error: (err) => console.error('[AutoArchive] failed to load spend types:', err)
+      error: () => {}
     });
   }
 
   private loadList() {
     this.apiService.get<ArchivingWarningItem[]>('characters/archiving-warnings').subscribe({
-      next: (data) => {
-        console.log('[AutoArchive] characters:', data.map(c => ({ id: c.id, user_id: c.user_id })));
-        console.log('[AutoArchive] currentUser id:', this.authService.currentUser()?.id);
-        this.characters.set(data);
-      },
+      next: (data) => this.characters.set(data),
       error: (err) => {
         if (err.status === 403) {
           this.router.navigateByUrl('/403');
