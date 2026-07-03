@@ -8,6 +8,7 @@ import { AuthService } from '../services/auth.service';
 import { BoardService } from '../services/board.service';
 import { CurrencyService } from '../services/currency.service';
 import { CurrencySpendType } from '../models/Currency';
+import { UserProfileResponse } from '../models/User';
 import { ErrorBannerComponent } from '../components/error-banner/error-banner.component';
 
 interface ArchivingWarningItem {
@@ -59,6 +60,7 @@ export class AutoArchiveComponent implements OnInit {
   buyImmunityStartDate = '';
   buyImmunityEndDate = '';
   buyImmunityError = signal<string | null>(null);
+  userBalance = signal<number | null>(null);
 
   today = new Date().toISOString().slice(0, 10);
 
@@ -76,7 +78,7 @@ export class AutoArchiveComponent implements OnInit {
   }
 
   get buyImmunityCanAfford(): boolean {
-    return (this.authService.currentUser()?.currency_amount ?? 0) >= this.buyImmunityTotalCost;
+    return (this.userBalance() ?? 0) >= this.buyImmunityTotalCost;
   }
 
   ngOnInit() {
@@ -145,6 +147,14 @@ export class AutoArchiveComponent implements OnInit {
     this.buyImmunityStartDate = this.today;
     this.buyImmunityEndDate = '';
     this.buyImmunityError.set(null);
+    this.userBalance.set(null);
+    const userId = this.authService.currentUser()?.id;
+    if (userId) {
+      this.apiService.get<UserProfileResponse>(`user/profile/${userId}`).subscribe({
+        next: (profile) => this.userBalance.set(profile.currency_amount ?? 0),
+        error: () => this.userBalance.set(0)
+      });
+    }
   }
 
   closeBuyImmunityModal() {
@@ -161,7 +171,7 @@ export class AutoArchiveComponent implements OnInit {
       duration_days: this.buyImmunityDays,
     }).subscribe({
       next: (res) => {
-        this.authService.currentUser.update(u => u ? { ...u, currency_amount: res.new_balance } : u);
+        this.userBalance.set(res.new_balance);
         this.closeBuyImmunityModal();
         this.loadList();
       },

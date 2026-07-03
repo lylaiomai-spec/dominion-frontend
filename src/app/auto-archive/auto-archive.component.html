@@ -95,7 +95,7 @@
         <strong>{{ immunitySpendType()?.amount }} {{ currencyName() }}</strong>
         &nbsp;·&nbsp;
         <span i18n="@@autoArchive.yourBalance">Your balance:</span>
-        <strong>{{ authService.currentUser()?.currency_amount }} {{ currencyName() }}</strong>
+        <strong>{{ userBalance() !== null ? userBalance() : '…' }} {{ currencyName() }}</strong>
       </div>
 
       <div class="inputfield">
