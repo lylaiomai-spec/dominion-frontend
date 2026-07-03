@@ -12,6 +12,8 @@ export interface CurrencySettingsUpdateRequest {
 export interface CurrencyTransactionMetadata {
   topic_id?: number;
   post_id?: number;
+  character_id?: number;
+  character_name?: string | null;
   note?: string | null;
 }
 

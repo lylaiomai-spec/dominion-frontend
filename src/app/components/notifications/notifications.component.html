@@ -78,15 +78,16 @@
           </thead>
           <tbody>
             @for (item of gameNotifications(); track item.id) {
+              @let game = $any(item.game ?? item.data);
               <tr>
                 <td>
-                  @if (item.game?.topic_id) {
-                    <a [routerLink]="['/viewtopic', item.game!.topic_id]" (click)="onNotificationClick(item)">{{ item.game?.topic_name || 'Unknown Topic' }}</a>
+                  @if (game?.topic_id) {
+                    <a [routerLink]="['/viewtopic', game.topic_id]" (click)="onNotificationClick(item)">{{ game.topic_name }}</a>
                   } @else {
-                    {{ item.game?.topic_name || 'Unknown Topic' }}
+                    {{ game?.topic_name }}
                   }
                 </td>
-                <td>{{ item.game?.character_name || 'Unknown' }}</td>
+                <td>{{ game?.character_name }}</td>
                 <td>{{ item.date_created | date:'short' }}</td>
                 <td><button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button></td>
               </tr>

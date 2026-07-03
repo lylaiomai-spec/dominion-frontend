@@ -38,6 +38,7 @@ export class TransactionsComponent implements OnInit, OnDestroy {
   readonly incomeTypeNames: Record<string, string> = {
     currency_income_game_post: $localize`:@@transactions.incomeType.gamePost:Game post`,
     currency_income_wanted_character: $localize`:@@transactions.incomeType.wantedCharacter:Wanted character`,
+    currency_income_new_character: $localize`:@@transactions.incomeType.newCharacter:Character accepted`,
   };
 
   readonly statusLabels: Record<number, string> = {
