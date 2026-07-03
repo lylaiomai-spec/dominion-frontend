@@ -93,6 +93,16 @@
                   }
                   <ng-container i18n="@@toast.accountUpdate.immunitySpendFor"> on archiving immunity.</ng-container>
                 }
+                @case ('currency_income_new_character') {
+                  <ng-container i18n="@@toast.accountUpdate.newCharacterIncome">You have earned</ng-container>
+                  <strong> {{ accountUpdate.amount }} </strong>
+                  @if (currencyService.settings().icon_url) {
+                    <img [src]="currencyService.settings().icon_url" class="currency-icon" alt="" />
+                  } @else {
+                    🪙
+                  }
+                  <ng-container i18n="@@toast.accountUpdate.newCharacterIncomeFor"> for your character being accepted.</ng-container>
+                }
                 @default {
                   <ng-container i18n="@@toast.accountUpdate.earned">You have earned</ng-container>
                   <strong> {{ accountUpdate.amount }} </strong>

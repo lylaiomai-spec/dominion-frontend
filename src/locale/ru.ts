@@ -221,6 +221,8 @@ export const TRANSLATIONS_RU = {
   "toast.accountUpdate.manualComment": ": {$INTERPOLATION}",
   "toast.accountUpdate.immunitySpend": "Списано",
   "toast.accountUpdate.immunitySpendFor": " за иммунитет от архивации.",
+  "toast.accountUpdate.newCharacterIncome": "Вы получили",
+  "toast.accountUpdate.newCharacterIncomeFor": " за принятие персонажа.",
   "transactions.featureDisabled": "Эта функция не включена.",
   "transactions.manual": "Вручную",
   "transactions.addButton": "Добавить транзакцию",
