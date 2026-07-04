@@ -3,7 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FactionService } from '../../services/faction.service';
+import { ApiService } from '../../services/api.service';
 import { Faction } from '../../models/Faction';
+
+interface FreeFormatDateOption {
+  id: number;
+  name: string;
+}
 
 @Component({
   selector: 'app-admin-factions',
@@ -14,9 +20,11 @@ import { Faction } from '../../models/Faction';
 })
 export class AdminFactionsComponent implements OnInit {
   private factionService = inject(FactionService);
+  private apiService = inject(ApiService);
 
   factions = this.factionService.factionTree;
   pendingFactions = this.factionService.pendingFactions;
+  freeFormatDateOptions: FreeFormatDateOption[] = [];
 
   showDeleteErrorModal = false;
 
@@ -25,6 +33,10 @@ export class AdminFactionsComponent implements OnInit {
   ngOnInit() {
     this.factionService.loadFactionTree();
     this.factionService.loadPendingFactions();
+    this.apiService.get<FreeFormatDateOption[]>('admin/free-format-date-settings/options').subscribe({
+      next: (data) => this.freeFormatDateOptions = data,
+      error: (err) => console.error('Failed to load free format date options', err),
+    });
   }
 
   approve(faction: Faction) {
@@ -54,6 +66,7 @@ export class AdminFactionsComponent implements OnInit {
       parent_id: faction.id,
       faction_status: 0,
       show_on_profile: false,
+      free_format_date_id: null,
       characters: []
     };
     this.factions.update(list => {

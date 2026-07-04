@@ -1,0 +1,122 @@
+<div class="ffd-container">
+  <h2 i18n="@@adminCalendar.title">Calendar</h2>
+
+  <div class="field-row">
+    <label for="calendar-name" i18n="@@adminCalendar.calendarName">Name</label>
+    <input id="calendar-name" type="text" [(ngModel)]="name" name="calendar-name" />
+  </div>
+
+  <section class="ffd-block">
+    <h3 i18n="@@adminFactionDate.timeUnits">Time Units</h3>
+
+    @for (unit of timeUnits; track unit._tempId) {
+      <fieldset class="ffd-fieldset">
+        <legend>
+          {{ unit.name || ('Time Unit ' + $index) }}
+          <button type="button" class="btn-remove" (click)="removeTimeUnit(unit)" i18n="@@adminFactionDate.remove">✕</button>
+        </legend>
+
+        <div class="field-row">
+          <label [for]="'tu-name-' + unit._tempId" i18n="@@adminFactionDate.name">Name</label>
+          <input [id]="'tu-name-' + unit._tempId" type="text" [(ngModel)]="unit.name" [name]="'tu-name-' + unit._tempId" />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'tu-pos-' + unit._tempId" i18n="@@adminFactionDate.position">Position</label>
+          <input [id]="'tu-pos-' + unit._tempId" type="number" [(ngModel)]="unit.position" [name]="'tu-pos-' + unit._tempId" />
+        </div>
+
+        <div class="field-row">
+          <label [for]="'tu-type-' + unit._tempId" i18n="@@adminFactionDate.type">Type</label>
+          <select [id]="'tu-type-' + unit._tempId" [(ngModel)]="unit.type" [name]="'tu-type-' + unit._tempId" (ngModelChange)="onTypeChange(unit)">
+            <option value="number" i18n="@@adminFactionDate.typeNumber">Number</option>
+            <option value="list" i18n="@@adminFactionDate.typeList">List</option>
+          </select>
+        </div>
+
+        @if (unit.type === 'number') {
+          <div class="field-row">
+            <label [for]="'tu-min-' + unit._tempId" i18n="@@adminFactionDate.minValue">Min value</label>
+            <input [id]="'tu-min-' + unit._tempId" type="number" [(ngModel)]="unit.minValue" [name]="'tu-min-' + unit._tempId" />
+          </div>
+
+          <div class="field-row">
+            <label [for]="'tu-max-' + unit._tempId" i18n="@@adminFactionDate.maxValue">Max value</label>
+            <input [id]="'tu-max-' + unit._tempId" type="number" [(ngModel)]="unit.maxValue" [name]="'tu-max-' + unit._tempId" />
+          </div>
+        }
+
+        @if (unit.type === 'list') {
+          <div class="field-row field-row--column">
+            <label i18n="@@adminFactionDate.listValues">Values</label>
+            <div class="list-values">
+              @for (val of unit.listValues; track trackByIndex($index)) {
+                <div class="list-value-row">
+                  <input type="text" [(ngModel)]="unit.listValues[$index]" [name]="'tu-list-' + unit._tempId + '-' + $index" />
+                  @if (unit.listValues.length > 1) {
+                    <button type="button" class="btn-remove" (click)="removeListValue(unit, $index)">✕</button>
+                  }
+                </div>
+              }
+              <button type="button" class="btn-secondary" (click)="addListValue(unit)" i18n="@@adminFactionDate.addValue">Add value</button>
+            </div>
+          </div>
+        }
+
+        <div class="field-row field-row--checkbox">
+          <input [id]="'tu-null-' + unit._tempId" type="checkbox" [(ngModel)]="unit.canBeNull" [name]="'tu-null-' + unit._tempId" />
+          <label [for]="'tu-null-' + unit._tempId" i18n="@@adminFactionDate.canBeNull">Can be null</label>
+        </div>
+      </fieldset>
+    }
+
+    <div class="block-actions">
+      <button type="button" class="btn-secondary" (click)="addTimeUnit()" i18n="@@adminFactionDate.addTimeUnit">Add Time Unit</button>
+    </div>
+  </section>
+
+  <section class="ffd-block">
+    <h3 i18n="@@adminFactionDate.formats">Formats</h3>
+
+    @for (format of formats; track format._tempId) {
+      <fieldset class="ffd-fieldset">
+        <legend>
+          <ng-container i18n="@@adminFactionDate.format">Format</ng-container> {{ $index + 1 }}
+          <button type="button" class="btn-remove" (click)="removeFormat(format)" i18n="@@adminFactionDate.remove">✕</button>
+        </legend>
+
+        @let named = namedTimeUnits();
+        @if (named.length > 0) {
+          <div class="tag-row">
+            @for (unit of named; track unit._tempId) {
+              <button type="button" class="tag" (click)="insertTag(formatInput, format, unit.name)">{{ unit.name }}</button>
+            }
+          </div>
+        }
+
+        <div class="field-row">
+          <input #formatInput type="text" [(ngModel)]="format.value" [name]="'format-' + format._tempId" class="format-input" />
+        </div>
+
+        @let missing = missingUnits(format);
+        @if (missing.length > 0) {
+          <p class="validation-error" i18n="@@adminFactionDate.missingUnits">Missing required time units: {{ missing.join(', ') }}</p>
+        }
+      </fieldset>
+    }
+
+    <div class="block-actions">
+      <button type="button" class="btn-secondary" (click)="addFormat()" i18n="@@adminFactionDate.addFormat">Add Format</button>
+    </div>
+  </section>
+
+  <div class="submit-row">
+    <button type="button" class="btn-primary" (click)="submit()" [disabled]="saveState === 'saving' || !isValid()" i18n="@@common.save">Save</button>
+    @if (saveState === 'success') {
+      <span class="save-status save-status--success" i18n="@@adminFactionDate.saveSuccess">Saved.</span>
+    }
+    @if (saveState === 'error') {
+      <span class="save-status save-status--error" i18n="@@adminFactionDate.saveError">Failed to save.</span>
+    }
+  </div>
+</div>

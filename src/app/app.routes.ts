@@ -333,6 +333,16 @@ export const routes: Routes = [
         title: 'Admin - Faction Date Fields'
       },
       {
+        path: 'calendars',
+        loadComponent: () => import('./admin/admin-calendar-list/admin-calendar-list.component').then(m => m.AdminCalendarListComponent),
+        title: 'Admin - Calendars'
+      },
+      {
+        path: 'calendar/:id',
+        loadComponent: () => import('./admin/admin-calendar-edit/admin-calendar-edit.component').then(m => m.AdminCalendarEditComponent),
+        title: 'Admin - Calendar'
+      },
+      {
         path: 'permissions',
         component: PermissionMatrixComponent,
         title: 'Admin - Permissions'

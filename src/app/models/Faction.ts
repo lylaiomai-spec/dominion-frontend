@@ -10,6 +10,7 @@ export interface Faction {
   faction_status: number,
   show_on_profile: boolean,
   faction_setting_name?: string,
+  free_format_date_id: number|null,
   characters: CharacterListItem[]
 }
 

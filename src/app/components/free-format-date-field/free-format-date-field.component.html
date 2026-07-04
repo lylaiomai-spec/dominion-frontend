@@ -2,21 +2,21 @@
   <label>{{ fieldName }}</label>
 }
 
-@if (factions.length > 0) {
+@if (dateTemplates.length > 0) {
   <div class="ffd-field">
 
-    @if (factions.length > 1) {
-      <div class="ffd-faction-row">
-        <select [(ngModel)]="selectedFaction" (ngModelChange)="onFactionChange()" [name]="(name ?? 'ffd') + '-faction'">
-          @for (faction of factions; track faction.id) {
-            <option [ngValue]="faction">{{ faction.name }}</option>
+    @if (dateTemplates.length > 1) {
+      <div class="ffd-template-row">
+        <select [(ngModel)]="selectedTemplate" (ngModelChange)="onTemplateChange()" [name]="(name ?? 'ffd') + '-template'">
+          @for (template of dateTemplates; track template.id) {
+            <option [ngValue]="template">{{ template.name }}</option>
           }
         </select>
       </div>
     }
 
-    @if (selectedFaction) {
-      @let formats = selectedFaction.free_format_date.format_strings;
+    @if (selectedTemplate) {
+      @let formats = selectedTemplate.free_format_date.format_strings;
 
       @for (formatString of formats; track $index) {
         @let formatIndex = $index;

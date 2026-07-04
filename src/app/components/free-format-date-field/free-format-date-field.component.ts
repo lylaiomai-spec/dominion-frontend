@@ -12,7 +12,7 @@ interface PlaceholderDef {
   value_list?: string[];
 }
 
-interface FactionDateTemplate {
+interface FreeFormatDateTemplate {
   id: number;
   name: string;
   free_format_date: {
@@ -41,8 +41,8 @@ export class FreeFormatDateFieldComponent implements OnChanges {
   @Input() name: string | undefined;
   @Input() characterIds: number[] = [];
 
-  factions: FactionDateTemplate[] = [];
-  selectedFaction: FactionDateTemplate | null = null;
+  dateTemplates: FreeFormatDateTemplate[] = [];
+  selectedTemplate: FreeFormatDateTemplate | null = null;
   selectedFormatIndex = 0;
   values: Record<number, string | number | null> = {};
 
@@ -52,14 +52,14 @@ export class FreeFormatDateFieldComponent implements OnChanges {
     }
   }
 
-  onFactionChange() {
+  onTemplateChange() {
     this.selectedFormatIndex = 0;
     this.resetValues();
   }
 
   get serializedValue(): string {
-    if (!this.selectedFaction) return '';
-    const ffd = this.selectedFaction.free_format_date;
+    if (!this.selectedTemplate) return '';
+    const ffd = this.selectedTemplate.free_format_date;
     const rawFormat = ffd.format_strings[this.selectedFormatIndex];
 
     const formatString = [...ffd.placeholders]
@@ -71,17 +71,17 @@ export class FreeFormatDateFieldComponent implements OnChanges {
       placeholders[p.name] = this.values[p.position] ?? null;
     }
 
-    return JSON.stringify({ faction_id: this.selectedFaction.id, format_string: formatString, placeholders });
+    return JSON.stringify({ free_format_date_id: this.selectedTemplate.id, format_string: formatString, placeholders });
   }
 
   segments(formatString: string): Segment[] {
-    if (!this.selectedFaction) return [];
+    if (!this.selectedTemplate) return [];
     const parts = formatString.split(/(\$\d+)/);
     return parts.flatMap<Segment>(part => {
       const match = part.match(/^\$(\d+)$/);
       if (match) {
         const pos = Number(match[1]);
-        const ph = this.selectedFaction!.free_format_date.placeholders.find(p => p.position === pos);
+        const ph = this.selectedTemplate!.free_format_date.placeholders.find(p => p.position === pos);
         if (ph) return [{ kind: 'input', placeholder: ph }];
       }
       return part ? [{ kind: 'text', text: part }] : [];
@@ -90,31 +90,31 @@ export class FreeFormatDateFieldComponent implements OnChanges {
 
   private load() {
     if (!this.characterIds.length) {
-      this.factions = [];
-      this.selectedFaction = null;
+      this.dateTemplates = [];
+      this.selectedTemplate = null;
       return;
     }
-    this.apiService.post<FactionDateTemplate[]>('factions/free-format-date', { character_ids: this.characterIds }).subscribe({
+    this.apiService.post<FreeFormatDateTemplate[]>('factions/free-format-date', { character_ids: this.characterIds }).subscribe({
       next: (data) => {
-        this.factions = data;
+        this.dateTemplates = data;
         this.populateFromValue(data);
       },
-      error: (err) => console.error('Failed to load faction date templates', err),
+      error: (err) => console.error('Failed to load free format date templates', err),
     });
   }
 
-  private populateFromValue(factions: FactionDateTemplate[]) {
+  private populateFromValue(factions: FreeFormatDateTemplate[]) {
     const v = this.fieldValue;
     if (!v || typeof v !== 'object') {
-      this.selectedFaction = factions[0] ?? null;
+      this.selectedTemplate = factions[0] ?? null;
       this.resetValues();
       return;
     }
 
-    this.selectedFaction = factions.find(f => f.id === v.faction_id) ?? factions[0] ?? null;
-    if (!this.selectedFaction) return;
+    this.selectedTemplate = factions.find(f => f.id === v.free_format_date_id) ?? factions[0] ?? null;
+    if (!this.selectedTemplate) return;
 
-    const ffd = this.selectedFaction.free_format_date;
+    const ffd = this.selectedTemplate.free_format_date;
 
     this.selectedFormatIndex = 0;
     for (let i = 0; i < ffd.format_strings.length; i++) {
@@ -139,8 +139,8 @@ export class FreeFormatDateFieldComponent implements OnChanges {
 
   private resetValues() {
     this.values = {};
-    if (!this.selectedFaction) return;
-    for (const ph of this.selectedFaction.free_format_date.placeholders) {
+    if (!this.selectedTemplate) return;
+    for (const ph of this.selectedTemplate.free_format_date.placeholders) {
       this.values[ph.position] = ph.type === 'number' ? null : (ph.is_nullable ? null : (ph.value_list?.[0] ?? null));
     }
   }

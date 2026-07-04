@@ -1,0 +1,9 @@
+<h2 i18n="@@adminCalendar.listTitle">Calendars</h2>
+
+<ul>
+  @for (cal of calendars; track cal.id) {
+    <li><a [routerLink]="['/admin/calendar', cal.id]">{{ cal.name }}</a></li>
+  }
+</ul>
+
+<a [routerLink]="['/admin/calendar', 'new']" class="btn-secondary" i18n="@@adminCalendar.createNew">Create new</a>
