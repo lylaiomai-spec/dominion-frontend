@@ -224,6 +224,8 @@ export class CharacterCreateComponent implements OnInit, OnDestroy {
         if (field.field_type === 'int') {
           const parsed = parseInt(value, 10);
           value = isNaN(parsed) ? null : parsed;
+        } else if (field.content_field_type === 'free_format_date') {
+          try { value = JSON.parse(value); } catch { value = null; }
         }
         customFields[field.machine_field_name] = {
           'content': value

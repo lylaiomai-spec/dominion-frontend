@@ -382,8 +382,11 @@ export class EpisodeCreateComponent implements OnInit {
 
     // Iterate over template to get custom fields
     this.episodeTemplate().forEach(field => {
-      const value = formData.get(field.machine_field_name);
+      let value: any = formData.get(field.machine_field_name);
       if (value !== null) {
+        if (field.content_field_type === 'free_format_date') {
+          try { value = JSON.parse(value); } catch { value = null; }
+        }
         customFields[field.machine_field_name] = value;
       }
     });

@@ -57,6 +57,23 @@ export class FreeFormatDateFieldComponent implements OnChanges {
     this.resetValues();
   }
 
+  get serializedValue(): string {
+    if (!this.selectedFaction) return '';
+    const ffd = this.selectedFaction.free_format_date;
+    const rawFormat = ffd.format_strings[this.selectedFormatIndex];
+
+    const formatString = [...ffd.placeholders]
+      .sort((a, b) => b.position - a.position)
+      .reduce((str, p) => str.replaceAll(`$${p.position}`, `{${p.name}}`), rawFormat);
+
+    const placeholders: Record<string, string | number | null> = {};
+    for (const p of ffd.placeholders) {
+      placeholders[p.name] = this.values[p.position] ?? null;
+    }
+
+    return JSON.stringify({ faction_id: this.selectedFaction.id, format_string: formatString, placeholders });
+  }
+
   segments(formatString: string): Segment[] {
     if (!this.selectedFaction) return [];
     const parts = formatString.split(/(\$\d+)/);
