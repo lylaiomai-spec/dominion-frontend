@@ -157,6 +157,6 @@ export class CharacterProfileEditComponent implements OnInit {
     const p = this.currentProfileData();
     if (!p || !p.custom_fields || !p.custom_fields.custom_fields) return null;
     const field = p.custom_fields.custom_fields[machineName];
-    return field ? field.content : null;
+    return field ? (field.data ?? field.content) : null;
   }
 }

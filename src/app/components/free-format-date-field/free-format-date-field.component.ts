@@ -36,7 +36,7 @@ export class FreeFormatDateFieldComponent implements OnChanges {
   private apiService = inject(ApiService);
 
   @Input() fieldName: string | undefined;
-  @Input() fieldValue: string = '';
+  @Input() fieldValue: any = null;
   @Input() showFieldName: boolean = true;
   @Input() name: string | undefined;
   @Input() characterIds: number[] = [];
@@ -97,18 +97,51 @@ export class FreeFormatDateFieldComponent implements OnChanges {
     this.apiService.post<FactionDateTemplate[]>('factions/free-format-date', { character_ids: this.characterIds }).subscribe({
       next: (data) => {
         this.factions = data;
-        this.selectedFaction = data[0] ?? null;
-        this.resetValues();
+        this.populateFromValue(data);
       },
       error: (err) => console.error('Failed to load faction date templates', err),
     });
+  }
+
+  private populateFromValue(factions: FactionDateTemplate[]) {
+    const v = this.fieldValue;
+    if (!v || typeof v !== 'object') {
+      this.selectedFaction = factions[0] ?? null;
+      this.resetValues();
+      return;
+    }
+
+    this.selectedFaction = factions.find(f => f.id === v.faction_id) ?? factions[0] ?? null;
+    if (!this.selectedFaction) return;
+
+    const ffd = this.selectedFaction.free_format_date;
+
+    this.selectedFormatIndex = 0;
+    for (let i = 0; i < ffd.format_strings.length; i++) {
+      const converted = [...ffd.placeholders]
+        .sort((a, b) => b.position - a.position)
+        .reduce((str, p) => str.replaceAll(`$${p.position}`, `{${p.name}}`), ffd.format_strings[i]);
+      if (converted === v.format_string) {
+        this.selectedFormatIndex = i;
+        break;
+      }
+    }
+
+    this.values = {};
+    if (v.placeholders && typeof v.placeholders === 'object') {
+      for (const p of ffd.placeholders) {
+        this.values[p.position] = v.placeholders[p.name] ?? null;
+      }
+    } else {
+      this.resetValues();
+    }
   }
 
   private resetValues() {
     this.values = {};
     if (!this.selectedFaction) return;
     for (const ph of this.selectedFaction.free_format_date.placeholders) {
-      this.values[ph.position] = ph.is_nullable ? null : (ph.type === 'number' ? (ph.min_value ?? null) : (ph.value_list?.[0] ?? null));
+      this.values[ph.position] = ph.type === 'number' ? null : (ph.is_nullable ? null : (ph.value_list?.[0] ?? null));
     }
   }
 }

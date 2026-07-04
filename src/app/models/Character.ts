@@ -50,6 +50,7 @@ export interface CharacterShort {
 export interface CustomFieldValue {
   content: any;
   content_html: string;
+  data?: any;
 }
 
 export interface CustomFieldsData {

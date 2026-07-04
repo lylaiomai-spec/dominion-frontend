@@ -203,7 +203,7 @@ export class CharacterCreateComponent implements OnInit, OnDestroy {
   getFieldValue(machineName: string): any {
     if (this.initialData && this.initialData.custom_fields && this.initialData.custom_fields.custom_fields) {
       const field = this.initialData.custom_fields.custom_fields[machineName];
-      return field ? field.content : null;
+      return field ? (field.data ?? field.content) : null;
     }
     return null;
   }

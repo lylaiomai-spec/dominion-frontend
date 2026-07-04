@@ -82,7 +82,7 @@ export class WantedCharacterCreateComponent implements OnInit {
   getFieldValue(machineName: string): any {
     if (this.initialData?.custom_fields?.custom_fields) {
       const field = this.initialData.custom_fields.custom_fields[machineName];
-      return field ? field.content : null;
+      return field ? (field.data ?? field.content) : null;
     }
     return null;
   }
