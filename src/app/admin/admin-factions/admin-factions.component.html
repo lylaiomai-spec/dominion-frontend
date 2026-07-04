@@ -75,6 +75,7 @@
           @if (!isNew(faction)) {
             <button type="button" (click)="addChild(faction)" i18n="@@faction.addChild">Add Child</button>
             <button type="button" class="btn-decline" (click)="deleteFaction(faction)" i18n="@@faction.delete">Delete</button>
+            <a [routerLink]="['/admin/faction', faction.id, 'free-format-date']" i18n="@@faction.dateFields">Date Fields</a>
           }
         </div>
       </fieldset>

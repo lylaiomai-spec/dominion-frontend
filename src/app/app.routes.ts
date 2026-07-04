@@ -27,6 +27,7 @@ import {AdminAiIndexComponent} from './admin/admin-ai-index/admin-ai-index.compo
 import {AdminAiIndexSettingsComponent} from './admin/admin-ai-index-settings/admin-ai-index-settings.component';
 import {AdminFactionsComponent} from './admin/admin-factions/admin-factions.component';
 import {AdminFactionSettingsComponent} from './admin/admin-faction-settings/admin-faction-settings.component';
+import {AdminFactionFreeFormatDateComponent} from './admin/admin-faction-free-format-date/admin-faction-free-format-date.component';
 import {AdminFeaturesComponent} from './admin/admin-features/admin-features.component';
 import {AdminCurrencyComponent} from './admin/admin-currency/admin-currency.component';
 import {AdminPostTopComponent} from './admin/admin-post-top/admin-post-top.component';
@@ -325,6 +326,11 @@ export const routes: Routes = [
         path: 'faction-settings',
         component: AdminFactionSettingsComponent,
         title: 'Admin - Faction Settings'
+      },
+      {
+        path: 'faction/:faction_id/free-format-date',
+        component: AdminFactionFreeFormatDateComponent,
+        title: 'Admin - Faction Date Fields'
       },
       {
         path: 'permissions',

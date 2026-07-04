@@ -57,6 +57,7 @@ export class EpisodeCreateComponent implements OnInit {
   // Character inputs
   characterControls = new FormArray([new FormControl('')]);
   selectedCharacterIds: (number | null)[] = [null];
+  validCharacterIds: number[] = [];
 
   // Track which input is currently active for suggestions
   activeInputIndex: number | null = null;
@@ -216,6 +217,7 @@ export class EpisodeCreateComponent implements OnInit {
       this.selectedCharacterIds.push(null);
       this.setupAutocomplete(0);
     }
+    this.syncValidCharacterIds();
 
     if (data.masks && data.masks.length > 0) {
       data.masks.forEach((mask, index) => {
@@ -250,6 +252,7 @@ export class EpisodeCreateComponent implements OnInit {
     this.selectedCharacterIds[index] = charId;
     this.activeInputIndex = null;
     this.characterService.loadShortCharacterList('');
+    this.syncValidCharacterIds();
   }
 
   addCharacterField() {
@@ -263,15 +266,18 @@ export class EpisodeCreateComponent implements OnInit {
       this.characterControls.removeAt(index);
       this.selectedCharacterIds.splice(index, 1);
 
-      // If we removed the active input, clear suggestions
       if (this.activeInputIndex === index) {
         this.activeInputIndex = null;
         this.characterService.loadShortCharacterList('');
       } else if (this.activeInputIndex !== null && this.activeInputIndex > index) {
-        // Adjust index if we removed an item before the active one
         this.activeInputIndex--;
       }
+      this.syncValidCharacterIds();
     }
+  }
+
+  private syncValidCharacterIds() {
+    this.validCharacterIds = this.selectedCharacterIds.filter((id): id is number => id !== null);
   }
 
   setupMaskAutocomplete(index: number) {

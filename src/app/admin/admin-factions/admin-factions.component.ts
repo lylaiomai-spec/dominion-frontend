@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { FactionService } from '../../services/faction.service';
 import { Faction } from '../../models/Faction';
 
 @Component({
   selector: 'app-admin-factions',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   standalone: true,
   templateUrl: './admin-factions.component.html',
   styleUrl: './admin-factions.component.css'

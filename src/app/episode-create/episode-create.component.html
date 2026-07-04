@@ -78,7 +78,7 @@
       @for (field of episodeTemplate(); track field.order) {
         <div class="fs-box hashelp">
           <p class="inputfield required">
-            <app-field-input [field]="field" [fieldValue]="getFieldValue(field.machine_field_name)"></app-field-input>
+            <app-field-input [field]="field" [fieldValue]="getFieldValue(field.machine_field_name)" [characterIds]="validCharacterIds"></app-field-input>
           </p>
         </div>
       }
