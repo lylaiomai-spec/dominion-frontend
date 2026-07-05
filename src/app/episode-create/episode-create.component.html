@@ -33,7 +33,12 @@
             @if (activeInputIndex === i && characterSuggestions().length > 0) {
             <ul class="autocomplete-list">
               @for (char of characterSuggestions(); track char.id) {
-              <li (click)="selectCharacter(i, char.name, char.id)">{{ char.name }}</li>
+              <li (click)="selectCharacter(i, char.name, char.id)" style="display:flex;align-items:center;gap:6px">
+                @if (char.avatar) {
+                  <img [src]="char.avatar" [alt]="char.name" style="width:20px;height:20px;border-radius:50%;object-fit:cover;flex-shrink:0" />
+                }
+                {{ char.name }}
+              </li>
               }
             </ul>
             }
