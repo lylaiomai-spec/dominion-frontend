@@ -546,6 +546,8 @@ export const TRANSLATIONS_RU = {
   "common.username": "Имя пользователя",
   "common.password": "Пароль",
   "common.add": "Добавить",
+  "codeCopy.copy": "Копировать",
+  "codeCopy.copied": "Скопировано!",
   "common.save": "Сохранить",
   "common.saving": "Сохранение…",
   "common.saved": "Сохранено",

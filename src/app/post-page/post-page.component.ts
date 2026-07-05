@@ -4,11 +4,12 @@ import { Subject, takeUntil } from 'rxjs';
 import { TopicService } from '../services/topic.service';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { RouterLinksDirective } from '../directives/router-links.directive';
+import { CodeCopyDirective } from '../directives/code-copy.directive';
 
 @Component({
   selector: 'app-post-page',
   standalone: true,
-  imports: [SafeHtmlPipe, RouterLinksDirective],
+  imports: [SafeHtmlPipe, RouterLinksDirective, CodeCopyDirective],
   templateUrl: './post-page.component.html',
 })
 export class PostPageComponent implements OnInit, OnDestroy {
