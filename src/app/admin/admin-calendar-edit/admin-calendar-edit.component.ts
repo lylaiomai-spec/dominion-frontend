@@ -16,6 +16,7 @@ interface TimeUnit {
   maxValue: number | null;
   listValues: string[];
   canBeNull: boolean;
+  isHiddenNegative: boolean;
 }
 
 interface FormatEntry {
@@ -67,6 +68,7 @@ export class AdminCalendarEditComponent implements OnInit {
       maxValue: p.max_value ?? null,
       listValues: p.value_list?.length ? p.value_list : [''],
       canBeNull: p.is_nullable,
+      isHiddenNegative: p.is_hidden_negative ?? false,
     }));
     this.formats = data.format_strings.map(s => ({
       _tempId: this.nextId++,
@@ -149,6 +151,7 @@ export class AdminCalendarEditComponent implements OnInit {
         name: u.name,
         position: u.position,
         is_nullable: u.canBeNull,
+        ...(u.isHiddenNegative ? { is_hidden_negative: true } : {}),
       };
       return u.type === 'number'
         ? { ...base, min_value: u.minValue, max_value: u.maxValue }
@@ -218,6 +221,7 @@ export class AdminCalendarEditComponent implements OnInit {
       maxValue: null,
       listValues: [''],
       canBeNull: false,
+      isHiddenNegative: false,
     };
   }
 

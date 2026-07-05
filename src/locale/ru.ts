@@ -510,6 +510,7 @@ export const TRANSLATIONS_RU = {
   "adminFactionDate.listValues": "Значения",
   "adminFactionDate.addValue": "Добавить значение",
   "adminFactionDate.canBeNull": "Может быть пустым",
+  "adminFactionDate.isHiddenNegative": "Скрывать отрицательные значения",
   "adminFactionDate.addTimeUnit": "Добавить единицу времени",
   "adminFactionDate.remove": "✕",
   "adminFactionDate.formats": "Форматы",

@@ -67,6 +67,11 @@
           <input [id]="'tu-null-' + unit._tempId" type="checkbox" [(ngModel)]="unit.canBeNull" [name]="'tu-null-' + unit._tempId" />
           <label [for]="'tu-null-' + unit._tempId" i18n="@@adminFactionDate.canBeNull">Can be null</label>
         </div>
+
+        <div class="field-row field-row--checkbox">
+          <input [id]="'tu-hideneg-' + unit._tempId" type="checkbox" [(ngModel)]="unit.isHiddenNegative" [name]="'tu-hideneg-' + unit._tempId" />
+          <label [for]="'tu-hideneg-' + unit._tempId" i18n="@@adminFactionDate.isHiddenNegative">Hide negative values</label>
+        </div>
       </fieldset>
     }
 

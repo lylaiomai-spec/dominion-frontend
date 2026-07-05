@@ -8,6 +8,7 @@ export interface PlaceholderDef {
   name: string;
   position: number;
   is_nullable: boolean;
+  is_hidden_negative?: boolean;
   min_value?: number | null;
   max_value?: number | null;
   value_list?: string[];
