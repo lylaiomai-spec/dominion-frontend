@@ -1,0 +1,75 @@
+@if (showFieldName && fieldName) {
+  <label>{{ fieldName }}</label>
+}
+
+@if (dateTemplates.length > 0) {
+  <div class="ffd-field">
+
+    @if (dateTemplates.length > 1) {
+      <div class="ffd-template-row">
+        <select [(ngModel)]="selectedTemplate" (ngModelChange)="onTemplateChange()" [name]="(name ?? 'ffd') + '-template'">
+          @for (template of dateTemplates; track template.id) {
+            <option [ngValue]="template">{{ template.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    @if (selectedTemplate) {
+      @let formats = selectedTemplate.free_format_date.format_strings;
+
+      @for (formatString of formats; track $index) {
+        @let formatIndex = $index;
+        <div class="ffd-format-row">
+          @if (formats.length > 1) {
+            <input
+              type="radio"
+              [id]="(name ?? 'ffd') + '-fmt-' + formatIndex"
+              [name]="(name ?? 'ffd') + '-fmt'"
+              [value]="formatIndex"
+              [(ngModel)]="selectedFormatIndex"
+            />
+          }
+
+          <div class="ffd-segments" [class.ffd-segments--inactive]="formats.length > 1 && selectedFormatIndex !== formatIndex">
+            @for (seg of segments(formatString); track $index) {
+              @if (seg.kind === 'text') {
+                <span class="ffd-text">{{ seg.text }}</span>
+              } @else {
+                @let ph = seg.placeholder;
+                @if (ph.type === 'number') {
+                  <input
+                    type="number"
+                    class="ffd-input-number"
+                    [name]="(name ?? 'ffd') + '-' + ph.position"
+                    [placeholder]="ph.name"
+                    [min]="ph.min_value ?? null"
+                    [max]="ph.max_value ?? null"
+                    [(ngModel)]="values[ph.position]"
+                    [disabled]="formats.length > 1 && selectedFormatIndex !== formatIndex"
+                  />
+                } @else {
+                  <select
+                    class="ffd-select"
+                    [name]="(name ?? 'ffd') + '-' + ph.position"
+                    [(ngModel)]="values[ph.position]"
+                    [disabled]="formats.length > 1 && selectedFormatIndex !== formatIndex"
+                  >
+                    @if (ph.is_nullable) {
+                      <option [ngValue]="null">—</option>
+                    }
+                    @for (opt of ph.value_list; track opt) {
+                      <option [ngValue]="opt">{{ opt }}</option>
+                    }
+                  </select>
+                }
+              }
+            }
+          </div>
+        </div>
+      }
+    }
+
+    <input type="hidden" [name]="name" [value]="serializedValue" />
+  </div>
+}

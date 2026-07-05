@@ -1,0 +1,4 @@
+@if (showFieldName) {
+  <label [class]="'field-' + fieldMachineName">{{ fieldName }}</label>
+}
+<span [id]="fieldId ?? fieldMachineName" [class]="'field-' + fieldMachineName">{{ fieldValue }}</span>

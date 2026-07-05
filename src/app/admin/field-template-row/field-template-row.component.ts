@@ -18,6 +18,6 @@ export class FieldTemplateRowComponent {
   @Input() index!: number;
   @Output() remove = new EventEmitter<void>();
 
-  fieldTypes = ['string', 'text', 'int', 'decimal', 'date'];
-  contentFieldTypes = ['short_text', 'number', 'decimal', 'long_text', 'image', 'cropped_image'];
+  fieldTypes = ['string', 'text', 'int', 'decimal', 'date', 'free_format_date'];
+  contentFieldTypes = ['short_text', 'number', 'decimal', 'long_text', 'image', 'cropped_image', 'free_format_date'];
 }

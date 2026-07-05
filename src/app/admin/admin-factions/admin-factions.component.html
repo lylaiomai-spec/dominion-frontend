@@ -66,6 +66,16 @@
           <label [for]="'show-' + faction.id" i18n="@@faction.show_on_profile">Show on profile</label>
         </div>
 
+        <div class="field-row">
+          <label [for]="'ffd-' + faction.id" i18n="@@faction.free_format_date_id">Free Format Date</label>
+          <select [id]="'ffd-' + faction.id" [(ngModel)]="faction.free_format_date_id" [name]="'ffd-' + faction.id">
+            <option [ngValue]="null" i18n="@@common.none">None</option>
+            @for (opt of freeFormatDateOptions; track opt.id) {
+              <option [ngValue]="opt.id">{{ opt.name }}</option>
+            }
+          </select>
+        </div>
+
         <div class="form-actions">
           @if (isNew(faction)) {
             <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>

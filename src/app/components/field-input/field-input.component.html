@@ -37,4 +37,12 @@
       [height]="field.height">
     </app-cropped-image-field>
   }
+  @case ('free_format_date') {
+    <app-free-format-date-field
+      [fieldName]="field.human_field_name"
+      [name]="field.machine_field_name"
+      [fieldValue]="fieldValue"
+      [characterIds]="characterIds">
+    </app-free-format-date-field>
+  }
 }

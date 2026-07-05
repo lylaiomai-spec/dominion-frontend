@@ -17,6 +17,7 @@ import { CharacterSheetHeaderComponent } from '../components/character-sheet-hea
 import { WantedCharacterHeaderComponent } from '../components/wanted-character-header/wanted-character-header.component';
 import { SafeHtmlPipe } from '../pipes/safe-html.pipe';
 import { RouterLinksDirective } from '../directives/router-links.directive';
+import { CodeCopyDirective } from '../directives/code-copy.directive';
 import { CharacterService } from '../services/character.service';
 import { AuthService } from '../services/auth.service';
 import { BoardService } from '../services/board.service';
@@ -54,6 +55,7 @@ function coerceToPage(value: unknown): number {
     WantedCharacterCreateComponent,
     LoreTopicHeaderComponent,
     RouterLinksDirective,
+    CodeCopyDirective,
     UserInfoComponent,
   ],
   templateUrl: './viewtopic.component.html',

@@ -173,7 +173,7 @@
                 </div>
               </form>
             } @else {
-              <div class="post-content" appRouterLinks [innerHTML]="post.content_html | safeHtml"></div>
+              <div class="post-content" appRouterLinks appCodeCopy [innerHTML]="post.content_html | safeHtml"></div>
             }
           </div>
           @if (post.use_character_profile && post.character_profile?.signature_html) {

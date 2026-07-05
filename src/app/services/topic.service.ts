@@ -52,6 +52,7 @@ export class TopicService {
   public ownPostAdded$ = this.ownPostAddedSubject.asObservable();
   private pendingOwnPostTimeout: ReturnType<typeof setTimeout> | null = null;
   private pendingScrollAfterFallback = false;
+  private ownPostReceivedEarly = false;
 
   private loadPostsSubject = new Subject<{topicId: number, page: number, postId?: number}>();
 
@@ -237,6 +238,10 @@ export class TopicService {
 
   notifyOwnPostSubmitted(topicId: number): void {
     this.clearOwnPostTimeout();
+    if (this.ownPostReceivedEarly) {
+      this.ownPostReceivedEarly = false;
+      return;
+    }
     const postsPerPage = this.boardService.board().posts_per_page || 15;
     const lastPage = Math.max(1, Math.ceil((this.topic().post_number + 1) / postsPerPage));
     this.pendingOwnPostTimeout = setTimeout(() => {
@@ -277,6 +282,9 @@ export class TopicService {
 
     const currentUser = this.authService.currentUser();
     if (currentUser && post.user_profile && currentUser.id === post.user_profile.user_id) {
+      if (this.pendingOwnPostTimeout === null) {
+        this.ownPostReceivedEarly = true;
+      }
       this.clearOwnPostTimeout();
       this.ownPostAddedSubject.next(post.id);
       if (newLastPage > prevLastPage) {

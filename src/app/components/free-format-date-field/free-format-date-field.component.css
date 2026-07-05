@@ -1,0 +1,41 @@
+.ffd-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ffd-faction-row select {
+  min-width: 160px;
+}
+
+.ffd-format-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ffd-segments {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.ffd-segments--inactive {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.ffd-text {
+  white-space: pre;
+}
+
+.ffd-input-number {
+  width: 6ch;
+  min-width: 4ch;
+  text-align: center;
+}
+
+.ffd-select {
+  max-width: 160px;
+}

@@ -57,6 +57,7 @@ export class EpisodeCreateComponent implements OnInit {
   // Character inputs
   characterControls = new FormArray([new FormControl('')]);
   selectedCharacterIds: (number | null)[] = [null];
+  validCharacterIds: number[] = [];
 
   // Track which input is currently active for suggestions
   activeInputIndex: number | null = null;
@@ -216,6 +217,7 @@ export class EpisodeCreateComponent implements OnInit {
       this.selectedCharacterIds.push(null);
       this.setupAutocomplete(0);
     }
+    this.syncValidCharacterIds();
 
     if (data.masks && data.masks.length > 0) {
       data.masks.forEach((mask, index) => {
@@ -250,6 +252,7 @@ export class EpisodeCreateComponent implements OnInit {
     this.selectedCharacterIds[index] = charId;
     this.activeInputIndex = null;
     this.characterService.loadShortCharacterList('');
+    this.syncValidCharacterIds();
   }
 
   addCharacterField() {
@@ -263,15 +266,18 @@ export class EpisodeCreateComponent implements OnInit {
       this.characterControls.removeAt(index);
       this.selectedCharacterIds.splice(index, 1);
 
-      // If we removed the active input, clear suggestions
       if (this.activeInputIndex === index) {
         this.activeInputIndex = null;
         this.characterService.loadShortCharacterList('');
       } else if (this.activeInputIndex !== null && this.activeInputIndex > index) {
-        // Adjust index if we removed an item before the active one
         this.activeInputIndex--;
       }
+      this.syncValidCharacterIds();
     }
+  }
+
+  private syncValidCharacterIds() {
+    this.validCharacterIds = this.selectedCharacterIds.filter((id): id is number => id !== null);
   }
 
   setupMaskAutocomplete(index: number) {
@@ -362,7 +368,7 @@ export class EpisodeCreateComponent implements OnInit {
   getFieldValue(machineName: string): any {
     if (this.initialData && this.initialData.custom_fields && this.initialData.custom_fields.custom_fields) {
       const field = this.initialData.custom_fields.custom_fields[machineName];
-      return field ? field.content : null;
+      return field ? (field.data ?? field.content) : null;
     }
     return null;
   }
@@ -376,8 +382,11 @@ export class EpisodeCreateComponent implements OnInit {
 
     // Iterate over template to get custom fields
     this.episodeTemplate().forEach(field => {
-      const value = formData.get(field.machine_field_name);
+      let value: any = formData.get(field.machine_field_name);
       if (value !== null) {
+        if (field.content_field_type === 'free_format_date') {
+          try { value = JSON.parse(value); } catch { value = null; }
+        }
         customFields[field.machine_field_name] = value;
       }
     });

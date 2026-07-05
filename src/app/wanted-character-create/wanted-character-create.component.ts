@@ -82,7 +82,7 @@ export class WantedCharacterCreateComponent implements OnInit {
   getFieldValue(machineName: string): any {
     if (this.initialData?.custom_fields?.custom_fields) {
       const field = this.initialData.custom_fields.custom_fields[machineName];
-      return field ? field.content : null;
+      return field ? (field.data ?? field.content) : null;
     }
     return null;
   }
@@ -107,6 +107,8 @@ export class WantedCharacterCreateComponent implements OnInit {
         if (field.field_type === 'int') {
           const parsed = parseInt(value, 10);
           value = isNaN(parsed) ? null : parsed;
+        } else if (field.content_field_type === 'free_format_date') {
+          try { value = JSON.parse(value); } catch { value = null; }
         }
         customFields[field.machine_field_name] = { content: value };
       }

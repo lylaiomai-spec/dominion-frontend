@@ -97,6 +97,8 @@ export class CharacterProfileEditComponent implements OnInit {
       if (value !== null) {
         if (field.content_field_type === 'number') {
           value = parseInt(value, 10);
+        } else if (field.content_field_type === 'free_format_date') {
+          try { value = JSON.parse(value); } catch { value = null; }
         }
         customFields[field.machine_field_name] = {
           'content': value
@@ -155,6 +157,6 @@ export class CharacterProfileEditComponent implements OnInit {
     const p = this.currentProfileData();
     if (!p || !p.custom_fields || !p.custom_fields.custom_fields) return null;
     const field = p.custom_fields.custom_fields[machineName];
-    return field ? field.content : null;
+    return field ? (field.data ?? field.content) : null;
   }
 }
