@@ -6,13 +6,14 @@ import { debounceTime } from 'rxjs/operators';
 import { DesignDraftService } from '../../services/design-draft.service';
 import { DesignDraft } from '../../models/DesignDraft';
 import { CssEditorComponent } from '../../components/css-editor/css-editor.component';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 @Component({
   selector: 'app-admin-design-draft-edit',
   standalone: true,
-  imports: [FormsModule, CssEditorComponent],
+  imports: [FormsModule, CssEditorComponent, SaveButtonComponent],
   templateUrl: './admin-design-draft-edit.component.html',
 })
 export class AdminDesignDraftEditComponent implements OnInit, OnDestroy {

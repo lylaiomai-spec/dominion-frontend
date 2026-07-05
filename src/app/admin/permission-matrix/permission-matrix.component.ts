@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PermissionService } from '../../services/permission.service';
 import { PermissionMatrixObject, PermissionType } from '../../models/Permission';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 @Component({
   selector: 'app-permission-matrix',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   templateUrl: './permission-matrix.component.html',
   standalone: true,
   styleUrl: './permission-matrix.component.css'

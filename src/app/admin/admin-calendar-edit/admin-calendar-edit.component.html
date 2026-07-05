@@ -116,12 +116,8 @@
   </section>
 
   <div class="submit-row">
-    <button type="button" class="btn-primary" (click)="submit()" [disabled]="saveState === 'saving' || !isValid()" i18n="@@common.save">Save</button>
-    @if (saveState === 'success') {
-      <span class="save-status save-status--success" i18n="@@adminFactionDate.saveSuccess">Saved.</span>
-    }
-    @if (saveState === 'error') {
-      <span class="save-status save-status--error" i18n="@@adminFactionDate.saveError">Failed to save.</span>
-    }
+    <app-save-button [state]="saveState" [disabled]="!isValid()" (clicked)="submit()">
+      <span i18n="@@common.save">Save</span>
+    </app-save-button>
   </div>
 </div>

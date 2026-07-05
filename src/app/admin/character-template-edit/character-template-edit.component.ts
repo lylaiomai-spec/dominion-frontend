@@ -2,10 +2,11 @@ import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { CharacterService } from '../../services/character.service';
 import { FieldTemplateRowComponent, FieldTemplateForm } from '../field-template-row/field-template-row.component';
 import { CommonModule } from '@angular/common';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 @Component({
   selector: 'app-character-template-edit',
-  imports: [FieldTemplateRowComponent, CommonModule],
+  imports: [FieldTemplateRowComponent, CommonModule, SaveButtonComponent],
   templateUrl: './character-template-edit.component.html',
   standalone: true,
   styleUrl: './character-template-edit.component.css'

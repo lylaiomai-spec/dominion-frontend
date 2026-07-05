@@ -49,14 +49,9 @@
     </div>
 
     <div>
-      <button class="button" (click)="save()" [disabled]="saveState() === 'loading'">
-        @switch (saveState()) {
-          @case ('loading') { <span i18n="@@common.saving">Saving…</span> }
-          @case ('success') { <span i18n="@@common.saved">Saved</span> }
-          @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
-          @default { <span i18n="@@common.save">Save</span> }
-        }
-      </button>
+      <app-save-button [state]="saveState()" (clicked)="save()">
+        <span i18n="@@common.save">Save</span>
+      </app-save-button>
     </div>
   </div>
 }

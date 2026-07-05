@@ -2,13 +2,14 @@ import { Component, effect, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyService } from '../../services/currency.service';
 import { CurrencyIncomeType, CurrencySpendType } from '../../models/Currency';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 @Component({
   selector: 'app-admin-currency',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SaveButtonComponent],
   templateUrl: './admin-currency.component.html',
   styleUrl: './admin-currency.component.css',
 })

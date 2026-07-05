@@ -12,14 +12,9 @@
       <input type="url" [(ngModel)]="iconUrl" />
     </div>
     <div class="settings-actions">
-      <button
-        type="button"
-        class="btn-save btn-save--{{ settingsState() }}"
-        [disabled]="settingsState() === 'loading'"
-        (click)="saveSettings()"
-        i18n="@@adminCurrency.save">
-        Save
-      </button>
+      <app-save-button [state]="settingsState()" (clicked)="saveSettings()">
+        <span i18n="@@adminCurrency.save">Save</span>
+      </app-save-button>
     </div>
   </section>
 
@@ -60,14 +55,9 @@
       Note: if multiple post-count rewards apply at the same time (e.g. 100 &amp; 500, or 100, 500 &amp; 1000), only the largest reward will be granted.
     </p>
     <div class="income-actions">
-      <button
-        type="button"
-        class="btn-save btn-save--{{ incomeTypesState() }}"
-        [disabled]="incomeTypesState() === 'loading'"
-        (click)="saveIncomeTypes()"
-        i18n="@@adminCurrency.saveIncomeTypes">
-        Save
-      </button>
+      <app-save-button [state]="incomeTypesState()" (clicked)="saveIncomeTypes()">
+        <span i18n="@@adminCurrency.saveIncomeTypes">Save</span>
+      </app-save-button>
     </div>
   </section>
 
@@ -105,14 +95,9 @@
       </tbody>
     </table>
     <div class="income-actions">
-      <button
-        type="button"
-        class="btn-save btn-save--{{ spendTypesState() }}"
-        [disabled]="spendTypesState() === 'loading'"
-        (click)="saveSpendTypes()"
-        i18n="@@adminCurrency.saveSpendTypes">
-        Save
-      </button>
+      <app-save-button [state]="spendTypesState()" (clicked)="saveSpendTypes()">
+        <span i18n="@@adminCurrency.saveSpendTypes">Save</span>
+      </app-save-button>
     </div>
   </section>
 </div>

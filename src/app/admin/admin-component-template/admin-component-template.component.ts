@@ -3,13 +3,14 @@ import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { HtmlEditorComponent } from '../../components/html-editor/html-editor.component';
 import { BreadcrumbsComponent } from '../../components/breadcrumbs/breadcrumbs.component';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 @Component({
   selector: 'app-admin-component-template',
   standalone: true,
-  imports: [HtmlEditorComponent, BreadcrumbsComponent],
+  imports: [HtmlEditorComponent, BreadcrumbsComponent, SaveButtonComponent],
   templateUrl: './admin-component-template.component.html',
   styleUrl: './admin-component-template.component.css',
 })

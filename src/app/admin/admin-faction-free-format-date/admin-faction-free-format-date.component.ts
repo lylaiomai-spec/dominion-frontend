@@ -2,8 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
-type SaveState = 'idle' | 'saving' | 'success' | 'error';
+type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 export type TimeUnitType = 'number' | 'list';
 
@@ -43,7 +44,7 @@ interface FreeFormatDateResponse {
 @Component({
   selector: 'app-admin-faction-free-format-date',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SaveButtonComponent],
   templateUrl: './admin-faction-free-format-date.component.html',
   styleUrl: './admin-faction-free-format-date.component.css',
 })
@@ -179,7 +180,7 @@ export class AdminFactionFreeFormatDateComponent implements OnInit {
       placeholders,
     };
 
-    this.saveState = 'saving';
+    this.saveState = 'loading';
     this.apiService.post(`admin/faction/${this.factionId}/free-format-date`, body).subscribe({
       next: () => {
         this.saveState = 'success';

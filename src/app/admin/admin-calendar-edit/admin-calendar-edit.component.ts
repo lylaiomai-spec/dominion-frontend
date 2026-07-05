@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CalendarService } from '../../services/calendar.service';
 import { CalendarFreeFormatDate, PlaceholderDef } from '../../models/Calendar';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
-type SaveState = 'idle' | 'saving' | 'success' | 'error';
+type SaveState = 'idle' | 'loading' | 'success' | 'error';
 type TimeUnitType = 'number' | 'list';
 
 interface TimeUnit {
@@ -27,7 +28,7 @@ interface FormatEntry {
 @Component({
   selector: 'app-admin-calendar-edit',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SaveButtonComponent],
   templateUrl: './admin-calendar-edit.component.html',
   styleUrl: './admin-calendar-edit.component.css',
 })
@@ -163,7 +164,7 @@ export class AdminCalendarEditComponent implements OnInit {
       placeholders,
     };
 
-    this.saveState = 'saving';
+    this.saveState = 'loading';
 
     if (this.calendarId === null) {
       this.calendarService.create(this.name, ffd).subscribe({
