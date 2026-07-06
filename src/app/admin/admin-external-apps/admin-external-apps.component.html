@@ -1,0 +1,39 @@
+<h2 i18n="@@adminExternalApps.title">External Apps</h2>
+
+<table class="apps-table">
+  <thead>
+    <tr>
+      <th i18n="@@adminExternalApps.id">ID</th>
+      <th i18n="@@adminExternalApps.name">Name</th>
+      <th i18n="@@adminExternalApps.status">Status</th>
+      <th i18n="@@adminExternalApps.userId">User ID</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (app of apps; track app.id) {
+      <tr>
+        <td>{{ app.id }}</td>
+        <td>{{ app.name }}</td>
+        <td>
+          @if (app.status) {
+            <span class="status-active" i18n="@@adminExternalApps.active">Active</span>
+          } @else {
+            <span class="status-inactive" i18n="@@adminExternalApps.inactive">Inactive</span>
+          }
+        </td>
+        <td>{{ app.user_id ?? '—' }}</td>
+        <td><a [routerLink]="['/admin/external-app', app.id]" i18n="@@common.edit">Edit</a></td>
+      </tr>
+    }
+    @if (apps.length === 0) {
+      <tr>
+        <td colspan="5" class="empty" i18n="@@adminExternalApps.empty">No external apps yet.</td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<div class="list-actions">
+  <a [routerLink]="['/admin/external-app', 'new']" class="btn-secondary" i18n="@@adminExternalApps.createNew">Create New</a>
+</div>

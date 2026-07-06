@@ -1,0 +1,115 @@
+.ext-app-container {
+  padding: 1rem;
+}
+
+.ext-app-fieldset {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.field-row label {
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.field-row input[type="text"],
+.field-row input[type="number"] {
+  flex: 1;
+}
+
+.field-row--checkbox {
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+}
+
+.field-row--checkbox label {
+  width: auto;
+}
+
+.readonly-input {
+  flex: 1;
+  background: #f5f5f5;
+  color: #555;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.btn-secondary {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid #aaa;
+  background: #f5f5f5;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.btn-secondary:hover {
+  background: #e8e8e8;
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #c62828;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  font-size: 0.85em;
+}
+
+.btn-remove:hover {
+  color: #b71c1c;
+}
+
+.perm-section {
+  margin-top: 1.5rem;
+}
+
+.perm-section h3 {
+  margin-bottom: 0.75rem;
+}
+
+.perm-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
+.perm-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.perm-add-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.perm-add-row input[type="text"] {
+  flex: 1;
+}
+
+.empty {
+  color: #9e9e9e;
+  font-style: italic;
+}

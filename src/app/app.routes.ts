@@ -75,6 +75,8 @@ import { LoreNavigationEditComponent } from './lore-navigation-edit/lore-navigat
 import { NotFoundComponent } from './error-pages/not-found/not-found.component';
 import { ForbiddenComponent } from './error-pages/forbidden/forbidden.component';
 import { ServerErrorComponent } from './error-pages/server-error/server-error.component';
+import { AdminExternalAppsComponent } from './admin/admin-external-apps/admin-external-apps.component';
+import { AdminExternalAppEditComponent } from './admin/admin-external-app-edit/admin-external-app-edit.component';
 
 
 export const routes: Routes = [
@@ -482,6 +484,16 @@ export const routes: Routes = [
         path: 'design-drafts/:id',
         loadComponent: () => import('./admin/admin-design-draft-edit/admin-design-draft-edit.component').then(m => m.AdminDesignDraftEditComponent),
         title: 'Admin - Edit Design Draft'
+      },
+      {
+        path: 'external-apps',
+        component: AdminExternalAppsComponent,
+        title: 'Admin - External Apps'
+      },
+      {
+        path: 'external-app/:id',
+        component: AdminExternalAppEditComponent,
+        title: 'Admin - External App'
       }
     ]
   },

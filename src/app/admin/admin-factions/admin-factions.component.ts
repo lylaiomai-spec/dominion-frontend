@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { FactionService } from '../../services/faction.service';
 import { ApiService } from '../../services/api.service';
 import { Faction } from '../../models/Faction';
+import { SaveButtonComponent, SaveState } from '../save-button/save-button.component';
 
 interface FreeFormatDateOption {
   id: number;
@@ -13,7 +14,7 @@ interface FreeFormatDateOption {
 
 @Component({
   selector: 'app-admin-factions',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SaveButtonComponent],
   standalone: true,
   templateUrl: './admin-factions.component.html',
   styleUrl: './admin-factions.component.css'
@@ -29,6 +30,11 @@ export class AdminFactionsComponent implements OnInit {
   showDeleteErrorModal = false;
 
   private tempIdCounter = -1;
+  private saveStates = signal<Map<number, SaveState>>(new Map());
+
+  saveStateFor(faction: Faction): SaveState {
+    return this.saveStates().get(faction.id) ?? 'idle';
+  }
 
   ngOnInit() {
     this.factionService.loadFactionTree();
@@ -88,10 +94,24 @@ export class AdminFactionsComponent implements OnInit {
         error: (err) => console.error('Failed to create faction', err)
       });
     } else {
+      this.setSaveState(faction.id, 'loading');
       this.factionService.updateFaction(faction.id, faction).subscribe({
-        error: (err) => console.error('Failed to save faction', err)
+        next: () => this.flashSaveState(faction.id, 'success'),
+        error: (err) => {
+          console.error('Failed to save faction', err);
+          this.flashSaveState(faction.id, 'error');
+        }
       });
     }
+  }
+
+  private setSaveState(id: number, state: SaveState) {
+    this.saveStates.update(m => new Map(m).set(id, state));
+  }
+
+  private flashSaveState(id: number, value: 'success' | 'error') {
+    this.setSaveState(id, value);
+    setTimeout(() => this.setSaveState(id, 'idle'), 3000);
   }
 
   deleteFaction(faction: Faction) {

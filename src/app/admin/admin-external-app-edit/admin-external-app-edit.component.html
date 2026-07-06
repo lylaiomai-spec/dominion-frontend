@@ -1,0 +1,79 @@
+<div class="ext-app-container">
+  <h2>
+    @if (isNew) {
+      <ng-container i18n="@@adminExternalApp.titleNew">New External App</ng-container>
+    } @else {
+      <ng-container i18n="@@adminExternalApp.titleEdit">Edit External App</ng-container>
+    }
+  </h2>
+
+  <form (submit)="submit(); $event.preventDefault()">
+    <fieldset class="ext-app-fieldset">
+      <div class="field-row">
+        <label for="app-name" i18n="@@adminExternalApp.name">Name</label>
+        <input id="app-name" type="text" name="name" [(ngModel)]="name" required />
+      </div>
+
+      @if (!isNew && app) {
+        <div class="field-row">
+          <label for="app-key" i18n="@@adminExternalApp.apiKey">API Key</label>
+          <input id="app-key" type="text" name="api_key" [value]="app.api_key" readonly class="readonly-input" />
+        </div>
+
+        <div class="field-row field-row--checkbox">
+          <input id="app-status" type="checkbox" name="status" [(ngModel)]="status" />
+          <label for="app-status" i18n="@@adminExternalApp.status">Active</label>
+        </div>
+
+        <div class="field-row">
+          <label for="app-user" i18n="@@adminExternalApp.userId">User ID</label>
+          <input id="app-user" type="number" name="user_id" [(ngModel)]="userId" />
+        </div>
+      }
+
+      <div class="form-actions">
+        <app-save-button type="submit" [state]="saveState" [disabled]="!name.trim()">
+          @if (isNew) {
+            <span i18n="@@common.create">Create</span>
+          } @else {
+            <span i18n="@@common.save">Save</span>
+          }
+        </app-save-button>
+        <a routerLink="/admin/external-apps" class="btn-secondary" i18n="@@common.back">Back</a>
+      </div>
+    </fieldset>
+  </form>
+
+  @if (!isNew && app) {
+    <section class="perm-section">
+      <h3 i18n="@@adminExternalApp.permissions">Permissions</h3>
+
+      @if (permissions.length > 0) {
+        <ul class="perm-list">
+          @for (perm of permissions; track perm) {
+            <li class="perm-row">
+              <span>{{ perm }}</span>
+              <button type="button" class="btn-remove" (click)="removePermission(perm)">✕</button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty" i18n="@@adminExternalApp.noPermissions">No permissions assigned.</p>
+      }
+
+      <div class="perm-add-row">
+        <input
+          type="text"
+          name="new-permission"
+          [(ngModel)]="newPermission"
+          (keydown.enter)="addPermission(); $event.preventDefault()"
+          placeholder="permission.name"
+          i18n-placeholder="@@adminExternalApp.permissionPlaceholder"
+        />
+        <app-save-button [state]="permSaveState" [disabled]="!newPermission.trim()" (clicked)="addPermission()">
+          <span i18n="@@common.add">Add</span>
+        </app-save-button>
+      </div>
+    </section>
+  }
+</div>

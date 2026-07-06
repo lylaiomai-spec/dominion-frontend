@@ -1,14 +1,15 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FactionSettingService } from '../../services/faction-setting.service';
 import { FactionService } from '../../services/faction.service';
 import { FactionSetting } from '../../models/FactionSetting';
 import { Faction } from '../../models/Faction';
+import { SaveButtonComponent, SaveState } from '../save-button/save-button.component';
 
 @Component({
   selector: 'app-admin-faction-settings',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   standalone: true,
   templateUrl: './admin-faction-settings.component.html',
   styleUrl: './admin-faction-settings.component.css'
@@ -21,6 +22,11 @@ export class AdminFactionSettingsComponent implements OnInit {
   factions = this.factionService.factions;
 
   private tempIdCounter = -1;
+  private saveStates = signal<Map<number, SaveState>>(new Map());
+
+  saveStateFor(setting: FactionSetting): SaveState {
+    return this.saveStates().get(setting.id) ?? 'idle';
+  }
 
   ngOnInit() {
     this.service.load();
@@ -54,11 +60,27 @@ export class AdminFactionSettingsComponent implements OnInit {
         error: (err) => console.error('Failed to create faction setting', err)
       });
     } else {
+      this.setSaveState(setting.id, 'loading');
       this.service.update(setting.id, payload).subscribe({
-        next: (updated) => this.replace(setting, updated),
-        error: (err) => console.error('Failed to update faction setting', err)
+        next: (updated) => {
+          this.replace(setting, updated);
+          this.flashSaveState(setting.id, 'success');
+        },
+        error: (err) => {
+          console.error('Failed to update faction setting', err);
+          this.flashSaveState(setting.id, 'error');
+        }
       });
     }
+  }
+
+  private setSaveState(id: number, state: SaveState) {
+    this.saveStates.update(m => new Map(m).set(id, state));
+  }
+
+  private flashSaveState(id: number, value: 'success' | 'error') {
+    this.setSaveState(id, value);
+    setTimeout(() => this.setSaveState(id, 'idle'), 3000);
   }
 
   delete(setting: FactionSetting) {
