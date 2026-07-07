@@ -5,3 +5,9 @@ export interface ExternalApp {
   status: boolean;
   user_id: number | null;
 }
+
+export interface ExternalAppPermission {
+  external_app_id: number;
+  subforum_id: number;
+  permission: string;
+}

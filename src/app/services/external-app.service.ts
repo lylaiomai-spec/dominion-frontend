@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
-import { ExternalApp } from '../models/ExternalApp';
+import { ExternalApp, ExternalAppPermission } from '../models/ExternalApp';
 
 @Injectable({ providedIn: 'root' })
 export class ExternalAppService {
@@ -23,15 +23,15 @@ export class ExternalAppService {
     return this.apiService.get<void>(`admin/external-app/delete/${id}`);
   }
 
-  getPermissions(id: number): Observable<string[]> {
-    return this.apiService.get<string[]>(`admin/external-app/${id}/permissions`);
+  getPermissions(id: number): Observable<ExternalAppPermission[]> {
+    return this.apiService.get<ExternalAppPermission[]>(`admin/external-app/${id}/permissions`);
   }
 
-  addPermission(id: number, permission: string): Observable<void> {
-    return this.apiService.post<void>(`admin/external-app/${id}/permission/create`, { permission });
+  addPermission(id: number, subforum_id: number, permission: string): Observable<void> {
+    return this.apiService.post<void>(`admin/external-app/${id}/permission/create`, { subforum_id, permission });
   }
 
-  removePermission(id: number, permission: string): Observable<void> {
-    return this.apiService.post<void>(`admin/external-app/${id}/permission/delete`, { permission });
+  removePermission(id: number, subforum_id: number, permission: string): Observable<void> {
+    return this.apiService.post<void>(`admin/external-app/${id}/permission/delete`, { subforum_id, permission });
   }
 }

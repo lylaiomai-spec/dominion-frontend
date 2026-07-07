@@ -50,9 +50,10 @@
 
       @if (permissions.length > 0) {
         <ul class="perm-list">
-          @for (perm of permissions; track perm) {
+          @for (perm of permissions; track perm.subforum_id + ':' + perm.permission) {
             <li class="perm-row">
-              <span>{{ perm }}</span>
+              <span class="perm-subforum">{{ perm.subforum_id }}</span>
+              <span class="perm-name">{{ perm.permission }}</span>
               <button type="button" class="btn-remove" (click)="removePermission(perm)">✕</button>
             </li>
           }
@@ -63,14 +64,19 @@
 
       <div class="perm-add-row">
         <input
-          type="text"
-          name="new-permission"
-          [(ngModel)]="newPermission"
-          (keydown.enter)="addPermission(); $event.preventDefault()"
-          placeholder="permission.name"
-          i18n-placeholder="@@adminExternalApp.permissionPlaceholder"
+          type="number"
+          name="new-subforum-id"
+          [(ngModel)]="newSubforumId"
+          placeholder="Subforum ID"
+          i18n-placeholder="@@adminExternalApp.subforumIdPlaceholder"
+          min="1"
         />
-        <app-save-button [state]="permSaveState" [disabled]="!newPermission.trim()" (clicked)="addPermission()">
+        <select name="new-permission" [(ngModel)]="newPermission">
+          @for (opt of permissionOptions; track opt) {
+            <option [value]="opt">{{ opt }}</option>
+          }
+        </select>
+        <app-save-button [state]="permSaveState" [disabled]="newSubforumId === null" (clicked)="addPermission()">
           <span i18n="@@common.add">Add</span>
         </app-save-button>
       </div>

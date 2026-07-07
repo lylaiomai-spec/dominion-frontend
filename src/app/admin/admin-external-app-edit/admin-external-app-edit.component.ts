@@ -2,7 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ExternalAppService } from '../../services/external-app.service';
-import { ExternalApp } from '../../models/ExternalApp';
+import { ExternalApp, ExternalAppPermission } from '../../models/ExternalApp';
 import { SaveButtonComponent, SaveState } from '../save-button/save-button.component';
 
 @Component({
@@ -26,9 +26,14 @@ export class AdminExternalAppEditComponent implements OnInit {
 
   saveState: SaveState = 'idle';
 
-  permissions: string[] = [];
-  newPermission = '';
+  permissions: ExternalAppPermission[] = [];
+  newSubforumId: number | null = null;
+  newPermission: 'post' | 'get_active_topics' | 'get_first_post' = 'post';
   permSaveState: SaveState = 'idle';
+
+  readonly permissionOptions: Array<'post' | 'get_active_topics' | 'get_first_post'> = [
+    'post', 'get_active_topics', 'get_first_post',
+  ];
 
   ngOnInit() {
     const raw = this.route.snapshot.paramMap.get('id');
@@ -93,13 +98,16 @@ export class AdminExternalAppEditComponent implements OnInit {
   }
 
   addPermission() {
-    const perm = this.newPermission.trim();
-    if (!perm) return;
+    if (this.newSubforumId === null) return;
     this.permSaveState = 'loading';
-    this.externalAppService.addPermission(this.app!.id, perm).subscribe({
+    this.externalAppService.addPermission(this.app!.id, this.newSubforumId, this.newPermission).subscribe({
       next: () => {
-        this.permissions = [...this.permissions, perm];
-        this.newPermission = '';
+        this.permissions = [
+          ...this.permissions,
+          { external_app_id: this.app!.id, subforum_id: this.newSubforumId!, permission: this.newPermission },
+        ];
+        this.newSubforumId = null;
+        this.newPermission = 'post';
         this.permSaveState = 'idle';
       },
       error: (err) => {
@@ -110,10 +118,12 @@ export class AdminExternalAppEditComponent implements OnInit {
     });
   }
 
-  removePermission(perm: string) {
-    this.externalAppService.removePermission(this.app!.id, perm).subscribe({
+  removePermission(entry: ExternalAppPermission) {
+    this.externalAppService.removePermission(this.app!.id, entry.subforum_id, entry.permission).subscribe({
       next: () => {
-        this.permissions = this.permissions.filter(p => p !== perm);
+        this.permissions = this.permissions.filter(
+          p => !(p.subforum_id === entry.subforum_id && p.permission === entry.permission)
+        );
       },
       error: (err) => console.error('Failed to remove permission', err),
     });
