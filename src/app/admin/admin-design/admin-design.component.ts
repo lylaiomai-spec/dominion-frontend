@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, of } from 'rxjs';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type FileKey = 'favicon' | 'custom_style' | 'main_style';
 type UploadState = 'idle' | 'loading' | 'success' | 'error';
@@ -29,7 +30,7 @@ let tempId = -1;
 
 @Component({
   selector: 'app-admin-design',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   standalone: true,
   templateUrl: './admin-design.component.html',
   styleUrl: './admin-design.component.css'

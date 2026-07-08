@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 export interface SubforumBucketRow {
   subforum_id: number;
@@ -11,7 +12,7 @@ export interface SubforumBucketRow {
 
 @Component({
   selector: 'app-admin-ai-index-settings',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   templateUrl: './admin-ai-index-settings.component.html',
   standalone: true,
   styleUrl: './admin-ai-index-settings.component.css'

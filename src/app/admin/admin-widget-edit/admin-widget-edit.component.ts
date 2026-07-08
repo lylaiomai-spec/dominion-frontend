@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -44,7 +45,7 @@ interface ConfigField {
 
 @Component({
   selector: 'app-admin-widget-edit',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   templateUrl: './admin-widget-edit.component.html',
   standalone: true,
   styleUrl: './admin-widget-edit.component.css'

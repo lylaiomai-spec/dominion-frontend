@@ -43,7 +43,9 @@
           @if (isNew(setting)) {
             <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
           } @else {
-            <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+            <app-save-button type="submit" [state]="saveStateFor(setting)">
+              <span i18n="@@common.save">Save</span>
+            </app-save-button>
           }
           <button type="button" class="btn-decline" (click)="delete(setting)" i18n="@@factionSetting.delete">Delete</button>
         </div>

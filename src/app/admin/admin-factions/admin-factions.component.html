@@ -80,7 +80,9 @@
           @if (isNew(faction)) {
             <button type="submit" class="btn-primary" i18n="@@common.add">Add</button>
           } @else {
-            <button type="submit" class="btn-primary" i18n="@@common.save">Save</button>
+            <app-save-button type="submit" [state]="saveStateFor(faction)">
+              <span i18n="@@common.save">Save</span>
+            </app-save-button>
           }
           @if (!isNew(faction)) {
             <button type="button" (click)="addChild(faction)" i18n="@@faction.addChild">Add Child</button>

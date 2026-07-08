@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GlobalSettingsService } from '../../services/global-settings.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -21,7 +22,7 @@ const SETTING_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-admin-settings',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SaveButtonComponent],
   standalone: true,
   templateUrl: './admin-settings.component.html',
   styleUrl: './admin-settings.component.css'

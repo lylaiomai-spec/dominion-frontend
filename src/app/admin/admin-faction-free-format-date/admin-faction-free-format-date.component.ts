@@ -2,8 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
-type SaveState = 'idle' | 'saving' | 'success' | 'error';
+type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
 export type TimeUnitType = 'number' | 'list';
 
@@ -16,6 +17,7 @@ export interface TimeUnit {
   maxValue: number | null;
   listValues: string[];
   canBeNull: boolean;
+  isHiddenNegative: boolean;
 }
 
 export interface FormatEntry {
@@ -28,6 +30,7 @@ interface PlaceholderResponse {
   name: string;
   position: number;
   is_nullable: boolean;
+  is_hidden_negative?: boolean;
   min_value?: number | null;
   max_value?: number | null;
   value_list?: string[];
@@ -41,7 +44,7 @@ interface FreeFormatDateResponse {
 @Component({
   selector: 'app-admin-faction-free-format-date',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, SaveButtonComponent],
   templateUrl: './admin-faction-free-format-date.component.html',
   styleUrl: './admin-faction-free-format-date.component.css',
 })
@@ -82,6 +85,7 @@ export class AdminFactionFreeFormatDateComponent implements OnInit {
       maxValue: p.max_value ?? null,
       listValues: p.value_list?.length ? p.value_list : [''],
       canBeNull: p.is_nullable,
+      isHiddenNegative: p.is_hidden_negative ?? false,
     }));
     this.formats = data.format_strings.map(s => ({
       _tempId: this.nextId++,
@@ -164,6 +168,7 @@ export class AdminFactionFreeFormatDateComponent implements OnInit {
         name: u.name,
         position: u.position,
         is_nullable: u.canBeNull,
+        ...(u.isHiddenNegative ? { is_hidden_negative: true } : {}),
       };
       return u.type === 'number'
         ? { ...base, min_value: u.minValue, max_value: u.maxValue }
@@ -175,7 +180,7 @@ export class AdminFactionFreeFormatDateComponent implements OnInit {
       placeholders,
     };
 
-    this.saveState = 'saving';
+    this.saveState = 'loading';
     this.apiService.post(`admin/faction/${this.factionId}/free-format-date`, body).subscribe({
       next: () => {
         this.saveState = 'success';
@@ -215,6 +220,7 @@ export class AdminFactionFreeFormatDateComponent implements OnInit {
       maxValue: null,
       listValues: [''],
       canBeNull: false,
+      isHiddenNegative: false,
     };
   }
 

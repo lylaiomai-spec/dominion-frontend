@@ -63,6 +63,11 @@
           <input [id]="'tu-null-' + unit._tempId" type="checkbox" [(ngModel)]="unit.canBeNull" [name]="'tu-null-' + unit._tempId" />
           <label [for]="'tu-null-' + unit._tempId" i18n="@@adminFactionDate.canBeNull">Can be null</label>
         </div>
+
+        <div class="field-row field-row--checkbox">
+          <input [id]="'tu-hideneg-' + unit._tempId" type="checkbox" [(ngModel)]="unit.isHiddenNegative" [name]="'tu-hideneg-' + unit._tempId" />
+          <label [for]="'tu-hideneg-' + unit._tempId" i18n="@@adminFactionDate.isHiddenNegative">Secretly hidden</label>
+        </div>
       </fieldset>
     }
 
@@ -107,12 +112,8 @@
   </section>
 
   <div class="submit-row">
-    <button type="button" class="btn-primary" (click)="submit()" [disabled]="saveState === 'saving' || !isValid()" i18n="@@common.save">Save</button>
-    @if (saveState === 'success') {
-      <span class="save-status save-status--success" i18n="@@adminFactionDate.saveSuccess">Saved.</span>
-    }
-    @if (saveState === 'error') {
-      <span class="save-status save-status--error" i18n="@@adminFactionDate.saveError">Failed to save.</span>
-    }
+    <app-save-button [state]="saveState" [disabled]="!isValid()" (clicked)="submit()">
+      <span i18n="@@common.save">Save</span>
+    </app-save-button>
   </div>
 </div>

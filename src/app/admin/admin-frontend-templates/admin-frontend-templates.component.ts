@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 export interface FrontendComponent {
   name: string;
@@ -16,7 +17,7 @@ type SaveState = 'idle' | 'loading' | 'success' | 'error';
 @Component({
   selector: 'app-admin-frontend-templates',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, SaveButtonComponent],
   templateUrl: './admin-frontend-templates.component.html',
   styleUrl: './admin-frontend-templates.component.css',
 })

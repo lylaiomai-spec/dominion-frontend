@@ -1,0 +1,13 @@
+<button
+  [type]="type"
+  [class]="'btn-save btn-save--' + state"
+  [disabled]="state === 'loading' || disabled"
+  (click)="clicked.emit()"
+>
+  @switch (state) {
+    @case ('loading') { <span class="spinner"></span> }
+    @case ('success') { <span i18n="@@common.saved">Saved</span> }
+    @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
+    @default { <ng-content /> }
+  }
+</button>

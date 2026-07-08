@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { BbToolbarComponent } from '../../components/bb-toolbar/bb-toolbar.component';
+import { SaveButtonComponent } from '../save-button/save-button.component';
 
 type SaveState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -14,7 +15,7 @@ interface PanelDetail {
 
 @Component({
   selector: 'app-admin-widget-panel-edit',
-  imports: [FormsModule, BbToolbarComponent],
+  imports: [FormsModule, BbToolbarComponent, SaveButtonComponent],
   templateUrl: './admin-widget-panel-edit.component.html',
   standalone: true,
   styleUrl: './admin-widget-panel-edit.component.css'

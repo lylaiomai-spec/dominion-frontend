@@ -44,6 +44,9 @@
             <ul class="character-group">
               @for (char of group[0].characters; track char.id) {
                 <li class="character-list-item">
+                  @if (char.avatar) {
+                    <img [src]="char.avatar" [alt]="char.name" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px" />
+                  }
                   @if (char.is_claim) {
                     <span>{{ char.name }}</span>
                   } @else {
@@ -80,6 +83,9 @@
                 <ul class="character-group">
                   @for (char of faction.characters; track char.id) {
                     <li class="character-list-item">
+                      @if (char.avatar) {
+                        <img [src]="char.avatar" [alt]="char.name" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:4px" />
+                      }
                       @if (char.is_claim) {
                         <span>{{ char.name }}</span>
                       } @else {

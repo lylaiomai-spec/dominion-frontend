@@ -49,20 +49,9 @@
       </table>
 
       <div class="actions">
-        <button
-          type="button"
-          class="btn-save"
-          [class]="'btn-save--' + saveState()"
-          [disabled]="saveState() === 'loading'"
-          (click)="save()"
-        >
-          @switch (saveState()) {
-            @case ('loading') { <span class="spinner"></span> }
-            @case ('success') { <span i18n="@@common.saved">Saved</span> }
-            @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
-            @default { <span i18n="@@common.update">Update</span> }
-          }
-        </button>
+        <app-save-button [state]="saveState()" (clicked)="save()">
+          <span i18n="@@common.update">Update</span>
+        </app-save-button>
       </div>
     }
   </section>

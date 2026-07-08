@@ -23,6 +23,7 @@ export interface Character {
 export interface CharacterListItem {
   id: number;
   name: string;
+  avatar: string | null;
   is_claim: boolean;
   wanted_character_id: number | null;
   claim_record_id: number | null;
@@ -44,7 +45,7 @@ export interface CharacterEpisode {
 export interface CharacterShort {
   id: number;
   name: string;
-  avatar: string;
+  avatar: string | null;
 }
 
 export interface CustomFieldValue {

@@ -92,25 +92,13 @@
   }
 
   <div class="form-actions">
-    <button
-      type="button"
-      [class]="'btn-save btn-save--' + saveState()"
-      [disabled]="saveState() === 'loading' || !selectedTypeId"
-      (click)="save()"
-    >
-      @switch (saveState()) {
-        @case ('loading') { <span class="spinner"></span> }
-        @case ('success') { <span i18n="@@common.saved">Saved</span> }
-        @case ('error') { <span i18n="@@common.saveFailed">Failed</span> }
-        @default {
-          @if (widgetId) {
-            <span i18n="@@common.update">Update</span>
-          } @else {
-            <span i18n="@@common.create">Create</span>
-          }
-        }
+    <app-save-button [state]="saveState()" [disabled]="!selectedTypeId" (clicked)="save()">
+      @if (widgetId) {
+        <span i18n="@@common.update">Update</span>
+      } @else {
+        <span i18n="@@common.create">Create</span>
       }
-    </button>
+    </app-save-button>
 
     @if (widgetId) {
       <button
