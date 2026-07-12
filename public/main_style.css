@@ -1958,6 +1958,24 @@ span.mention {
   border: 1px solid #b8daff;
 }
 
+.status-claimed {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-available {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.status-temp-claimed {
+  background-color: #fde8d0;
+  color: #7a3b00;
+  border: 1px solid #f5c6a0;
+}
+
 .character-sheet-factions h3,
 .character-sheet-custom-fields h3 {
   font-size: 1.2em;

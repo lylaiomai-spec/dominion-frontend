@@ -32,10 +32,10 @@
             @default { {{ user.user_status }} }
           }
         </td>
-        <td>{{ user.date_registered ? (user.date_registered | date:'dd.MM.yyyy') : '—' }}</td>
-        <td>{{ user.date_last_visit ? (user.date_last_visit | date:'dd.MM.yyyy') : '—' }}</td>
+        <td>{{ user.date_registered ? (user.date_registered | date:'yyyy-MM-dd') : '—' }}</td>
+        <td>{{ user.date_last_visit ? (user.date_last_visit | date:'yyyy-MM-dd') : '—' }}</td>
         <td>{{ user.character_count }}</td>
-        <td>{{ user.last_game_post_date ? (user.last_game_post_date | date:'dd.MM.yyyy') : '—' }}</td>
+        <td>{{ user.last_game_post_date ? (user.last_game_post_date | date:'yyyy-MM-dd') : '—' }}</td>
         <td><button (click)="openRolesModal(user)" i18n="@@adminUsers.editRoles">Roles</button></td>
         <td><button (click)="openEditModal(user)" i18n="@@adminUsers.editUser">Edit</button></td>
         <td><button (click)="openAbsenceModal(user)" i18n="@@adminUsers.absence">Absence</button></td>

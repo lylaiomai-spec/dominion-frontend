@@ -113,7 +113,7 @@
                         }
                       }
                       @case ('last_post_date') {
-                        {{ topic.last_post_date }}
+                        {{ topic.last_post_date | date:'yyyy-MM-dd' }}
                       }
                       @case ('characters') {
                         <span class="character-list">
