@@ -16,7 +16,7 @@
         <td>{{ item.bucket }}</td>
         <td>{{ item.last_id ?? '—' }}</td>
         <td>{{ item.current_max_id }}</td>
-        <td>{{ item.date_ingested ? (item.date_ingested | date:'dd.MM.yyyy HH:mm') : '—' }}</td>
+        <td>{{ item.date_ingested ? (item.date_ingested | date:'yyyy-MM-dd HH:mm') : '—' }}</td>
         <td>
           @if (isOutOfSync(item)) {
             <button (click)="sync(item)" [disabled]="isSyncing(item.bucket)" i18n="@@adminSearch.sync">Sync</button>

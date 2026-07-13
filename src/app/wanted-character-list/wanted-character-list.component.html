@@ -37,9 +37,9 @@
                 @if (wc.claim_record) {
                   <span class="claim-badge">
                     @if (wc.claim_record.claim_author_username) {
-                      <ng-container i18n="@@wantedCharacterList.claimedByUntil">Claimed by {{ wc.claim_record.claim_author_username }} until {{ wc.claim_record.claim_expiration_date | date:'mediumDate' }}</ng-container>
+                      <ng-container i18n="@@wantedCharacterList.claimedByUntil">Claimed by {{ wc.claim_record.claim_author_username }} until {{ wc.claim_record.claim_expiration_date | date:'yyyy-MM-dd' }}</ng-container>
                     } @else {
-                      <ng-container i18n="@@wantedCharacterList.claimedByGuestUntil">Claimed by a guest until {{ wc.claim_record.claim_expiration_date | date:'mediumDate' }}</ng-container>
+                      <ng-container i18n="@@wantedCharacterList.claimedByGuestUntil">Claimed by a guest until {{ wc.claim_record.claim_expiration_date | date:'yyyy-MM-dd' }}</ng-container>
                     }
                   </span>
                 }

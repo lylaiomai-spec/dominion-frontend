@@ -48,7 +48,7 @@
           <p class="inputfield">
             @if (hasExistingClaim()) {
               <span i18n="@@charactercreate.claimLockedHas">
-                Active claim until {{ initialData?.claim_record?.claim_expiration_date | date:'mediumDate' }}.
+                Active claim until {{ initialData?.claim_record?.claim_expiration_date | date:'yyyy-MM-dd' }}.
               </span>
             } @else {
               <span i18n="@@charactercreate.claimLockedNone">No claim set.</span>
@@ -106,7 +106,7 @@
               </div>
               @if (isOwnClaim()) {
                 <p class="claim-own-note" i18n="@@charactercreate.claimOwnNote">
-                  You have claimed this character until {{ selectedClaimItem()?.claim_expiration_date | date:'mediumDate' }}
+                  You have claimed this character until {{ selectedClaimItem()?.claim_expiration_date | date:'yyyy-MM-dd' }}
                 </p>
               }
             </div>
@@ -150,7 +150,7 @@
     <div class="modal-content">
       <h2 i18n="@@charactercreate.claimBlockedTitle">Character already claimed</h2>
       <p i18n="@@charactercreate.claimBlockedText">
-        This character is claimed by another user until {{ selectedClaimItem()?.claim_expiration_date | date:'mediumDate' }}.
+        This character is claimed by another user until {{ selectedClaimItem()?.claim_expiration_date | date:'yyyy-MM-dd' }}.
       </p>
       <div class="buttons">
         <button type="button" class="button" (click)="dismissClaimBlockedModal()" i18n="@@common.ok">OK</button>

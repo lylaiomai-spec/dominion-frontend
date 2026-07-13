@@ -26,5 +26,6 @@ export interface WantedCharacter {
   factions: Faction[] | null;
   wanted_character_status?: number;
   claim_record: ClaimRecord | null;
+  active_claim_record: string | null;
   user_info?: UserInfo | null;
 }

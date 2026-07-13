@@ -7,6 +7,13 @@
       } @else if (wantedCharacter.wanted_character_status === 1) {
         <span class="status-badge status-inactive" i18n="@@common.statusInactive">Inactive</span>
       }
+      @if (wantedCharacter.is_claimed) {
+        <span class="status-badge status-claimed" i18n="@@common.statusClaimed">Claimed</span>
+      } @else if (wantedCharacter.active_claim_record) {
+        <span class="status-badge status-temp-claimed" i18n="@@common.statusTemporarilyClaimed">Temporarily claimed (until {{ wantedCharacter.active_claim_record | date:'yyyy-MM-dd' }})</span>
+      } @else {
+        <span class="status-badge status-available" i18n="@@common.statusAvailable">Available</span>
+      }
     </h2>
 
     @if (wantedCharacter.factions && wantedCharacter.factions.length > 0) {

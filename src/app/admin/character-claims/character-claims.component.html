@@ -40,7 +40,7 @@
                   @if (claim.can_change_name) { <span i18n="@@common.yes">Yes</span> }
                   @else { <span i18n="@@common.no">No</span> }
                 </td>
-                <td>{{ claim.last_claim_date ? (claim.last_claim_date | date:'dd.MM.yyyy HH:mm') : '—' }}</td>
+                <td>{{ claim.last_claim_date ? (claim.last_claim_date | date:'yyyy-MM-dd HH:mm') : '—' }}</td>
                 <td>{{ claim.is_claimed ? claim.user_id : '—' }}</td>
                 <td><button type="button" class="button" (click)="deleteClaim(claim.id, faction.id)" i18n="@@characterClaims.delete">Delete</button></td>
               </tr>

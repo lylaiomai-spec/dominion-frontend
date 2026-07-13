@@ -56,7 +56,7 @@
           @for (item of systemNotifications(); track item.id) {
             <div class="feed-item">
               <div class="feed-item-content">
-                <span class="date">{{ item.date_created | date:'short' }}</span>
+                <span class="date">{{ item.date_created | date:'yyyy-MM-dd HH:mm' }}</span>
                 <p>{{ item.message }}</p>
               </div>
               <button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button>
@@ -88,7 +88,7 @@
                   }
                 </td>
                 <td>{{ game?.character_name }}</td>
-                <td>{{ item.date_created | date:'short' }}</td>
+                <td>{{ item.date_created | date:'yyyy-MM-dd HH:mm' }}</td>
                 <td><button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button></td>
               </tr>
             }
@@ -103,7 +103,7 @@
             @let mention = $any(item.mention ?? item.data);
             <div class="feed-item">
               <div class="feed-item-content">
-                <span class="date">[{{ item.date_created | date:'short' }}]</span>
+                <span class="date">[{{ item.date_created | date:'yyyy-MM-dd HH:mm' }}]</span>
                 <span>
                   {{ mention?.user_name || 'User' }} mentioned you in
                   @if (mention?.topic_id) {
@@ -128,7 +128,7 @@
             @let reaction = $any(item.data);
             <div class="feed-item">
               <div class="feed-item-content">
-                <span class="date">{{ item.date_created | date:'short' }}</span>
+                <span class="date">{{ item.date_created | date:'yyyy-MM-dd HH:mm' }}</span>
                 <span>
                   <strong>{{ reaction?.user_name }}</strong>
                   <ng-container i18n="@@notifications.reaction.reactedTo"> reacted to your </ng-container>
@@ -155,7 +155,7 @@
           @for (item of directMessageNotifications(); track item.id) {
             <div class="feed-item">
               <a class="feed-item-content" [routerLink]="['/direct-chat']" (click)="onNotificationClick(item)">
-                <span class="date">{{ item.date_created | date:'short' }}</span>
+                <span class="date">{{ item.date_created | date:'yyyy-MM-dd HH:mm' }}</span>
                 <p>{{ item.message }}</p>
               </a>
               <button class="dismiss-button" (click)="dismissNotification(item, $event)">&times;</button>

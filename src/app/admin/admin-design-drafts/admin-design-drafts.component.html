@@ -15,8 +15,8 @@
     @for (draft of drafts(); track draft.id) {
       <tr>
         <td><a [routerLink]="['/admin/design-drafts', draft.id]">{{ draft.name }}</a></td>
-        <td>{{ draft.date_created | date:'medium' }}</td>
-        <td>{{ draft.date_last_changed | date:'medium' }}</td>
+        <td>{{ draft.date_created | date:'yyyy-MM-dd HH:mm' }}</td>
+        <td>{{ draft.date_last_changed | date:'yyyy-MM-dd HH:mm' }}</td>
         <td style="display: flex; gap: 8px;">
           <button class="button" (click)="openPreview(draft)" i18n="@@adminDesignDrafts.openPreview">Open Draft Preview</button>
           <button class="button" (click)="confirmPublish(draft)" i18n="@@adminDesignDrafts.publish">Publish</button>
