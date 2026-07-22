@@ -138,6 +138,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
   reactionPickerPostId = signal<number | null>(null);
   activeReactions = signal<Reaction[]>([]);
+  isSubmitting = signal(false);
   private activeReactionsLoaded = false;
 
   private destroy$ = new Subject<void>();
@@ -450,6 +451,9 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
     const message = this.postForm.messageField.nativeElement.value;
 
     if (!message || !this.id()) return;
+    if (this.isSubmitting()) return;
+
+    this.isSubmitting.set(true);
 
     let characterProfileId: number | null = null;
     if (this.selectedCharacterId !== null && this.selectedCharacterId !== 'account' as any) {
@@ -472,6 +476,7 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
 
     this.topicService.createPost(payload).subscribe({
       next: () => {
+        this.isSubmitting.set(false);
         this.postForm.messageField.nativeElement.value = '';
         if (!this.authService.isAuthenticated()) {
           window.location.reload();
@@ -479,7 +484,10 @@ export class ViewtopicComponent implements OnInit, OnDestroy {
           this.topicService.notifyOwnPostSubmitted(this.id()!);
         }
       },
-      error: (err: any) => console.error('Failed to create post', err)
+      error: (err: any) => {
+        this.isSubmitting.set(false);
+        console.error('Failed to create post', err);
+      }
     });
   }
 

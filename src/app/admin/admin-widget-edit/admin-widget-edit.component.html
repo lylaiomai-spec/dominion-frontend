@@ -91,6 +91,44 @@
     </fieldset>
   }
 
+  @if (entityType() === 'character' || entityType() === 'wanted_character') {
+    <fieldset class="config-fields">
+      <legend i18n="@@admin.widgetEdit.filters">Filters</legend>
+
+      <div class="field">
+        <label i18n="@@admin.widgetEdit.filterStatus">Status</label>
+        <div class="checkbox-group">
+          <label>
+            <input type="checkbox"
+              [checked]="filterStatusActive().includes('1')"
+              (change)="toggleFilter(filterStatusActive, '1')" />
+            <ng-container i18n="@@admin.widgetEdit.filterStatusActive">Active</ng-container>
+          </label>
+          <label>
+            <input type="checkbox"
+              [checked]="filterStatusActive().includes('0')"
+              (change)="toggleFilter(filterStatusActive, '0')" />
+            <ng-container i18n="@@admin.widgetEdit.filterStatusInactive">Inactive</ng-container>
+          </label>
+        </div>
+      </div>
+
+      @if (entityType() === 'wanted_character') {
+        <div class="field">
+          <label i18n="@@admin.widgetEdit.filterIsClaimed">Is claimed</label>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox"
+                [checked]="filterIsClaimed().includes('1')"
+                (change)="toggleFilter(filterIsClaimed, '1')" />
+              <ng-container i18n="@@admin.widgetEdit.filterIsClaimedYes">Claimed</ng-container>
+            </label>
+          </div>
+        </div>
+      }
+    </fieldset>
+  }
+
   <div class="form-actions">
     <app-save-button [state]="saveState()" [disabled]="!selectedTypeId" (clicked)="save()">
       @if (widgetId) {
