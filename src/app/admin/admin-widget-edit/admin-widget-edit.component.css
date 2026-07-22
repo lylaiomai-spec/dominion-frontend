@@ -26,6 +26,19 @@
   margin-bottom: 16px;
 }
 
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checkbox-group label {
+  font-weight: normal;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .form-actions {
   margin-top: 8px;
 }
