@@ -14,6 +14,8 @@
             <span class="toast-label" i18n="@@toast.title.reaction">Reaction</span>
           } @else if (notification.type === 'topic_subscriptions') {
             <span class="toast-label" i18n="@@toast.title.topicSubscription">Subscription</span>
+          } @else if (notification.type === 'ai_message') {
+            <span class="toast-label" i18n="@@toast.title.aiMessage">AI</span>
           } @else if (notification.type === 'account_update') {
             <span class="toast-label">{{ currencyService.settings().currency_name }}</span>
           } @else {
@@ -133,6 +135,8 @@
                 🪙
               }.
             </span>
+          } @else if (notification.type === 'ai_message') {
+            <a class="toast-text toast-text-link" routerLink="/ai-chat" (click)="remove(notification.id)" i18n="@@toast.aiMessage">You have a message from AI</a>
           } @else {
             <span class="toast-text">{{ notification.message }}</span>
           }

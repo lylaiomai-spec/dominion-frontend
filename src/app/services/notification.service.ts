@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, NotificationMention, NotificationReaction, NotificationDirectMessage, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent, AiTaskDoneEvent, AiQueuePositionEvent, AiErrorEvent, PageChangedEvent, TopicFullEvent } from '../models/event';
+import { PostCreatedEvent, TopicCreatedEvent, NotificationEvent, WebSocketEvent, TopicViewersUpdateEvent, UnreadNotificationsResponse, NotificationData, NotificationMention, NotificationReaction, NotificationDirectMessage, NotificationAiMessage, PostUpdatedEvent, DirectMessageCreatedEvent, ActiveUsersUpdateEvent, ActiveUsersActivityUpdateEvent, PanelReloadEvent, ReactionCreatedEvent, HealthUpdateEvent, UserRefreshRequiredEvent, DraftUpdatedEvent, AiMessageEvent, AiTaskDoneEvent, AiQueuePositionEvent, AiErrorEvent, PageChangedEvent, TopicFullEvent } from '../models/event';
 import { AuthService } from './auth.service';
 import { ApiService } from './api.service';
 import { CharacterService } from './character.service';
@@ -118,6 +118,8 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
   private mentionPostTriggers = new Map<number, NotificationData>();  // post_id → notification
   private gameTopicTriggers = new Map<number, NotificationData>();    // topic_id → notification
   private dmChatTriggers = new Map<number, NotificationData>();       // chat_id → notification
+  private aiMessageTriggers = new Map<number, NotificationData>();    // AI chat message id → notification
+  private shownAiMessageIds = new Set<number>();
 
   constructor() {
     const baseUrl = environment.wsUrl;
@@ -153,6 +155,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
         this.systemNotificationsSignal.set([
           ...(response.system || []).map(n => ({ ...n, type: 'system' as const })),
           ...(response.absence_started || []).map(n => ({ ...n, type: 'absence_started' as const })),
+          ...(response.ai_message || []).map(n => ({ ...n, type: 'ai_message' as const })),
         ]);
         this.gameNotificationsSignal.set([
           ...(response.game || []).map(n => ({ ...n, type: 'game' as const })),
@@ -178,10 +181,23 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     return ((n.direct_message ?? n.data) as NotificationDirectMessage | null)?.chat_id ?? undefined;
   }
 
+  private aiMessageId(n: NotificationData): number | undefined {
+    return (n.data as NotificationAiMessage | null)?.message_id ?? undefined;
+  }
+
+  private isSystemGroup(n: NotificationData): boolean {
+    return n.type === 'system' || n.type === 'absence_started' || n.type === 'ai_message';
+  }
+
   private rebuildTriggers(response: UnreadNotificationsResponse): void {
     this.mentionPostTriggers.clear();
     this.gameTopicTriggers.clear();
     this.dmChatTriggers.clear();
+    this.aiMessageTriggers.clear();
+    for (const n of response.ai_message || []) {
+      const messageId = this.aiMessageId(n);
+      if (messageId) this.aiMessageTriggers.set(messageId, n);
+    }
     for (const n of response.mention || []) {
       const postId = this.mentionPostId(n);
       if (postId) this.mentionPostTriggers.set(postId, n);
@@ -204,6 +220,9 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     } else if (n.type === 'direct_message') {
       const chatId = this.dmChatId(n);
       if (chatId) this.dmChatTriggers.set(chatId, n);
+    } else if (n.type === 'ai_message') {
+      const messageId = this.aiMessageId(n);
+      if (messageId) this.aiMessageTriggers.set(messageId, n);
     }
   }
 
@@ -216,6 +235,9 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     } else if (n.type === 'direct_message') {
       const chatId = this.dmChatId(n);
       if (chatId) this.dmChatTriggers.delete(chatId);
+    } else if (n.type === 'ai_message') {
+      const messageId = this.aiMessageId(n);
+      if (messageId) this.aiMessageTriggers.delete(messageId);
     }
   }
 
@@ -269,6 +291,15 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
     }
   }
 
+  // Also remembers the ids, so a notification arriving after its message is already shown is dismissed on arrival.
+  public checkAiMessageIds(messageIds: number[]): void {
+    for (const messageId of messageIds) {
+      this.shownAiMessageIds.add(messageId);
+      const n = this.aiMessageTriggers.get(messageId);
+      if (n) this.dismissNotification(n);
+    }
+  }
+
   public dismissNotification(notification: NotificationData): void {
     this.removeTrigger(notification);
     this.apiService.post(`notifications/dismiss/${notification.id}`, {}).subscribe({
@@ -279,7 +310,7 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
   private removeFromSignal(notification: NotificationData): void {
     const id = notification.id;
-    if (notification.type === 'system' || notification.type === 'absence_started') {
+    if (this.isSystemGroup(notification)) {
       this.systemNotificationsSignal.update(current => current.filter(n => n.id !== id));
     } else if (notification.type === 'game' || notification.type === 'episode_status_change') {
       this.gameNotificationsSignal.update(current => current.filter(n => n.id !== id));
@@ -460,9 +491,15 @@ private systemNotificationsSignal = signal<NotificationData[]>([]);
 
         if (notifSetting?.disable_all) break;
 
+        const shownAiMessageId = notificationData.type === 'ai_message' ? this.aiMessageId(notificationData) : undefined;
+        if (shownAiMessageId && this.shownAiMessageIds.has(shownAiMessageId)) {
+          this.dismissNotification(notificationData);
+          break;
+        }
+
         this.addTrigger(notificationData);
 
-        if (notificationData.type === 'system' || notificationData.type === 'absence_started') {
+        if (this.isSystemGroup(notificationData)) {
           this.systemNotificationsSignal.update(current => [notificationData, ...current]);
         } else if (notificationData.type === 'game' || notificationData.type === 'episode_status_change') {
           this.gameNotificationsSignal.update(current => [notificationData, ...current]);

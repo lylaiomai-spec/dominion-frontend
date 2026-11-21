@@ -139,6 +139,7 @@ export class SettingsComponent implements OnInit {
     account_update: $localize`:@@settings.notif.typeName.account_update:Account updates`,
     direct_message: $localize`:@@settings.notif.typeName.direct_message:Direct messages`,
     reaction: $localize`:@@settings.notif.typeName.reaction:Reactions`,
+    ai_message: $localize`:@@settings.notif.typeName.ai_message:AI messages`,
   };
   oldPassword = '';
   newPassword = '';

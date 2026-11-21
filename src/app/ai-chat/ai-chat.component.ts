@@ -63,13 +63,14 @@ export class AiChatComponent implements OnInit, OnDestroy {
         const messages = history.map(msg => new Message(
           msg.id,
           msg.content,
-          new Date(msg.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          msg.date,
           msg.role === 'user',
           msg.role === 'user' ? (user?.username ?? 'You') : 'AI',
           msg.role === 'user' ? (user?.avatar ?? null) : null,
           this.uniqueSources(msg.sources)
         ));
         this.messages.set(messages);
+        this.notificationService.checkAiMessageIds(history.filter(msg => msg.role === 'assistant').map(msg => msg.id));
       },
       error: (err) => console.error('Failed to load AI chat history', err)
     });
@@ -79,13 +80,14 @@ export class AiChatComponent implements OnInit, OnDestroy {
       const aiMessage = new Message(
         data.id,
         data.content,
-        new Date(data.date_created).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        data.date,
         false,
         'AI',
         null,
         this.uniqueSources(data.sources)
       );
       this.messages.update(msgs => [...msgs, aiMessage]);
+      this.notificationService.checkAiMessageIds([data.id]);
       this.isLoading.set(false);
       this.queuePosition.set(null);
     };
@@ -100,13 +102,13 @@ export class AiChatComponent implements OnInit, OnDestroy {
           this.queuePosition.set(null);
         }
       }),
-      this.notificationService.aiError$.subscribe(() => {
+      this.notificationService.aiError$.subscribe(event => {
         this.isLoading.set(false);
         this.queuePosition.set(null);
         const systemMessage = new Message(
           --this.localIdCounter,
-          'An error occurred while processing your request. Please try again.',
-          new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          $localize`:@@aiChat.errorProcessing:An error occurred while processing your request. Please try again.`,
+          event.data.date,
           false,
           'System',
           null
@@ -152,12 +154,12 @@ export class AiChatComponent implements OnInit, OnDestroy {
     if (!content || this.isLoading()) return;
 
     const user = this.currentUser();
-    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+    // The time label is filled in from the server's localized date once the send succeeds.
     const userMessage = new Message(
       --this.localIdCounter,
       content,
-      now,
+      '',
       true,
       user?.username ?? 'You',
       user?.avatar ?? null
@@ -167,8 +169,9 @@ export class AiChatComponent implements OnInit, OnDestroy {
     textarea.value = '';
     this.isLoading.set(true);
 
-    this.apiService.post<{ queue_position: number }>('ai-chat/message', { content, session_id: this.sessionId }).subscribe({
+    this.apiService.post<{ queue_position: number; date: string }>('ai-chat/message', { content, session_id: this.sessionId }).subscribe({
       next: (res) => {
+        this.messages.update(msgs => msgs.map(m => m.id === userMessage.id ? { ...m, time: res.date } : m));
         if (res.queue_position > 0) {
           this.queuePosition.set(res.queue_position);
         }
@@ -179,8 +182,8 @@ export class AiChatComponent implements OnInit, OnDestroy {
         if (err?.status === 503) {
           const systemMessage = new Message(
             --this.localIdCounter,
-            'AI is currently unavailable. Please try again later.',
-            new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            $localize`:@@aiChat.unavailable:AI is currently unavailable. Please try again later.`,
+            '',
             false,
             'System',
             null

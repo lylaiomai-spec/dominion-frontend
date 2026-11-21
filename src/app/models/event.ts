@@ -106,10 +106,14 @@ export interface NotificationEpisodeStatusChange {
   initiator_name: string;
 }
 
+export interface NotificationAiMessage {
+  message_id: number;
+}
+
 export interface NotificationData {
   id: number;
   user_id: number;
-  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update' | 'reaction' | 'auto_archiving' | 'episode_status_change' | 'absence_started' | 'topic_subscriptions';
+  type: 'system' | 'game' | 'mention' | 'direct_message' | 'account_update' | 'reaction' | 'auto_archiving' | 'episode_status_change' | 'absence_started' | 'topic_subscriptions' | 'ai_message';
   title: string;
   message: string;
   date_created: string;
@@ -118,7 +122,7 @@ export interface NotificationData {
   mention: NotificationMention | null;
   game: NotificationGame | null;
   direct_message: NotificationDirectMessage | null;
-  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | NotificationReaction | NotificationAutoArchiving | NotificationEpisodeStatusChange | NotificationAbsenceStarted | NotificationTopicSubscription | null;
+  data: NotificationMention | NotificationGame | NotificationDirectMessage | NotificationAccountUpdate | NotificationReaction | NotificationAutoArchiving | NotificationEpisodeStatusChange | NotificationAbsenceStarted | NotificationTopicSubscription | NotificationAiMessage | null;
 }
 
 export interface NotificationEvent {
@@ -138,6 +142,7 @@ export interface UnreadNotificationsResponse {
   episode_status_change: NotificationData[];
   absence_started?: NotificationData[];
   topic_subscriptions?: NotificationData[];
+  ai_message?: NotificationData[];
 }
 
 export interface TopicViewersUpdateEvent {
@@ -228,7 +233,7 @@ export interface AiMessageData {
   role: string;
   content: string;
   sources?: AiSource[];
-  date_created: string;
+  date: string;
 }
 
 export interface AiMessageEvent {
@@ -252,7 +257,7 @@ export interface AiQueuePositionEvent {
 export interface AiErrorEvent {
   type: 'ai_error';
   msg_id?: number;
-  data: { error: string };
+  data: { error: string; date: string };
 }
 
 export interface PageChangedEvent {

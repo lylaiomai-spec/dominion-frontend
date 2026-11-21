@@ -42,7 +42,9 @@
                           }
                         </div>
                       }
-                      <p class="message-metadata"><span>{{ msg.time }}</span></p>
+                      @if (msg.time) {
+                        <p class="message-metadata"><span>{{ msg.time }}</span></p>
+                      }
                     </div>
                   </div>
                 </div>

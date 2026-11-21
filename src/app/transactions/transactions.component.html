@@ -16,10 +16,7 @@
       <div class="tx-row">
         <div class="tx-left">
           <span class="tx-type">
-            {{ tx.income_type_key ? (incomeTypeNames[tx.income_type_key] ?? tx.income_type_key) : manualLabel }}
-            @if (!tx.income_type_key && tx.metadata?.note) {
-              ({{ tx.metadata!.note }})
-            }
+            {{ txLabel(tx) }}
             @if (tx.metadata; as meta) {
               @if (meta.topic_id && meta.post_id) {
                 (<a [routerLink]="['/viewtopic', meta.topic_id]" [fragment]="''+ + meta.post_id" i18n="@@transactions.postLink">post</a>)

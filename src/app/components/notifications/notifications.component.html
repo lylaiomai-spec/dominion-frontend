@@ -82,6 +82,8 @@
                       <ng-container i18n="@@notifications.absenceCharacters">Characters: </ng-container>{{ absence.characters.join(', ') }}
                     </p>
                   }
+                } @else if (item.type === 'ai_message') {
+                  <p><a routerLink="/ai-chat" (click)="onNotificationClick(item)" i18n="@@notifications.aiMessage">You have a message from AI</a></p>
                 } @else {
                   <p>{{ item.message }}</p>
                 }

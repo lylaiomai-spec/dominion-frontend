@@ -41,6 +41,15 @@ export class TransactionsComponent implements OnInit, OnDestroy {
     currency_income_game_post: $localize`:@@transactions.incomeType.gamePost:Game post`,
     currency_income_wanted_character: $localize`:@@transactions.incomeType.wantedCharacter:Wanted character`,
     currency_income_new_character: $localize`:@@transactions.incomeType.newCharacter:Character accepted`,
+    currency_income_100_general_posts: $localize`:@@transactions.incomeType.generalPosts100:100 general posts`,
+    currency_income_500_general_posts: $localize`:@@transactions.incomeType.generalPosts500:500 general posts`,
+    currency_income_1000_general_posts: $localize`:@@transactions.incomeType.generalPosts1000:1000 general posts`,
+    currency_income_100_game_posts: $localize`:@@transactions.incomeType.gamePosts100:100 game posts`,
+    currency_income_500_game_posts: $localize`:@@transactions.incomeType.gamePosts500:500 game posts`,
+    currency_income_1000_game_posts: $localize`:@@transactions.incomeType.gamePosts1000:1000 game posts`,
+    currency_income_manual_transaction: $localize`:@@transactions.incomeType.manual:Manual income`,
+    currency_spend_manual_transaction: $localize`:@@transactions.spendType.manual:Manual spend`,
+    currency_spend_auto_archiving_immunity: $localize`:@@transactions.spendType.autoArchivingImmunity:Auto-archiving immunity`,
   };
 
   readonly statusLabels: Record<number, string> = {
@@ -68,6 +77,12 @@ export class TransactionsComponent implements OnInit, OnDestroy {
 
   goToPage(page: number): void {
     this.router.navigate([], { queryParams: { page }, replaceUrl: false });
+  }
+
+  txLabel(tx: CurrencyTransaction): string {
+    const name = tx.income_type_key ? (this.incomeTypeNames[tx.income_type_key] ?? tx.income_type_key) : this.manualLabel;
+    const note = tx.metadata?.note;
+    return note ? `${name} (${note})` : name;
   }
 
   openAddModal(): void {

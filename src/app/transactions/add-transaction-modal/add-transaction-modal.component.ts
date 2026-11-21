@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { CurrencyService } from '../../services/currency.service';
-import { AddTransactionRequest, CurrencyIncomeType } from '../../models/Currency';
+import { AddTransactionRequest, CurrencyIncomeType, CurrencySpendType } from '../../models/Currency';
 
 export const CUSTOM_KEY = '__custom__';
 const KEYS_WITH_POST_LINK = new Set(['currency_income_game_post']);
@@ -13,13 +14,16 @@ const KEYS_WITH_POST_LINK = new Set(['currency_income_game_post']);
   changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './add-transaction-modal.component.html',
 })
-export class AddTransactionModalComponent {
+export class AddTransactionModalComponent implements OnInit {
   @Input() userId!: number;
   @Input() incomeTypes: CurrencyIncomeType[] = [];
   @Output() close = new EventEmitter<void>();
   @Output() created = new EventEmitter<void>();
 
   private currencyService = inject(CurrencyService);
+  private destroyRef = inject(DestroyRef);
+
+  readonly spendTypes = signal<CurrencySpendType[]>([]);
 
   readonly customKey = CUSTOM_KEY;
 
@@ -31,6 +35,29 @@ export class AddTransactionModalComponent {
   postId: number | null = null;
   saving = false;
   error = '';
+
+  ngOnInit() {
+    this.currencyService.loadSpendTypes()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (types) => this.spendTypes.set(types),
+        error: (err) => console.error('Failed to load spend types', err),
+      });
+  }
+
+  get isSpend(): boolean {
+    return this.type === 'spend';
+  }
+
+  get typeOptions(): (CurrencyIncomeType | CurrencySpendType)[] {
+    return this.isSpend ? this.spendTypes() : this.incomeTypes;
+  }
+
+  // A key chosen for one direction is not valid for the other, so switching resets it.
+  onTypeChange(type: 'income' | 'spend') {
+    this.type = type;
+    this.incomeTypeKey = '';
+  }
 
   get isCustom(): boolean {
     return this.incomeTypeKey === CUSTOM_KEY;

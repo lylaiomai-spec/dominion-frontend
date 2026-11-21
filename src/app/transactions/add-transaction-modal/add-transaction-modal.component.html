@@ -4,7 +4,7 @@
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="tx-type" i18n="@@addTransaction.type">Type</label>
-        <select id="tx-type" name="type" [(ngModel)]="type">
+        <select id="tx-type" name="type" [ngModel]="type" (ngModelChange)="onTypeChange($event)">
           <option value="income" i18n="@@addTransaction.income">Income</option>
           <option value="spend" i18n="@@addTransaction.spend">Spend</option>
         </select>
@@ -16,10 +16,14 @@
       </div>
 
       <div class="form-group">
-        <label for="tx-income-type" i18n="@@addTransaction.incomeType">Income Type</label>
+        @if (isSpend) {
+          <label for="tx-income-type" i18n="@@addTransaction.spendType">Spend Type</label>
+        } @else {
+          <label for="tx-income-type" i18n="@@addTransaction.incomeType">Income Type</label>
+        }
         <select id="tx-income-type" name="incomeTypeKey" [(ngModel)]="incomeTypeKey">
           <option value="" i18n="@@addTransaction.none">— None —</option>
-          @for (it of incomeTypes; track it.key) {
+          @for (it of typeOptions; track it.key) {
             <option [value]="it.key">{{ it.name }}</option>
           }
           <option [value]="customKey" i18n="@@addTransaction.custom">Custom</option>
